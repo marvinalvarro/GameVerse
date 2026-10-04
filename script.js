@@ -443,3 +443,66 @@ document.querySelectorAll('[data-modal]').forEach((btn) => {
     });
   });
 })();
+
+
+// ===== Efek miring + naik (kursor di desktop, sentuhan jari di HP) =====
+(function initFx() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const SEL = '.card, .voice-box, .guide-shot, .stat';
+  const MAX_TILT = { card: 9, stat: 12, 'guide-shot': 5, 'voice-box': 2.5 };
+  let active = null;
+  let releaseTimer = null;
+
+  function maxFor(el) {
+    for (const k in MAX_TILT) if (el.classList.contains(k)) return MAX_TILT[k];
+    return 8;
+  }
+  function setTilt(el, e) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    const x = (e.clientX - r.left) / r.width;
+    const y = (e.clientY - r.top) / r.height;
+    const max = maxFor(el);
+    el.style.setProperty('--ry', ((x - 0.5) * 2 * max).toFixed(2) + 'deg');
+    el.style.setProperty('--rx', (-(y - 0.5) * 2 * max).toFixed(2) + 'deg');
+  }
+  function on(el, e) {
+    clearTimeout(releaseTimer);
+    if (active && active !== el) off(active);
+    active = el;
+    el.classList.add('fx-on');
+    setTilt(el, e);
+  }
+  function off(el) {
+    if (!el) return;
+    el.classList.remove('fx-on');
+    el.style.removeProperty('--rx');
+    el.style.removeProperty('--ry');
+    if (active === el) active = null;
+  }
+
+  document.addEventListener('pointermove', (e) => {
+    const el = e.target.closest ? e.target.closest(SEL) : null;
+    if (el) on(el, e);
+    else if (active) off(active);
+  }, { passive: true });
+
+  document.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest ? e.target.closest(SEL) : null;
+    if (el) on(el, e);
+  }, { passive: true });
+
+  // Jari diangkat / scroll mulai: efek dilepas pelan-pelan (biar tap cepat tetap kelihatan efeknya)
+  function release(e) {
+    if (e.pointerType === 'mouse') return;
+    clearTimeout(releaseTimer);
+    releaseTimer = setTimeout(() => off(active), 260);
+  }
+  document.addEventListener('pointerup', release, { passive: true });
+  document.addEventListener('pointercancel', release, { passive: true });
+  document.documentElement.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') off(active); });
+
+  // iOS Safari butuh ini supaya :active (efek tekan tombol) jalan
+  document.addEventListener('touchstart', () => {}, { passive: true });
+})();

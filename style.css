@@ -293,10 +293,11 @@ header {
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(15,61,58,0.12);
-  border-color: var(--mint-deep);
+@media (hover: hover) {
+  .card:hover {
+    box-shadow: 0 14px 28px rgba(15,61,58,0.16);
+    border-color: var(--mint-deep);
+  }
 }
 .card .icon {
   width: 38px; height: 38px;
@@ -511,7 +512,7 @@ footer {
     min-width: 0;
     margin: 0;
     /* ruang di dalam slide biar bayangan kartu gak kepotong */
-    padding: 4px 6px 10px;
+    padding: 12px 8px 14px;
   }
   .features-group + .features-group { margin-top: 0; }
 
@@ -870,5 +871,109 @@ footer {
     margin-top: 26px;
     padding: 22px 0 4px;
     border-top: 1px solid var(--panel-line);
+  }
+}
+
+
+/* ===============================
+   Efek sentuh / hover (HP & desktop)
+   - Kotak (kartu, form, angka): miring ngikutin jari/kursor + naik
+   - Tombol & bulatan: naik pas hover, mengecil pas ditekan
+=============================== */
+.card, .voice-box, .guide-shot, .stat {
+  --rx: 0deg; --ry: 0deg; --lift: 0px; --s: 1;
+  transform: perspective(800px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--lift)) scale(var(--s));
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.fx-on {
+  --lift: -6px; --s: 1.02;
+  transition: transform 0.08s linear, box-shadow 0.25s ease, border-color 0.15s ease;
+}
+.card.fx-on { box-shadow: 0 18px 34px rgba(15,61,58,0.22); border-color: var(--mint-deep); }
+.voice-box.fx-on { --lift: -3px; --s: 1.004; box-shadow: 0 16px 32px rgba(15,61,58,0.16); }
+.guide-shot.fx-on { --lift: -3px; --s: 1.02; box-shadow: 0 12px 26px rgba(15,61,58,0.18); }
+.stat.fx-on { --lift: -4px; --s: 1.1; }
+.card:active { --s: 0.985; }
+
+/* Tombol & bulatan */
+.btn, .next-btn, .guide-btn, .chip span, .tab, .modal-close, .dot {
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, width 0.2s ease, border-radius 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .btn:hover, .next-btn:hover, .guide-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 22px rgba(43,179,160,0.35);
+  }
+  .chip span:hover, .tab:hover { transform: translateY(-2px) scale(1.04); }
+  .modal-close:hover { transform: rotate(90deg) scale(1.1); }
+  .stars-row label:hover { transform: scale(1.2) rotate(-10deg); }
+}
+.btn:active, .next-btn:active, .guide-btn:active,
+.chip span:active, .tab:active, .modal-close:active {
+  transform: translateY(0) scale(0.94);
+  box-shadow: none;
+}
+.stars-row label { transition: color 0.15s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.stars-row label:active { transform: scale(0.88); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .voice-box, .guide-shot, .stat { transform: none !important; }
+  .fx-on { --lift: 0px; --s: 1; }
+}
+
+
+/* ===============================
+   Efek tambahan (melengkapi efek di atas)
+   Bulatan kecil, avatar, baris daftar, ikon kartu
+=============================== */
+
+/* ikon di dalam kartu ikut "loncat" pas kartu di-hover / ditekan */
+.card .icon { transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@media (hover: hover) {
+  .card:hover .icon { transform: translateY(-3px) rotate(-10deg) scale(1.12); }
+}
+.card:active .icon { transform: rotate(8deg) scale(1.05); }
+
+/* titik indikator */
+.guide-dot { transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.2s ease, border-radius 0.2s ease, background 0.2s ease; }
+@media (hover: hover) {
+  .dot:hover, .guide-dot:hover { transform: scale(1.5); }
+}
+.dot:active, .guide-dot:active { transform: scale(0.7); }
+
+/* avatar bulat & baris papan peringkat */
+.rank-row { transition: transform 0.2s ease, background 0.2s ease; border-radius: 10px; }
+.rank-row .avatar { transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@media (hover: hover) {
+  .rank-row:hover { transform: translateX(5px); background: var(--panel); }
+  .rank-row:hover .avatar { transform: scale(1.18) rotate(8deg); }
+}
+.rank-row:active { transform: translateX(3px) scale(0.98); background: var(--panel); }
+.rank-row:active .avatar { transform: scale(1.1) rotate(-6deg); }
+
+/* label hari (event) & kode command */
+.event-row .day, .cmd-row code { display: inline-block; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@media (hover: hover) {
+  .event-row:hover .day { transform: rotate(-4deg) scale(1.1); }
+  .cmd-row:hover code { transform: translateY(-2px) rotate(-3deg) scale(1.08); }
+}
+.event-row:active .day, .cmd-row:active code { transform: scale(0.92); }
+
+/* Zona penahan di bawah kartu/tombol: biar pas naik, kursor di tepi bawah gak bikin efeknya kedap-kedip */
+.card, .stat, .btn, .next-btn, .guide-btn { position: relative; }
+.card::after, .stat::after, .btn::after, .next-btn::after, .guide-btn::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -8px;
+  height: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card .icon, .guide-dot, .rank-row, .rank-row .avatar, .event-row .day, .cmd-row code {
+    transition: none !important;
+    transform: none !important;
   }
 }
