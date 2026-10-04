@@ -39,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -75,7 +75,7 @@
     <p>Game Verse itu komunitas Discord buat siapa aja yang suka main game, ngobrol santai, atau sekadar cari temen baru. Ada voice leveling, event rutin, sampai economy game—semua dalam satu server.</p>
     <div class="hero-ctas">
       <a class="btn btn-primary" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Gabung Sekarang</a>
-      <a class="btn btn-ghost" href="#fitur">Lihat Fitur</a>
+      <a class="btn btn-ghost" id="seeFeatures" href="#fitur">Lihat Fitur</a>
     </div>
   </section>
 
@@ -100,12 +100,20 @@
 
   <section class="features" id="fitur">
     <h2>Yang bisa kamu temuin di sini</h2>
-    <p class="section-sub">Klik kartunya buat lihat contoh dan cara pakainya.</p>
+    <p class="section-sub">Pilih bagian yang mau kamu lihat, atau geser ke samping.</p>
+
+    <div class="tabbar" id="tabbar" role="tablist" aria-label="Bagian situs">
+      <button class="tab-pill active" type="button" role="tab" aria-selected="true" data-page="0"><span aria-hidden="true">🧩</span>Fitur</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="1"><span aria-hidden="true">🎮</span>Coba Langsung</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="2"><span aria-hidden="true">🏆</span>Level &amp; Galeri</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="3"><span aria-hidden="true">❓</span>FAQ</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="4"><span aria-hidden="true">💬</span>Masukan</button>
+    </div>
 
     <!-- viewport = jendela yang motong slide (biar slide sebelah gak keliatan ngintip) -->
     <div class="mobile-viewport" id="mobileViewport">
       <div class="mobile-track" id="mobileTrack">
-        <div class="features-group" id="fitur-server">
+        <div class="features-group" id="fitur-server" role="tabpanel">
           <div class="group-label">Fitur Server (klik buat lihat contoh)</div>
           <div class="grid">
             <button class="card" data-modal="voice" type="button">
@@ -129,7 +137,7 @@
           </div>
         </div>
 
-        <div class="features-group" id="coba-langsung">
+        <div class="features-group" id="coba-langsung" role="tabpanel">
           <div class="group-label">Coba Langsung (klik buat lihat cara pakainya)</div>
           <div class="grid">
             <button class="card card-guide" data-guide="ktp" type="button">
@@ -158,65 +166,11 @@
             </button>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="mobile-pager" id="mobilePager">
-      <div class="dots" id="mobileDots">
-        <button class="dot active" type="button" data-page="0" aria-label="Halaman 1"></button>
-        <button class="dot" type="button" data-page="1" aria-label="Halaman 2"></button>
-      </div>
-      <div class="pager-row">
-        <button class="next-btn" id="mobileNext" type="button">Lanjut</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="voice" id="suara">
-    <h2>Suara kamu penting</h2>
-    <p class="section-sub">Kasih rating, kritik, atau usul fitur. Semua masuk langsung ke admin.</p>
-
-    <div class="voice-box">
-      <form class="vform" id="feedbackForm" novalidate>
-        <fieldset class="stars">
-          <legend>Seberapa seru Game Verse buat kamu?</legend>
-          <div class="stars-row">
-            <input type="radio" name="rating" id="star5" value="5"><label for="star5" title="5 bintang"><span class="sr-only">5 bintang</span>★</label>
-            <input type="radio" name="rating" id="star4" value="4"><label for="star4" title="4 bintang"><span class="sr-only">4 bintang</span>★</label>
-            <input type="radio" name="rating" id="star3" value="3"><label for="star3" title="3 bintang"><span class="sr-only">3 bintang</span>★</label>
-            <input type="radio" name="rating" id="star2" value="2"><label for="star2" title="2 bintang"><span class="sr-only">2 bintang</span>★</label>
-            <input type="radio" name="rating" id="star1" value="1"><label for="star1" title="1 bintang"><span class="sr-only">1 bintang</span>★</label>
-          </div>
-          <p class="star-hint" id="starHint">Pilih bintang dulu</p>
-        </fieldset>
-
-        <fieldset class="chips">
-          <legend>Mau ngasih apa?</legend>
-          <div class="chips-row">
-            <label class="chip"><input type="radio" name="category" value="Kritik" checked><span>Kritik</span></label>
-            <label class="chip"><input type="radio" name="category" value="Saran fitur"><span>Saran fitur</span></label>
-            <label class="chip"><input type="radio" name="category" value="Laporan masalah"><span>Laporan masalah</span></label>
-            <label class="chip"><input type="radio" name="category" value="Lainnya"><span>Lainnya</span></label>
-          </div>
-        </fieldset>
-
-        <label class="field">
-          <span>Nama Discord <em>(boleh dikosongin)</em></span>
-          <input type="text" name="name" maxlength="40" autocomplete="off" placeholder="contoh: marvin.">
-        </label>
-        <label class="field">
-          <span>Ceritain di sini <em>(opsional kalau sudah kasih bintang)</em></span>
-          <textarea name="message" rows="4" maxlength="800" placeholder="Apa yang kamu suka, kurang nyaman, atau pengen ditambah?"></textarea>
-        </label>
-        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="btn btn-primary btn-submit" type="submit">Kirim Masukan</button>
-        <p class="vstatus" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-  </section>
-
+        <!-- Halaman 3: Level & Galeri -->
+        <div class="features-group" id="page-level" role="tabpanel">
   <!-- Cara naik level -->
-  <section class="sec levels reveal" id="level">
+  <div class="sec levels" id="level">
     <h2>Cara naik level</h2>
     <p class="section-sub">Makin aktif, makin tinggi levelmu. Gak perlu diatur manual, semuanya otomatis.</p>
     <ol class="steps">
@@ -226,10 +180,10 @@
       <li class="step"><span class="num">4</span><div class="step-ico" aria-hidden="true">🏅</div><h3>Dapat role eksklusif</h3><p>Level tertentu membuka role spesial yang gak dimiliki semua orang.</p></li>
     </ol>
     <div class="tiers" id="tiers" hidden></div>
-  </section>
+  </div>
 
   <!-- Sekilas isi server (galeri) -->
-  <section class="sec gallery reveal" id="galeri">
+  <div class="sec gallery" id="galeri">
     <h2>Sekilas isi server</h2>
     <p class="section-sub">Geser buat lihat lebih banyak. Klik gambarnya buat memperbesar.</p>
     <div class="gallery-track" id="galleryTrack">
@@ -239,24 +193,28 @@
       <button class="shot" type="button" data-full="img/ultah-1.webp" data-cap="Poster daftar ulang tahun"><img src="img/ultah-1.webp" alt="Poster daftar ulang tahun" loading="lazy"><span>Daftar ultah</span></button>
       <button class="shot" type="button" data-full="img/streak-1.webp" data-cap="Streak harian di channel"><img src="img/streak-1.webp" alt="Channel streak harian" loading="lazy"><span>Streak harian</span></button>
     </div>
-  </section>
+  </div>
 
   <!-- Testimoni: muncul otomatis kalau kamu isi di script.js (GV_CONFIG.testimonials) -->
-  <section class="sec testi reveal" id="testimoni" hidden>
+  <div class="sec testi" id="testimoni" hidden>
     <h2>Kata mereka</h2>
     <p class="section-sub">Cerita dari member Game Verse.</p>
     <div class="testi-grid" id="testiGrid"></div>
-  </section>
+  </div>
 
   <!-- Tim: muncul otomatis kalau kamu isi di script.js (GV_CONFIG.team) -->
-  <section class="sec team reveal" id="tim" hidden>
+  <div class="sec team" id="tim" hidden>
     <h2>Tim di balik layar</h2>
     <p class="section-sub">Admin dan moderator yang jagain server.</p>
     <div class="team-grid" id="teamGrid"></div>
-  </section>
+  </div>
 
+        </div>
+
+        <!-- Halaman 4: FAQ & aturan -->
+        <div class="features-group" id="page-faq" role="tabpanel">
   <!-- FAQ & aturan -->
-  <section class="sec faq reveal" id="faq">
+  <div class="sec faq" id="faq">
     <h2>Tanya jawab &amp; aturan</h2>
     <p class="section-sub">Jawaban cepat buat pertanyaan yang sering muncul.</p>
 
@@ -300,6 +258,71 @@
       <li>Jaga privasi: jangan sebar data pribadi, baik punyamu maupun orang lain.</li>
       <li>Ikuti arahan admin dan moderator.</li>
     </ol>
+  </div>
+
+        </div>
+
+        <!-- Halaman 5: Masukan -->
+        <div class="features-group" id="page-masukan" role="tabpanel">
+  <div class="voice" id="suara">
+    <h2>Suara kamu penting</h2>
+    <p class="section-sub">Kasih rating, kritik, atau usul fitur. Semua masuk langsung ke admin.</p>
+
+    <div class="voice-box">
+      <form class="vform" id="feedbackForm" novalidate>
+        <fieldset class="stars">
+          <legend>Seberapa seru Game Verse buat kamu?</legend>
+          <div class="stars-row">
+            <input type="radio" name="rating" id="star5" value="5"><label for="star5" title="5 bintang"><span class="sr-only">5 bintang</span>★</label>
+            <input type="radio" name="rating" id="star4" value="4"><label for="star4" title="4 bintang"><span class="sr-only">4 bintang</span>★</label>
+            <input type="radio" name="rating" id="star3" value="3"><label for="star3" title="3 bintang"><span class="sr-only">3 bintang</span>★</label>
+            <input type="radio" name="rating" id="star2" value="2"><label for="star2" title="2 bintang"><span class="sr-only">2 bintang</span>★</label>
+            <input type="radio" name="rating" id="star1" value="1"><label for="star1" title="1 bintang"><span class="sr-only">1 bintang</span>★</label>
+          </div>
+          <p class="star-hint" id="starHint">Pilih bintang dulu</p>
+        </fieldset>
+
+        <fieldset class="chips">
+          <legend>Mau ngasih apa?</legend>
+          <div class="chips-row">
+            <label class="chip"><input type="radio" name="category" value="Kritik" checked><span>Kritik</span></label>
+            <label class="chip"><input type="radio" name="category" value="Saran fitur"><span>Saran fitur</span></label>
+            <label class="chip"><input type="radio" name="category" value="Laporan masalah"><span>Laporan masalah</span></label>
+            <label class="chip"><input type="radio" name="category" value="Lainnya"><span>Lainnya</span></label>
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span>Nama Discord <em>(boleh dikosongin)</em></span>
+          <input type="text" name="name" maxlength="40" autocomplete="off" placeholder="contoh: marvin.">
+        </label>
+        <label class="field">
+          <span>Ceritain di sini <em>(opsional kalau sudah kasih bintang)</em></span>
+          <textarea name="message" rows="4" maxlength="800" placeholder="Apa yang kamu suka, kurang nyaman, atau pengen ditambah?"></textarea>
+        </label>
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn btn-primary btn-submit" type="submit">Kirim Masukan</button>
+        <p class="vstatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-pager" id="mobilePager">
+      <div class="dots" id="mobileDots">
+        <button class="dot active" type="button" data-page="0" aria-label="Halaman 1"></button>
+        <button class="dot" type="button" data-page="1" aria-label="Halaman 2"></button>
+        <button class="dot" type="button" data-page="2" aria-label="Halaman 3"></button>
+        <button class="dot" type="button" data-page="3" aria-label="Halaman 4"></button>
+        <button class="dot" type="button" data-page="4" aria-label="Halaman 5"></button>
+      </div>
+      <div class="pager-row">
+        <button class="next-btn" id="mobileNext" type="button">Lanjut</button>
+      </div>
+    </div>
   </section>
 
   <section class="cta-band">
@@ -314,7 +337,7 @@
       <a class="social" href="https://www.tiktok.com/@marvinalvarro" target="_blank" rel="noopener">TikTok</a>
       <a class="social" href="https://www.instagram.com/ahadyuuu_" target="_blank" rel="noopener">Instagram</a>
     </div>
-    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v6</small></p>
+    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v7</small></p>
   </footer>
 </main>
 
@@ -330,7 +353,7 @@
   </div>
 </div>
 
-<script src="script.js?v=6"></script>
+<script src="script.js?v=7"></script>
 
 </body>
 </html>

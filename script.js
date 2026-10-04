@@ -120,89 +120,117 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeModal();
 });
 
-// ===== Mobile onboarding pagination =====
-// Mode slide cuma aktif di layar <= 640px (HP). Di desktop semuanya tampil biasa.
+// Halaman ini ke-scroll di dalam <body> (bukan window), jadi "ke atas" harus menggulung keduanya.
+function scrollToTop() {
+  const opt = { top: 0, behavior: 'smooth' };
+  window.scrollTo(opt);
+  if (document.body.scrollTo) document.body.scrollTo(opt);
+  if (document.documentElement.scrollTo) document.documentElement.scrollTo(opt);
+}
+
+// ===== Jelajah: tab + slide (semua ukuran layar) =====
+// 5 halaman: Fitur | Coba Langsung | Level & Galeri | FAQ | Masukan
 const mobileViewport = document.getElementById('mobileViewport');
 const mobileTrack = document.getElementById('mobileTrack');
 const mobileDotsWrap = document.getElementById('mobileDots');
 const mobileNextBtn = document.getElementById('mobileNext');
 const featuresSection = document.getElementById('fitur');
+const tabbar = document.getElementById('tabbar');
+
+// Isi pemilih "Lihat Fitur" (urutannya sama dengan urutan halaman)
+const PAGE_INFO = [
+  { icon: '🧩', title: 'Fitur Server',   desc: 'Voice leveling, economy & mini game, event rutin' },
+  { icon: '🎮', title: 'Coba Langsung',  desc: "KTP digital, CV Ta'aruf, streak harian, ultah" },
+  { icon: '🏆', title: 'Level & Galeri', desc: 'Cara naik level dan sekilas isi server' },
+  { icon: '❓', title: 'FAQ & Aturan',   desc: 'Jawaban cepat dan aturan dasar server' },
+  { icon: '💬', title: 'Kasih Masukan',  desc: 'Rating, kritik, dan saran fitur' }
+];
+// Link langsung ke bagian tertentu, mis. .../GameVerse/#faq
+const HASH_PAGE = {
+  'fitur-server': 0, 'coba-langsung': 1,
+  level: 2, galeri: 2, testimoni: 2, tim: 2,
+  faq: 3, suara: 4, masukan: 4
+};
+
+let gvGoTo = () => {};
 
 if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
   const groups = Array.from(mobileTrack.querySelectorAll('.features-group'));
   const dots = Array.from(mobileDotsWrap.querySelectorAll('.dot'));
+  const tabs = tabbar ? Array.from(tabbar.querySelectorAll('.tab-pill')) : [];
   const totalPages = groups.length;
-  const mq = window.matchMedia('(max-width: 640px)');
   let currentPage = 0;
 
-  // Di HP, bagian "Suara kamu penting" dimasukin ke dalam halaman slide.
-  // 0 = halaman 1, 1 = halaman 2. Ganti angka ini kalau mau pindah halaman.
-  const VOICE_PAGE = 1;
-  const voiceSection = document.getElementById('suara');
-  const voiceHome = voiceSection ? voiceSection.nextElementSibling : null;
-
-  function placeVoice() {
-    if (!voiceSection || !voiceHome) return;
-    if (mq.matches) {
-      if (voiceSection.parentElement !== groups[VOICE_PAGE]) groups[VOICE_PAGE].appendChild(voiceSection);
-    } else if (voiceSection.parentElement !== voiceHome.parentElement) {
-      voiceHome.parentElement.insertBefore(voiceSection, voiceHome);
-    }
-  }
-
-  // Tinggi jendela ngikutin tinggi slide yang aktif -> gak ada ruang kosong
-  // di bawah kartu, jadi jarak ke "Siap gabung?" selalu pas.
+  // Tinggi jendela ngikutin tinggi halaman yang aktif -> gak ada ruang kosong di bawah.
   function syncHeight() {
-    if (!mq.matches) {
-      mobileViewport.style.height = '';
-      return;
-    }
     mobileViewport.style.height = groups[currentPage].offsetHeight + 'px';
   }
 
-  function renderPage(scrollToTop) {
+  function renderPage() {
     mobileTrack.style.setProperty('--page', currentPage);
     dots.forEach((d, i) => d.classList.toggle('active', i === currentPage));
+    tabs.forEach((t, i) => {
+      const on = i === currentPage;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
 
-    const isLast = currentPage === totalPages - 1;
-    mobileNextBtn.textContent = isLast ? 'Ke Halaman Utama' : 'Lanjut';
+    // Tab aktif digeser ke tengah (tanpa ikut menggeser halaman)
+    const at = tabs[currentPage];
+    if (at && tabbar && tabbar.scrollWidth > tabbar.clientWidth) {
+      tabbar.scrollTo({ left: at.offsetLeft - (tabbar.clientWidth - at.offsetWidth) / 2, behavior: 'smooth' });
+    }
 
-    // Slide yang gak aktif gak bisa difokus / diklik lewat keyboard
+    mobileNextBtn.textContent = currentPage === totalPages - 1 ? 'Ke Halaman Utama' : 'Lanjut';
+
+    // Halaman yang gak aktif gak bisa difokus / diklik lewat keyboard
     groups.forEach((g, i) => {
-      const active = i === currentPage || !mq.matches;
-      if (active) g.removeAttribute('inert'); else g.setAttribute('inert', '');
-      g.setAttribute('aria-hidden', active ? 'false' : 'true');
+      if (i === currentPage) g.removeAttribute('inert'); else g.setAttribute('inert', '');
+      g.setAttribute('aria-hidden', i === currentPage ? 'false' : 'true');
     });
 
     syncHeight();
+  }
 
-    if (scrollToTop && mq.matches) {
-      const top = featuresSection.getBoundingClientRect().top;
-      if (top < 0) featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function goTo(page, force) {
+    currentPage = Math.max(0, Math.min(totalPages - 1, page));
+    renderPage();
+    // Kalau lagi di bawah (atau dipaksa), bawa pandangan ke awal bagian ini
+    if (force || featuresSection.getBoundingClientRect().top < 0) {
+      featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
-
-  function goTo(page) {
-    currentPage = Math.max(0, Math.min(totalPages - 1, page));
-    renderPage(true);
-  }
+  gvGoTo = goTo;
 
   mobileNextBtn.addEventListener('click', () => {
     if (currentPage < totalPages - 1) {
       goTo(currentPage + 1);
     } else {
-      // Slide terakhir -> balik ke halaman utama (paling atas)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Halaman terakhir -> balik ke halaman utama (paling atas)
+      scrollToTop();
       setTimeout(() => goTo(0), 500);
     }
   });
 
   dots.forEach((dot) => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.page, 10))));
+  tabs.forEach((t) => t.addEventListener('click', () => goTo(parseInt(t.dataset.page, 10))));
+
+  // Panah kiri/kanan di keyboard pas fokus di tab
+  if (tabbar) {
+    tabbar.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault();
+      goTo(currentPage + (e.key === 'ArrowRight' ? 1 : -1));
+      if (tabs[currentPage]) tabs[currentPage].focus();
+    });
+  }
 
   // Geser kiri/kanan
   let startX = 0, startY = 0, ignoreSwipe = false;
   mobileViewport.addEventListener('touchstart', (e) => {
-    ignoreSwipe = !!e.target.closest('.voice'); // jangan geser slide pas lagi ngisi form
+    // jangan geser halaman pas lagi ngisi form atau geser galeri
+    ignoreSwipe = !!e.target.closest('.voice, .gallery-track');
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
   }, { passive: true });
@@ -215,20 +243,50 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
     }
   }, { passive: true });
 
-  window.addEventListener('resize', () => renderPage(false));
+  // Jaga-jaga: kalau jendela kegeser sendiri (mis. lewat link #faq), kembalikan
+  mobileViewport.addEventListener('scroll', () => { mobileViewport.scrollLeft = 0; });
+
+  window.addEventListener('resize', syncHeight);
   window.addEventListener('load', syncHeight);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncHeight);
-  if (mq.addEventListener) mq.addEventListener('change', () => { placeVoice(); renderPage(false); });
 
-  // Tinggi jendela ikut berubah kalau isi slide berubah (pesan status, textarea, dll)
+  // Tinggi jendela ikut berubah kalau isi halaman berubah (FAQ dibuka, pesan status, gambar kemuat)
   if (window.ResizeObserver) {
     const ro = new ResizeObserver(() => syncHeight());
     groups.forEach((g) => ro.observe(g));
   }
 
-  placeVoice();
-  renderPage(false);
+  // Buka halaman dari link #faq, #level, dst
+  function openFromHash() {
+    const k = decodeURIComponent((location.hash || '').slice(1));
+    if (Object.prototype.hasOwnProperty.call(HASH_PAGE, k)) goTo(HASH_PAGE[k], true);
+  }
+  window.addEventListener('hashchange', openFromHash);
+  if (location.hash) window.addEventListener('load', () => setTimeout(openFromHash, 350));
+
+  renderPage();
 }
+
+// Tombol "Lihat Fitur" di bagian atas: tampilkan pilihan halaman, lalu loncat langsung ke sana
+(function initPicker() {
+  const btn = document.getElementById('seeFeatures');
+  if (!btn) return;
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    activeGuide = null;
+    modalTitle.textContent = 'Mau lihat apa?';
+    modalBody.innerHTML = '<div class="pick-grid">' + PAGE_INFO.map((p, i) =>
+      '<button type="button" class="pick" data-pick="' + i + '"><span class="pi" aria-hidden="true">' + p.icon + '</span>' +
+      '<span><b>' + p.title + '</b><small>' + p.desc + '</small></span></button>').join('') + '</div>';
+    modalOverlay.classList.add('open');
+    modalBody.querySelectorAll('[data-pick]').forEach((b) => {
+      b.addEventListener('click', () => {
+        closeModal();
+        gvGoTo(parseInt(b.dataset.pick, 10), true);
+      });
+    });
+  });
+})();
 
 
 // ===== Rating & Saran Fitur =====
@@ -752,7 +810,7 @@ function esc(str) {
 (function initFloatJoin() {
   const fj = document.getElementById('floatJoin');
   if (!fj || !('IntersectionObserver' in window)) return;
-  const targets = ['.hero', '.features', '.cta-band'].map((q) => document.querySelector(q)).filter(Boolean);
+  const targets = ['.hero', '.cta-band', '.tabbar', '.mobile-pager', '.voice-box'].map((q) => document.querySelector(q)).filter(Boolean);
   const seen = new Map(targets.map((t) => [t, true]));
   const io = new IntersectionObserver((entries) => {
     entries.forEach((en) => seen.set(en.target, en.isIntersecting));

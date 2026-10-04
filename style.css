@@ -481,112 +481,123 @@ footer {
   .bubble, .splash-bar::after { animation: none; }
 }
 
-/* Pager disembunyiin di desktop; dimunculin di media query mobile */
-.mobile-pager { display: none; }
-
 /* ===============================
-   MOBILE (<= 640px): fitur jadi 2 slide.
-   - .mobile-viewport motong slide, jadi slide sebelah gak ngintip
-   - tinggi viewport diatur JS = tinggi slide aktif (gak ada ruang kosong)
-   - pager ada di bawah kartu (bukan fixed), jadi gak nutupin "Siap gabung?"
+   JELAJAH: tab + slide (semua ukuran layar)
+   - .tabbar          : tombol pilih halaman (bisa digeser di HP)
+   - .mobile-viewport : jendela yang motong slide, jadi slide sebelah gak ngintip
+   - tinggi viewport diatur JS = tinggi halaman aktif (gak ada ruang kosong)
 =============================== */
+.features { padding-bottom: 24px; }
+
+.tabbar {
+  display: flex;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 14px;
+  padding: 8px 6px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.tabbar::-webkit-scrollbar { display: none; }
+.tab-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-line);
+  background: var(--panel);
+  color: var(--ink);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab-pill.active {
+  background: var(--aqua);
+  color: var(--btn-ink);
+  border-color: var(--mint-deep);
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(43,179,160,0.28);
+}
+@media (hover: hover) {
+  .tab-pill:not(.active):hover { transform: translateY(-3px) scale(1.04); border-color: var(--mint-deep); }
+  .tab-pill.active:hover { transform: translateY(-2px) scale(1.03); }
+}
+.tab-pill:active { transform: scale(0.94); }
+.tab-pill:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+
+.mobile-viewport {
+  overflow: hidden;
+  overflow: clip;           /* clip = gak bisa ke-scroll sendiri (mis. lewat link #faq) */
+  transition: height 0.35s ease;
+}
+.mobile-track {
+  display: flex;
+  align-items: flex-start;
+  transform: translateX(calc(var(--page, 0) * -100%));
+  transition: transform 0.4s ease;
+}
+.features-group {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 8px 14px;   /* ruang biar bayangan & efek miring kartu gak kepotong */
+}
+.features-group + .features-group { margin-top: 0; }
+.group-label { margin-bottom: 12px; }
+
+.mobile-pager {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0 4px;
+}
+.dots { display: flex; align-items: center; gap: 8px; }
+.dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--panel-line);
+  cursor: pointer;
+  transition: width 0.2s ease, border-radius 0.2s ease, background 0.2s ease;
+}
+.dot.active { width: 22px; border-radius: 4px; background: var(--mint-deep); }
+.pager-row { display: flex; width: 100%; max-width: 360px; }
+.next-btn {
+  flex: 1;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  background: var(--aqua);
+  color: var(--btn-ink);
+  border: none;
+  border-radius: 999px;
+  min-height: 46px;
+  padding: 12px 22px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-track, .mobile-viewport { transition: none; }
+}
+
 @media (max-width: 640px) {
-  .features { padding-bottom: 8px; }
-
-  .mobile-viewport {
-    overflow: hidden;
-    transition: height 0.35s ease;
-    /* TANPA padding/margin di sini, biar slide sebelah gak ngintip */
-  }
-
-  .mobile-track {
-    display: flex;
-    align-items: flex-start;
-    transform: translateX(calc(var(--page, 0) * -100%));
-    transition: transform 0.4s ease;
-  }
-
-  .features-group {
-    flex: 0 0 100%;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
-    /* ruang di dalam slide biar bayangan kartu gak kepotong */
-    padding: 12px 8px 14px;
-  }
-  .features-group + .features-group { margin-top: 0; }
-
-  .group-label { margin-bottom: 12px; }
-
-  .grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .card {
-    min-width: 0;
-    padding: 20px 18px;
-  }
-
-  .mobile-pager {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 0 4px;
-  }
-  .dots { display: flex; align-items: center; gap: 8px; }
-  .dot {
-    width: 8px;
-    height: 8px;
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-    background: var(--panel-line);
-    cursor: pointer;
-    transition: width 0.2s ease, border-radius 0.2s ease, background 0.2s ease;
-  }
-  .dot.active {
-    width: 22px;
-    border-radius: 4px;
-    background: var(--mint-deep);
-  }
-
-  .pager-row {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    max-width: 360px;
-  }
-  .next-btn,
-  .prev-btn {
-    font-family: "Baloo 2", sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    border-radius: 999px;
-    min-height: 46px;
-    padding: 12px 22px;
-    cursor: pointer;
-    transition: transform 0.15s ease;
-  }
-  .next-btn {
-    flex: 1;
-    background: var(--aqua);
-    color: var(--btn-ink);
-    border: none;
-  }
-  .prev-btn {
-    background: rgba(255,255,255,0.7);
-    color: var(--ink);
-    border: 1px solid var(--panel-line);
-  }
-  .prev-btn[hidden] { display: none; }
-  .next-btn:active, .prev-btn:active { transform: scale(0.98); }
-
-  .cta-band {
-    padding: 36px 20px 48px;
-    margin-top: 20px;
-  }
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .card { min-width: 0; padding: 20px 18px; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .cta-band { padding: 36px 20px 48px; margin-top: 12px; }
   .cta-band h2 { margin-bottom: 10px; }
   .cta-band p { margin-bottom: 20px; line-height: 1.6; }
 }
@@ -864,15 +875,6 @@ footer {
 .guide-btn:focus-visible, .guide-dot:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
 
 
-/* Di HP: bagian "Suara kamu penting" ada di dalam slide */
-@media (max-width: 640px) {
-  .features-group .voice {
-    max-width: none;
-    margin-top: 26px;
-    padding: 22px 0 4px;
-    border-top: 1px solid var(--panel-line);
-  }
-}
 
 
 /* ===============================
@@ -1305,4 +1307,85 @@ html[data-theme="dark"] .step-ico, html[data-theme="dark"] .card .icon { backgro
 @media (prefers-reduced-motion: reduce) {
   .js-reveal .reveal, .js-reveal .reveal:not(.in) .step { opacity: 1; transform: none; transition: none; }
   #statOnlineLabel.live::before { animation: none; }
+}
+
+
+/* ===============================
+   Isi di dalam halaman slide (lebih rapat, biar gak panjang)
+=============================== */
+.features-group .sec {
+  max-width: none;
+  margin: 0;
+  padding: 6px 0 4px;
+}
+.features-group .sec h2 { font-size: clamp(1.25rem, 2.6vw, 1.55rem); }
+.features-group .sec .section-sub { margin-bottom: 18px; }
+.features-group .sec + .sec {
+  margin-top: 24px;
+  padding-top: 26px;
+  border-top: 1px solid var(--panel-line);
+}
+.features-group .sec.faq { max-width: 760px; margin-left: auto; margin-right: auto; }
+.features-group .sec[hidden] { display: none; }
+
+.features-group .voice {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 6px 0 0;
+  border: 0;
+}
+.features-group .voice h2 { font-size: clamp(1.25rem, 2.6vw, 1.55rem); }
+.features-group .voice .section-sub { margin-bottom: 18px; }
+
+/* Level: kartu langkah lebih ringkas */
+.features-group .step { padding: 16px 14px; }
+@media (max-width: 640px) {
+  .features-group .step { padding: 14px 12px; }
+  .features-group .step h3 { font-size: 0.92rem; }
+  .features-group .step p { font-size: 0.8rem; line-height: 1.45; }
+}
+
+/* ===============================
+   Pemilih "Lihat Fitur"
+=============================== */
+.pick-grid { display: grid; gap: 10px; }
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+  font-family: inherit;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.pick .pi {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  background: var(--aqua);
+  font-size: 1.5rem;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pick b { display: block; font-size: 0.98rem; }
+.pick small { display: block; margin-top: 2px; color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
+@media (hover: hover) {
+  .pick:hover { transform: translateX(4px) scale(1.01); border-color: var(--mint-deep); box-shadow: 0 8px 20px rgba(15,61,58,0.12); }
+  .pick:hover .pi { transform: rotate(-10deg) scale(1.12); }
+}
+.pick:active { transform: scale(0.97); }
+.pick:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+
+/* Level di HP: 2 kolom biar halamannya pendek (harus di paling bawah supaya menang dari aturan dasar .steps) */
+@media (max-width: 640px) {
+  .features-group .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .features-group .step-ico { width: 38px; height: 38px; font-size: 1.15rem; margin-bottom: 8px; }
+  .features-group .step .num { transform: scale(0.85); transform-origin: top right; }
 }
