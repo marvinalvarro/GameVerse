@@ -612,7 +612,7 @@ function esc(str) {
   function apply(t) {
     root.setAttribute('data-theme', t);
     if (meta) meta.setAttribute('content', t === 'dark' ? '#0b1f1d' : '#50dcc5');
-    if (btn) btn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+    if (btn) btn.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false');
   }
   apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
 
