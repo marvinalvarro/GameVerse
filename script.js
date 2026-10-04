@@ -184,7 +184,7 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
 // > pilih channel (misal #masukan-web) > Copy Webhook URL > tempel di bawah.
 // CATATAN: URL ini kelihatan di source web. Pakai webhook khusus channel masukan
 // aja, dan kalau disalahgunakan tinggal hapus/ganti webhook-nya.
-const FEEDBACK_WEBHOOK = '';
+const FEEDBACK_WEBHOOK = 'https://discord.com/api/webhooks/1556138301516284015/r_SHW3y_olapcAcXuAsFud0W_VlqYpY1UxnHsmXsmtoHRvweN71Gldi8On0fGzwsPCq2';
 const FEEDBACK_COOLDOWN_MS = 60 * 1000;
 
 const starTexts = {
