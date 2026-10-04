@@ -985,25 +985,68 @@ footer {
    FITUR TAMBAHAN
    ===================================================================== */
 
-/* ---------- Tombol tema di header ---------- */
+/* ---------- Toggle tema di header: bulan - saklar - matahari ---------- */
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .theme-toggle {
-  width: 44px; height: 44px;
-  display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--panel-line);
-  background: rgba(255,255,255,0.6);
-  font-size: 1.15rem; line-height: 1;
+  --on: #ffc414;
+  --off: #bdbdbd;
+  --sw: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 6px;
+  border: none;
+  background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
 }
-.theme-toggle .ti-sun { display: none; }
-:root[data-theme="dark"] .theme-toggle .ti-sun { display: inline; }
-:root[data-theme="dark"] .theme-toggle .ti-moon { display: none; }
-@media (hover: hover) { .theme-toggle:hover { transform: rotate(20deg) scale(1.12); } }
-.theme-toggle:active { transform: scale(0.88); }
-.theme-toggle:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+.tt-ico {
+  width: 24px; height: 24px;
+  fill: currentColor;
+  transition: color 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tt-sun { color: var(--on); }
+.tt-moon { color: var(--off); }
+
+.tt-switch {
+  position: relative;
+  width: 46px; height: 26px;
+  border: 2.5px solid var(--sw);
+  border-radius: 999px;
+  transition: border-color 0.25s ease;
+}
+.tt-knob {
+  position: absolute;
+  top: 50%; left: 3px;
+  width: 15px; height: 15px;
+  margin-top: -7.5px;
+  border-radius: 50%;
+  background: var(--sw);
+  transform: translateX(20px);              /* terang: bulatan di kanan */
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.25s ease, width 0.15s ease;
+}
+
+/* gelap: bulan nyala, matahari redup, saklar kuning, bulatan ke kiri */
+:root[data-theme="dark"] .theme-toggle { --sw: var(--on); --off: #b5b5b5; }
+:root[data-theme="dark"] .tt-moon { color: var(--on); }
+:root[data-theme="dark"] .tt-sun { color: var(--off); }
+:root[data-theme="dark"] .tt-knob { transform: translateX(0); }
+
+@media (hover: hover) {
+  .theme-toggle:hover .tt-ico { transform: scale(1.12) rotate(-8deg); }
+}
+.theme-toggle:active .tt-knob { width: 18px; }
+.theme-toggle:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; border-radius: 999px; }
+
+@media (max-width: 400px) {
+  .theme-toggle { gap: 5px; padding: 0 2px; }
+  .tt-ico { width: 20px; height: 20px; }
+  .tt-switch { width: 40px; height: 24px; }
+  .tt-knob { width: 13px; height: 13px; margin-top: -6.5px; transform: translateX(16px); }
+  :root[data-theme="dark"] .tt-knob { transform: translateX(0); }
+  .header-actions { gap: 4px; }
+}
 
 /* ---------- Muncul halus pas scroll ---------- */
 .js-reveal .reveal {
@@ -1281,7 +1324,6 @@ html[data-theme="dark"] .splash-mark span:first-child { color: #e6fbf5; }
 html[data-theme="dark"] .bubble { background: rgba(255,255,255,0.1); }
 html[data-theme="dark"] .blob-field .blob { opacity: 0.22; }
 html[data-theme="dark"] header { background: rgba(8,26,24,0.65); }
-html[data-theme="dark"] .theme-toggle { background: rgba(255,255,255,0.08); }
 html[data-theme="dark"] .modal-box { background: #0f2927; }
 html[data-theme="dark"] .modal-overlay { background: rgba(0,10,9,0.6); }
 html[data-theme="dark"] .field input, html[data-theme="dark"] .field textarea { background: #0d2220; color: var(--ink); }
