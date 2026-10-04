@@ -423,3 +423,23 @@ document.addEventListener('keydown', (e) => {
 document.querySelectorAll('[data-modal]').forEach((btn) => {
   btn.addEventListener('click', () => { activeGuide = null; });
 });
+
+// Jaring pengaman: kalau kartu KTP/CV/Streak/Ultah di index.html masih berupa
+// link ke Discord, klik-nya dialihkan ke panduan bergambar (bukan loncat ke Discord).
+(function guardOldCards() {
+  const channelToGuide = {
+    '1534281400826728448': 'ktp',
+    '1477885865832218710': 'cv',
+    '1531194725854482544': 'streak',
+    '1531332595336482917': 'ultah'
+  };
+  document.querySelectorAll('a.card[href*="discord.com/channels"]').forEach((a) => {
+    const key = channelToGuide[a.getAttribute('href').split('/').pop()];
+    if (!key) return;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      renderGuide(key, 0);
+      modalOverlay.classList.add('open');
+    });
+  });
+})();
