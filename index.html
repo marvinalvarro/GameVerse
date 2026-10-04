@@ -2,12 +2,44 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<script>
+/* Terapkan tema sebelum halaman digambar, biar gak kedip putih di mode gelap */
+(function () {
+  try {
+    var t = localStorage.getItem('gv_theme');
+    if (t !== 'dark' && t !== 'light') t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Game Verse</title>
+<title>Game Verse | Komunitas Discord: Mabar, Ngobrol, Naik Level</title>
+<meta name="description" content="Komunitas Discord buat mabar, ngobrol santai, dan naik level bareng. Ada voice leveling, event rutin, economy game, KTP digital, dan banyak lagi.">
+<meta name="theme-color" content="#50dcc5" id="themeColor">
+<link rel="canonical" href="https://marvinalvarro.github.io/GameVerse/">
+
+<!-- Preview saat link dibagikan (Discord, WhatsApp, dll) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Game Verse">
+<meta property="og:locale" content="id_ID">
+<meta property="og:title" content="Game Verse | Komunitas Discord buat Mabar &amp; Ngobrol">
+<meta property="og:description" content="Tempat nongkrong, mabar, dan naik level bareng. Gabung sekarang!">
+<meta property="og:url" content="https://marvinalvarro.github.io/GameVerse/">
+<meta property="og:image" content="https://marvinalvarro.github.io/GameVerse/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Game Verse | Komunitas Discord buat Mabar &amp; Ngobrol">
+<meta name="twitter:description" content="Tempat nongkrong, mabar, dan naik level bareng. Gabung sekarang!">
+<meta name="twitter:image" content="https://marvinalvarro.github.io/GameVerse/img/og.png">
+
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -30,7 +62,12 @@
 <main id="main">
   <header>
     <div class="logo-sm"><span class="g">Game</span> Verse</div>
-    <a class="btn btn-primary" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Server</a>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Ganti tema terang atau gelap" title="Ganti tema">
+        <span class="ti-moon" aria-hidden="true">🌙</span><span class="ti-sun" aria-hidden="true">☀️</span>
+      </button>
+      <a class="btn btn-primary" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Server</a>
+    </div>
   </header>
 
   <section class="hero" id="atas">
@@ -42,11 +79,24 @@
     </div>
   </section>
 
-  <div class="stats">
-    <div class="stat"><b>340+</b><span>Member</span></div>
+  <div class="stats reveal">
+    <div class="stat"><b id="statMembers">340+</b><span>Member</span></div>
     <div class="stat"><b>15+</b><span>Channel &amp; Voice</span></div>
-    <div class="stat"><b>24/7</b><span>Aktif Ngobrol</span></div>
+    <div class="stat"><b id="statOnline">24/7</b><span id="statOnlineLabel">Aktif Ngobrol</span></div>
   </div>
+
+  <!-- Event berikutnya (dihitung otomatis dari jadwal di script.js) -->
+  <section class="next-event reveal" aria-label="Event berikutnya">
+    <button class="card event-card" data-modal="event" type="button">
+      <div class="icon" aria-hidden="true">🎉</div>
+      <div class="ev-body">
+        <span class="ev-label">Event berikutnya</span>
+        <h3 id="evName">Mabar Night</h3>
+        <p id="evWhen">Cek jadwal lengkapnya</p>
+      </div>
+      <span class="go-tag">Jadwal ⌄</span>
+    </button>
+  </section>
 
   <section class="features" id="fitur">
     <h2>Yang bisa kamu temuin di sini</h2>
@@ -165,14 +215,110 @@
     </div>
   </section>
 
+  <!-- Cara naik level -->
+  <section class="sec levels reveal" id="level">
+    <h2>Cara naik level</h2>
+    <p class="section-sub">Makin aktif, makin tinggi levelmu. Gak perlu diatur manual, semuanya otomatis.</p>
+    <ol class="steps">
+      <li class="step"><span class="num">1</span><div class="step-ico" aria-hidden="true">💬</div><h3>Ngobrol &amp; nongkrong</h3><p>Aktif di chat dan duduk di voice channel bareng member lain.</p></li>
+      <li class="step"><span class="num">2</span><div class="step-ico" aria-hidden="true">⭐</div><h3>Kumpulin XP</h3><p>Makin sering aktif, makin banyak XP yang kamu dapat.</p></li>
+      <li class="step"><span class="num">3</span><div class="step-ico" aria-hidden="true">🚀</div><h3>Naik level</h3><p>Pantau posisimu kapan aja lewat command <code>.rank</code> di server.</p></li>
+      <li class="step"><span class="num">4</span><div class="step-ico" aria-hidden="true">🏅</div><h3>Dapat role eksklusif</h3><p>Level tertentu membuka role spesial yang gak dimiliki semua orang.</p></li>
+    </ol>
+    <div class="tiers" id="tiers" hidden></div>
+  </section>
+
+  <!-- Sekilas isi server (galeri) -->
+  <section class="sec gallery reveal" id="galeri">
+    <h2>Sekilas isi server</h2>
+    <p class="section-sub">Geser buat lihat lebih banyak. Klik gambarnya buat memperbesar.</p>
+    <div class="gallery-track" id="galleryTrack">
+      <button class="shot" type="button" data-full="img/ktp-3.webp" data-cap="KTP warga Game Verse"><img src="img/ktp-3.webp" alt="Contoh KTP warga Game Verse" loading="lazy"><span>KTP warga</span></button>
+      <button class="shot" type="button" data-full="img/ultah-3.webp" data-cap="Kartu ucapan ulang tahun"><img src="img/ultah-3.webp" alt="Kartu ucapan ulang tahun dari bot" loading="lazy"><span>Ucapan ultah</span></button>
+      <button class="shot" type="button" data-full="img/cv-2.webp" data-cap="CV Ta'aruf"><img src="img/cv-2.webp" alt="Contoh CV Ta'aruf" loading="lazy"><span>CV Ta'aruf</span></button>
+      <button class="shot" type="button" data-full="img/ultah-1.webp" data-cap="Poster daftar ulang tahun"><img src="img/ultah-1.webp" alt="Poster daftar ulang tahun" loading="lazy"><span>Daftar ultah</span></button>
+      <button class="shot" type="button" data-full="img/streak-1.webp" data-cap="Streak harian di channel"><img src="img/streak-1.webp" alt="Channel streak harian" loading="lazy"><span>Streak harian</span></button>
+    </div>
+  </section>
+
+  <!-- Testimoni: muncul otomatis kalau kamu isi di script.js (GV_CONFIG.testimonials) -->
+  <section class="sec testi reveal" id="testimoni" hidden>
+    <h2>Kata mereka</h2>
+    <p class="section-sub">Cerita dari member Game Verse.</p>
+    <div class="testi-grid" id="testiGrid"></div>
+  </section>
+
+  <!-- Tim: muncul otomatis kalau kamu isi di script.js (GV_CONFIG.team) -->
+  <section class="sec team reveal" id="tim" hidden>
+    <h2>Tim di balik layar</h2>
+    <p class="section-sub">Admin dan moderator yang jagain server.</p>
+    <div class="team-grid" id="teamGrid"></div>
+  </section>
+
+  <!-- FAQ & aturan -->
+  <section class="sec faq reveal" id="faq">
+    <h2>Tanya jawab &amp; aturan</h2>
+    <p class="section-sub">Jawaban cepat buat pertanyaan yang sering muncul.</p>
+
+    <div class="qa-list">
+      <details class="qa">
+        <summary>Gimana cara gabung?</summary>
+        <div class="qa-body">Klik tombol <b>Join Server</b> di atas, nanti kamu diarahkan ke Discord. Gratis, tinggal klik dan masuk.</div>
+      </details>
+      <details class="qa">
+        <summary>Gimana cara naik level?</summary>
+        <div class="qa-body">Aktif ngobrol di chat dan nongkrong di voice channel. XP terkumpul otomatis. Ketik <code>.rank</code> di server buat cek posisimu.</div>
+      </details>
+      <details class="qa">
+        <summary>Gimana cek coin dan main game?</summary>
+        <div class="qa-body">Ketik <code>.balance</code> buat cek saldo coin. Game yang tersedia antara lain slot, blackjack, tebak angka, tic-tac-toe, dan trivia. Ketik <code>.help</code> buat lihat semua command.</div>
+      </details>
+      <details class="qa">
+        <summary>Gimana bikin KTP atau CV Ta'aruf?</summary>
+        <div class="qa-body">Buka kartunya di bagian <b>Coba Langsung</b>, ikuti langkah bergambarnya, lalu klik tombol Buat KTP atau Buat CV di channel-nya.</div>
+      </details>
+      <details class="qa">
+        <summary>Kenapa streak aku reset ke 0?</summary>
+        <div class="qa-body">Streak reset kalau kelewat sehari tanpa saling tag dengan temanmu. Kalian berdua harus saling tag setiap hari biar apinya terus nyala.</div>
+      </details>
+      <details class="qa">
+        <summary>Ultahku kok gak diucapin bot?</summary>
+        <div class="qa-body">Pastikan kamu sudah daftar lewat tombol <b>Daftar Ulang Tahun</b> di channel Ultah, dengan format tanggal <code>DD-MM-YYYY</code>, contoh 17-08-2005.</div>
+      </details>
+      <details class="qa">
+        <summary>Ini server resmi Discord?</summary>
+        <div class="qa-body">Bukan. Game Verse adalah komunitas independen dan tidak berafiliasi dengan Discord.</div>
+      </details>
+    </div>
+
+    <!-- Aturan dasar: SESUAIKAN dengan aturan server kamu yang sebenarnya -->
+    <h3 class="sub-h">Aturan dasar server</h3>
+    <ol class="rules">
+      <li>Saling menghargai sesama member, gak ada bully atau ngatain.</li>
+      <li>Dilarang spam dan promosi tanpa izin admin.</li>
+      <li>Dilarang konten SARA, ujaran kebencian, dan konten dewasa.</li>
+      <li>Jaga privasi: jangan sebar data pribadi, baik punyamu maupun orang lain.</li>
+      <li>Ikuti arahan admin dan moderator.</li>
+    </ol>
+  </section>
+
   <section class="cta-band">
     <h2>Siap gabung?</h2>
     <p>Satu klik doang, langsung bisa mabar dan ngobrol bareng ribuan member lain.</p>
     <a class="btn btn-primary btn-lg" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Game Verse →</a>
   </section>
 
-  <footer>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.5">v5</small></footer>
+  <footer>
+    <div class="socials">
+      <a class="social" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Discord</a>
+      <a class="social" href="https://www.tiktok.com/@marvinalvarro" target="_blank" rel="noopener">TikTok</a>
+      <a class="social" href="https://www.instagram.com/ahadyuuu_" target="_blank" rel="noopener">Instagram</a>
+    </div>
+    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v6</small></p>
+  </footer>
 </main>
+
+<a class="float-join" id="floatJoin" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Server</a>
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
@@ -184,7 +330,7 @@
   </div>
 </div>
 
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
 
 </body>
 </html>

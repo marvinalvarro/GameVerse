@@ -1,3 +1,32 @@
+// =====================================================================
+// PENGATURAN SITUS: edit bagian ini kalau mau ganti isi tanpa nyentuh kode lain
+// =====================================================================
+const GV_CONFIG = {
+  // Kode undangan Discord (bagian setelah discord.gg/). Dipakai buat ngambil jumlah member asli.
+  inviteCode: 'N8Wg9Zv3z5',
+
+  // Jadwal event buat hitung mundur (zona waktu WIB).
+  //   weekday: 0=Minggu, 1=Senin, ... 5=Jumat, 6=Sabtu   |   monthDay: tanggal tiap bulan
+  //   time: 'HH:MM' (opsional). Kalau diisi, hitung mundur sampai jam/menit. Kalau kosong, per hari.
+  events: [
+    { name: 'Trivia',           weekday: 5 },
+    { name: 'Mabar Night',      weekday: 6 },
+    { name: 'Giveaway Bulanan', monthDay: 1 }
+  ],
+
+  // Daftar role per level (opsional). Kosong = bagian ini disembunyiin.
+  // Contoh: { level: 10, role: 'Nama Role' }
+  roleTiers: [],
+
+  // Testimoni member (opsional). Kosong = section "Kata mereka" disembunyiin.
+  // Contoh: { text: 'Servernya seru banget!', name: 'marvin.', rating: 5 }
+  testimonials: [],
+
+  // Admin / moderator (opsional). Kosong = section "Tim" disembunyiin.
+  // Contoh: { name: 'Marvin', role: 'Owner', avatar: 'img/marvin.webp' }  (avatar boleh dikosongin)
+  team: []
+};
+
 // bubble halus di splash
 const splash = document.getElementById('splash');
 for (let i = 0; i < 14; i++) {
@@ -449,7 +478,7 @@ document.querySelectorAll('[data-modal]').forEach((btn) => {
 (function initFx() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const SEL = '.card, .voice-box, .guide-shot, .stat';
+  const SEL = '.card, .voice-box, .guide-shot, .stat, .shot';
   const MAX_TILT = { card: 9, stat: 12, 'guide-shot': 5, 'voice-box': 2.5 };
   let active = null;
   let releaseTimer = null;
@@ -505,4 +534,242 @@ document.querySelectorAll('[data-modal]').forEach((btn) => {
 
   // iOS Safari butuh ini supaya :active (efek tekan tombol) jalan
   document.addEventListener('touchstart', () => {}, { passive: true });
+})();
+
+
+// =====================================================================
+// FITUR TAMBAHAN: tema, event berikutnya, angka live, galeri, data opsional, dll
+// =====================================================================
+function esc(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// ===== Tema terang / gelap =====
+(function initTheme() {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const meta = document.getElementById('themeColor');
+
+  function apply(t) {
+    root.setAttribute('data-theme', t);
+    if (meta) meta.setAttribute('content', t === 'dark' ? '#0b1f1d' : '#50dcc5');
+    if (btn) btn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+  }
+  apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      apply(next);
+      try { localStorage.setItem('gv_theme', next); } catch (e) {}
+    });
+  }
+})();
+
+// ===== Event berikutnya (hitung mundur, WIB) =====
+(function initNextEvent() {
+  const nameEl = document.getElementById('evName');
+  const whenEl = document.getElementById('evWhen');
+  if (!nameEl || !whenEl || !GV_CONFIG.events || !GV_CONFIG.events.length) return;
+
+  const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+  function compute() {
+    // WIB = UTC+7 (tanpa DST), jadi cukup geser 7 jam lalu baca field UTC
+    const j = new Date(Date.now() + 7 * 3600 * 1000);
+    const y = j.getUTCFullYear(), mo = j.getUTCMonth(), d = j.getUTCDate(), wd = j.getUTCDay();
+    const nowMin = j.getUTCHours() * 60 + j.getUTCMinutes();
+    let best = null;
+
+    GV_CONFIG.events.forEach((ev) => {
+      const t = ev.time ? ev.time.split(':').map(Number) : null;
+      const evMin = t ? t[0] * 60 + t[1] : null;
+      let delta;
+      if (typeof ev.weekday === 'number') {
+        delta = (ev.weekday - wd + 7) % 7;
+        if (delta === 0 && evMin !== null && nowMin >= evMin) delta = 7;
+      } else if (typeof ev.monthDay === 'number') {
+        const today = Date.UTC(y, mo, d);
+        let target = Date.UTC(y, mo, ev.monthDay);
+        if (target < today || (target === today && evMin !== null && nowMin >= evMin)) {
+          target = Date.UTC(y, mo + 1, ev.monthDay);
+        }
+        delta = Math.round((target - today) / 86400000);
+      } else {
+        return;
+      }
+      if (!best || delta < best.delta) best = { ev, delta, evMin, nowMin };
+    });
+    return best;
+  }
+
+  function render() {
+    const b = compute();
+    if (!b) return;
+    const { ev, delta, evMin, nowMin } = b;
+    const label = typeof ev.weekday === 'number' ? HARI[ev.weekday] : 'Tanggal ' + ev.monthDay;
+
+    let text;
+    if (delta === 0) {
+      if (evMin !== null && evMin > nowMin) {
+        const left = evMin - nowMin;
+        const h = Math.floor(left / 60), m = left % 60;
+        text = (h ? h + ' jam ' : '') + m + ' menit lagi';
+      } else {
+        text = 'Hari ini!';
+      }
+    } else if (delta === 1) {
+      text = 'Besok';
+    } else {
+      text = delta + ' hari lagi';
+    }
+
+    nameEl.textContent = ev.name;
+    whenEl.textContent = label + ' · ' + text;
+    whenEl.classList.toggle('today', delta === 0);
+  }
+
+  render();
+  setInterval(render, 60 * 1000);
+})();
+
+// ===== Angka member & online asli dari Discord (ada angka cadangan kalau gagal) =====
+(function initLiveStats() {
+  const mEl = document.getElementById('statMembers');
+  const oEl = document.getElementById('statOnline');
+  const oLabel = document.getElementById('statOnlineLabel');
+  const code = GV_CONFIG.inviteCode;
+  if (!mEl || !oEl || !code) return;
+
+  function countUp(el, to) {
+    const fmt = (n) => Math.round(n).toLocaleString('id-ID');
+    if (reduceMotion) { el.textContent = fmt(to); return; }
+    const start = performance.now(), dur = 900;
+    (function tick(now) {
+      const k = Math.min(1, (now - start) / dur);
+      el.textContent = fmt(to * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+  function show(members, online) {
+    if (members > 0) countUp(mEl, members);
+    if (online > 0) {
+      countUp(oEl, online);
+      if (oLabel) { oLabel.textContent = 'Online sekarang'; oLabel.classList.add('live'); }
+    }
+  }
+
+  try {
+    const c = JSON.parse(sessionStorage.getItem('gv_stats') || 'null');
+    if (c && Date.now() - c.t < 5 * 60 * 1000) { show(c.m, c.o); return; }
+  } catch (e) {}
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 6000);
+  fetch('https://discord.com/api/v9/invites/' + encodeURIComponent(code) + '?with_counts=true', { signal: ctrl.signal })
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))))
+    .then((j) => {
+      clearTimeout(timer);
+      const m = j.approximate_member_count, o = j.approximate_presence_count;
+      if (!(m > 0)) return;
+      try { sessionStorage.setItem('gv_stats', JSON.stringify({ t: Date.now(), m: m, o: o })); } catch (e) {}
+      show(m, o);
+    })
+    .catch(() => { /* gagal ambil: biarin angka cadangan di HTML */ });
+})();
+
+// ===== Section opsional dari GV_CONFIG: role per level, testimoni, tim =====
+(function initOptionalData() {
+  const C = GV_CONFIG;
+
+  const tiers = document.getElementById('tiers');
+  if (tiers && C.roleTiers && C.roleTiers.length) {
+    tiers.innerHTML = '<h3 class="sub-h">Role yang bisa kamu dapat</h3><div class="tier-list">' +
+      C.roleTiers.map((t) => '<div class="tier"><b>Lv. ' + esc(t.level) + '</b><span>' + esc(t.role) + '</span></div>').join('') +
+      '</div>';
+    tiers.hidden = false;
+  }
+
+  const testi = document.getElementById('testimoni');
+  const testiGrid = document.getElementById('testiGrid');
+  if (testi && testiGrid && C.testimonials && C.testimonials.length) {
+    testiGrid.innerHTML = C.testimonials.map((t) => {
+      const r = Math.max(0, Math.min(5, parseInt(t.rating || 0, 10)));
+      return '<figure class="tcard">' +
+        (r ? '<div class="tstars" aria-label="' + r + ' dari 5 bintang">' + '★'.repeat(r) + '<span>' + '★'.repeat(5 - r) + '</span></div>' : '') +
+        '<blockquote>' + esc(t.text) + '</blockquote>' +
+        '<figcaption>' + esc(t.name || 'Member Game Verse') + '</figcaption></figure>';
+    }).join('');
+    testi.hidden = false;
+  }
+
+  const team = document.getElementById('tim');
+  const teamGrid = document.getElementById('teamGrid');
+  if (team && teamGrid && C.team && C.team.length) {
+    teamGrid.innerHTML = C.team.map((m) => {
+      const initial = esc((m.name || '?').trim().charAt(0).toUpperCase());
+      const av = m.avatar ? '<img src="' + esc(m.avatar) + '" alt="' + esc(m.name) + '" loading="lazy">' : initial;
+      return '<div class="member"><div class="avatar-lg">' + av + '</div><b>' + esc(m.name) + '</b><span>' + esc(m.role || '') + '</span></div>';
+    }).join('');
+    team.hidden = false;
+  }
+})();
+
+// ===== Galeri: geser pakai mouse + klik buat memperbesar =====
+(function initGallery() {
+  const track = document.getElementById('galleryTrack');
+  if (!track) return;
+
+  let down = false, startX = 0, startLeft = 0, moved = 0;
+
+  track.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse') return; // di HP udah bisa digeser bawaan
+    down = true; moved = 0; startX = e.clientX; startLeft = track.scrollLeft;
+    track.classList.add('dragging');
+  });
+  window.addEventListener('pointermove', (e) => {
+    if (!down) return;
+    const dx = e.clientX - startX;
+    moved = Math.max(moved, Math.abs(dx));
+    track.scrollLeft = startLeft - dx;
+  });
+  window.addEventListener('pointerup', () => { down = false; track.classList.remove('dragging'); });
+
+  track.addEventListener('click', (e) => {
+    if (moved > 6) { moved = 0; return; } // habis geser, jangan dianggap klik
+    const b = e.target.closest('.shot');
+    if (!b) return;
+    activeGuide = null;
+    modalTitle.textContent = b.dataset.cap || 'Galeri';
+    modalBody.innerHTML = '<div class="lightbox"><img src="' + esc(b.dataset.full) + '" alt="' + esc(b.dataset.cap) + '"></div>';
+    modalOverlay.classList.add('open');
+  });
+})();
+
+// ===== Tombol Join melayang (HP) =====
+// Muncul pas kamu scroll di luar bagian atas, fitur, dan ajakan gabung (biar gak nutupin tombol lain).
+(function initFloatJoin() {
+  const fj = document.getElementById('floatJoin');
+  if (!fj || !('IntersectionObserver' in window)) return;
+  const targets = ['.hero', '.features', '.cta-band'].map((q) => document.querySelector(q)).filter(Boolean);
+  const seen = new Map(targets.map((t) => [t, true]));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => seen.set(en.target, en.isIntersecting));
+    fj.classList.toggle('show', !Array.from(seen.values()).some(Boolean));
+  });
+  targets.forEach((t) => io.observe(t));
+})();
+
+// ===== Muncul halus pas di-scroll =====
+(function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  if (!els.length || reduceMotion || !('IntersectionObserver' in window)) return;
+  document.documentElement.classList.add('js-reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+  els.forEach((el) => io.observe(el));
 })();
