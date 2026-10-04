@@ -1,210 +1,863 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Game Verse</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+:root {
+  --bg: #ffffff;
+  --mint: #50dcc5;
+  --mint-deep: #2bb3a0;
+  --aqua: #bfe8c2;
+  --panel: #f3fffc;
+  --panel-line: rgba(0, 0, 0, 0.3);
+  --ink: #0f3d3a;
+  --muted: #5b7a4f;
+  --btn-ink: #107c40;
+  --radius: 14px;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+html, body {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(160deg, #ffffff 0%, #d9faf4 35%, var(--mint) 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  overflow-x: hidden;
+}
 
-<div class="blob-field" aria-hidden="true">
-  <div class="blob blob1"></div>
-  <div class="blob blob2"></div>
-  <div class="blob blob3"></div>
-  <div class="blob blob4"></div>
-</div>
+/* ===== Splash ===== */
+#splash {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #ffffff 0%, #d9faf4 45%, var(--mint) 100%);
+  z-index: 50;
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+#splash.hide {
+  opacity: 0;
+  transform: translateY(-24px);
+  pointer-events: none;
+}
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+.splash-mark {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.6rem, 9vw, 5.2rem);
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-direction: column;
+  line-height: 0.95;
+  text-align: center;
+}
+.splash-mark span:first-child { color: #ffffff; text-shadow: 0 2px 18px rgba(15,61,58,0.15); }
+.splash-mark span:last-child { color: var(--ink); }
+.splash-tag {
+  margin-top: 18px;
+  color: var(--ink);
+  opacity: 0.65;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+.splash-bar {
+  margin-top: 34px;
+  width: 140px;
+  height: 3px;
+  background: rgba(15,61,58,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.splash-bar::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--ink);
+  animation: load 2.1s ease forwards;
+}
+@keyframes load { to { width: 100%; } }
 
-<div id="splash" aria-hidden="true">
-  <div class="splash-mark">
-    <span>GAME</span>
-    <span>VERSE</span>
-  </div>
-  <div class="splash-tag">komunitas game &amp; ngobrol santai</div>
-  <div class="splash-bar"></div>
-</div>
+/* ===== Blob 3D background ===== */
+.blob-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.blob-field .blob {
+  position: absolute;
+  filter: blur(60px);
+  opacity: 0.6;
+  animation: blob-drift 16s ease-in-out infinite;
+}
+.blob1 {
+  width: 440px; height: 420px;
+  top: -120px; left: -120px;
+  border-radius: 42% 58% 65% 35% / 45% 40% 60% 55%;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0%, var(--mint) 55%, var(--mint-deep) 100%);
+}
+.blob2 {
+  width: 380px; height: 360px;
+  top: 22%; right: -140px;
+  border-radius: 58% 42% 40% 60% / 55% 60% 40% 45%;
+  background: radial-gradient(circle at 65% 30%, #ffffff 0%, var(--aqua) 50%, var(--mint) 100%);
+  animation-delay: 3.5s;
+}
+.blob3 {
+  width: 320px; height: 300px;
+  bottom: -120px; left: 18%;
+  border-radius: 50% 50% 38% 62% / 42% 55% 45% 58%;
+  background: radial-gradient(circle at 40% 40%, #ffffff 0%, var(--mint-deep) 65%, var(--ink) 130%);
+  opacity: 0.32;
+  animation-delay: 7s;
+}
+.blob4 {
+  width: 260px; height: 260px;
+  bottom: 8%; right: 6%;
+  border-radius: 55% 45% 60% 40% / 50% 45% 55% 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--aqua) 60%, var(--mint-deep) 100%);
+  opacity: 0.45;
+  animation-delay: 1.5s;
+}
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  50% { transform: translate(26px, -22px) scale(1.07) rotate(8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blob-field .blob { animation: none; }
+}
 
-<main id="main">
-  <header>
-    <div class="logo-sm"><span class="g">Game</span> Verse</div>
-    <a class="btn btn-primary" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Server</a>
-  </header>
+/* ===== Main site ===== */
+main {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.3s;
+}
+main.show { opacity: 1; }
 
-  <section class="hero" id="atas">
-    <h1>Tempat nongkrong, mabar, dan <em>naik level</em> bareng.</h1>
-    <p>Game Verse itu komunitas Discord buat siapa aja yang suka main game, ngobrol santai, atau sekadar cari temen baru. Ada voice leveling, event rutin, sampai economy game—semua dalam satu server.</p>
-    <div class="hero-ctas">
-      <a class="btn btn-primary" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Gabung Sekarang</a>
-      <a class="btn btn-ghost" href="#fitur">Lihat Fitur</a>
-    </div>
-  </section>
+header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px clamp(20px, 5vw, 56px);
+  background: rgba(255,255,255,0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--panel-line);
+  z-index: 10;
+}
+.logo-sm {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.logo-sm .g { color: var(--mint-deep); }
+.btn {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  padding: 10px 20px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-primary {
+  background: var(--aqua);
+  color: var(--btn-ink);
+  font-weight: 700;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(80,220,197,0.45); }
 
-  <div class="stats">
-    <div class="stat"><b>340+</b><span>Member</span></div>
-    <div class="stat"><b>15+</b><span>Channel &amp; Voice</span></div>
-    <div class="stat"><b>24/7</b><span>Aktif Ngobrol</span></div>
-  </div>
+.hero {
+  padding: clamp(60px, 10vw, 110px) clamp(20px, 5vw, 56px) clamp(40px, 7vw, 70px);
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero h1 {
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 5.2vw, 3.4rem);
+  line-height: 1.08;
+  margin: 0 0 20px;
+  color: var(--ink);
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--mint-deep);
+}
+.hero p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0 auto 32px;
+  max-width: 54ch;
+}
+.hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--panel-line);
+}
+.btn-ghost:hover { border-color: var(--mint); background: var(--panel); }
 
-  <section class="features" id="fitur">
-    <h2>Yang bisa kamu temuin di sini</h2>
-    <p class="section-sub">Kotak putus-putus = info doang. Kotak solid = bisa langsung diklik ke channel-nya.</p>
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: clamp(24px, 6vw, 64px);
+  padding: 0 20px 70px;
+  flex-wrap: wrap;
+}
+.stat { text-align: center; }
+.stat b {
+  display: block;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.8rem;
+  color: var(--mint-deep);
+}
+.stat span { color: var(--muted); font-size: 0.85rem; }
 
-    <!-- viewport = jendela yang motong slide (biar slide sebelah gak keliatan ngintip) -->
-    <div class="mobile-viewport" id="mobileViewport">
-      <div class="mobile-track" id="mobileTrack">
-        <div class="features-group" id="fitur-server">
-          <div class="group-label">Fitur Server (klik buat lihat contoh)</div>
-          <div class="grid">
-            <button class="card" data-modal="voice" type="button">
-              <div class="icon">🎙️</div>
-              <h3>Voice &amp; Chat Leveling</h3>
-              <p>Makin aktif ngobrol atau nongkrong di voice, makin cepat naik level dan dapat role eksklusif.</p>
-              <span class="go-tag">Lihat Leaderboard ⌄</span>
-            </button>
-            <button class="card" data-modal="economy" type="button">
-              <div class="icon">🎲</div>
-              <h3>Economy &amp; Mini Game</h3>
-              <p>Main slot, blackjack, tebak angka, sampai kumpulin coin buat ditukar reward server.</p>
-              <span class="go-tag">Lihat Daftar Command ⌄</span>
-            </button>
-            <button class="card" data-modal="event" type="button">
-              <div class="icon">🎉</div>
-              <h3>Event Rutin</h3>
-              <p>Trivia, giveaway, sampai aktivitas seru rutin—selalu ada alasan buat mampir.</p>
-              <span class="go-tag">Lihat Jadwal ⌄</span>
-            </button>
-          </div>
-        </div>
+.features {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 56px) 40px;
+  scroll-margin-top: 90px;
+}
+.features h2 {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  text-align: center;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.features .section-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0 0 24px;
+}
+.features-group + .features-group { margin-top: 44px; }
+.group-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.group-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--panel-line);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+}
 
-        <div class="features-group" id="coba-langsung">
-          <div class="group-label">Coba Langsung (klik buat gabung &amp; buka channel-nya)</div>
-          <div class="grid">
-            <a class="card" href="https://discord.com/channels/1477885864771322069/1534281400826728448" target="_blank" rel="noopener">
-              <div class="icon">🪪</div>
-              <h3>KTP Digital</h3>
-              <p>Bikin KTP warga Game Verse kamu sendiri, lengkap dengan desain custom.</p>
-              <span class="go-tag">Buka Channel →</span>
-            </a>
-            <a class="card" href="https://discord.com/channels/1477885864771322069/1477885865832218710" target="_blank" rel="noopener">
-              <div class="icon">💌</div>
-              <h3>CV Ta'aruf</h3>
-              <p>Bikin CV ta'aruf buat yang lagi niat serius cari jodoh.</p>
-              <span class="go-tag">Buka Channel →</span>
-            </a>
-            <a class="card" href="https://discord.com/channels/1477885864771322069/1531194725854482544" target="_blank" rel="noopener">
-              <div class="icon">🔥</div>
-              <h3>Streak Harian</h3>
-              <p>Kirim 1 pesan tiap hari biar api streak kamu gak padam.</p>
-              <span class="go-tag">Buka Channel →</span>
-            </a>
-            <a class="card" href="https://discord.com/channels/1477885864771322069/1531332595336482917" target="_blank" rel="noopener">
-              <div class="icon">🎂</div>
-              <h3>Ultah</h3>
-              <p>Daftarin tanggal lahir kamu, bot bakal otomatis ngucapin pas hari-H.</p>
-              <span class="go-tag">Buka Channel →</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+/* Card info — bisa diklik, munculin modal detail (Voice/Economy/Event) */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px rgba(15,61,58,0.08);
+  padding: 26px 22px;
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15,61,58,0.12);
+  border-color: var(--mint-deep);
+}
+.card .icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(191,232,194,0.6);
+  color: var(--mint-deep);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+}
+.card h3 { margin: 0 0 8px; font-size: 1.02rem; font-weight: 600; color: var(--ink); }
+.card p { margin: 0 0 14px; color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+.card .go-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--mint-deep);
+}
 
-    <div class="mobile-pager" id="mobilePager">
-      <div class="dots" id="mobileDots">
-        <button class="dot active" type="button" data-page="0" aria-label="Halaman 1"></button>
-        <button class="dot" type="button" data-page="1" aria-label="Halaman 2"></button>
-      </div>
-      <div class="pager-row">
-        <button class="next-btn" id="mobileNext" type="button">Lanjut</button>
-      </div>
-    </div>
-  </section>
+/* Card channel (bisa diklik — KTP/CV/Streak/Ultah) */
+a.card {
+  text-decoration: none;
+  color: inherit;
+}
+a.card .icon { background: var(--aqua); }
 
-  <section class="voice" id="suara">
-    <h2>Suara kamu penting</h2>
-    <p class="section-sub">Kasih rating, kritik, atau usul fitur. Semua masuk langsung ke admin.</p>
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,30,28,0.45);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: #ffffff;
+  border-radius: 18px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 28px 26px;
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.25s ease;
+  box-shadow: 0 30px 60px rgba(15,61,58,0.3);
+}
+.modal-overlay.open .modal-box { transform: translateY(0) scale(1); }
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.modal-head h3 {
+  margin: 0;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+.modal-close {
+  background: var(--panel);
+  border: none;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  color: var(--ink);
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--panel-line);
+  font-size: 0.88rem;
+}
+.rank-row:last-child { border-bottom: none; }
+.rank-row .num {
+  width: 22px;
+  font-weight: 700;
+  color: var(--mint-deep);
+}
+.rank-row .avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--aqua);
+  color: var(--btn-ink);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.rank-row .name { flex: 1; font-weight: 600; color: var(--ink); }
+.rank-row .lvl { color: var(--muted); font-size: 0.8rem; }
+.rank-group-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin: 18px 0 4px;
+}
+.rank-group-title:first-child { margin-top: 0; }
 
-    <div class="voice-box">
-      <div class="tabs" role="tablist" aria-label="Jenis masukan">
-        <button class="tab active" type="button" role="tab" id="tab-rating" aria-controls="panel-rating" aria-selected="true" data-tab="rating">Rating &amp; Kritik</button>
-        <button class="tab" type="button" role="tab" id="tab-saran" aria-controls="panel-saran" aria-selected="false" data-tab="saran">Saran Fitur</button>
-      </div>
+.cmd-row {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 0.86rem;
+  align-items: baseline;
+}
+.cmd-row code {
+  background: var(--panel);
+  color: var(--mint-deep);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cmd-row span { color: var(--muted); }
 
-      <form class="vform" id="panel-rating" role="tabpanel" aria-labelledby="tab-rating" data-kind="rating" novalidate>
-        <fieldset class="stars">
-          <legend>Seberapa seru Game Verse buat kamu?</legend>
-          <div class="stars-row">
-            <input type="radio" name="rating" id="star5" value="5"><label for="star5" title="5 bintang"><span class="sr-only">5 bintang</span>★</label>
-            <input type="radio" name="rating" id="star4" value="4"><label for="star4" title="4 bintang"><span class="sr-only">4 bintang</span>★</label>
-            <input type="radio" name="rating" id="star3" value="3"><label for="star3" title="3 bintang"><span class="sr-only">3 bintang</span>★</label>
-            <input type="radio" name="rating" id="star2" value="2"><label for="star2" title="2 bintang"><span class="sr-only">2 bintang</span>★</label>
-            <input type="radio" name="rating" id="star1" value="1"><label for="star1" title="1 bintang"><span class="sr-only">1 bintang</span>★</label>
-          </div>
-          <p class="star-hint" id="starHint">Pilih bintang dulu</p>
-        </fieldset>
+.event-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--panel-line);
+}
+.event-row:last-child { border-bottom: none; }
+.event-row .day {
+  background: var(--aqua);
+  color: var(--btn-ink);
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 5px 9px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.event-row h4 { margin: 0 0 2px; font-size: 0.92rem; color: var(--ink); }
+.event-row p { margin: 0; font-size: 0.82rem; color: var(--muted); }
 
-        <label class="field">
-          <span>Nama Discord <em>(boleh dikosongin)</em></span>
-          <input type="text" name="name" maxlength="40" autocomplete="off" placeholder="contoh: marvin.">
-        </label>
-        <label class="field">
-          <span>Kritik atau komentar <em>(opsional)</em></span>
-          <textarea name="message" rows="4" maxlength="600" placeholder="Apa yang kamu suka? Apa yang bikin kurang nyaman?"></textarea>
-        </label>
-        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="btn btn-primary btn-submit" type="submit">Kirim Rating</button>
-        <p class="vstatus" role="status" aria-live="polite"></p>
-      </form>
+.cta-band {
+  text-align: center;
+  padding: 70px 20px 100px;
+  border-top: 1px solid var(--panel-line);
+  background: rgba(255,255,255,0.25);
+}
+.cta-band h2 {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+.cta-band p { color: var(--muted); margin: 0 0 28px; }
+.btn-lg { font-size: 1rem; padding: 14px 32px; }
 
-      <form class="vform" id="panel-saran" role="tabpanel" aria-labelledby="tab-saran" data-kind="saran" hidden novalidate>
-        <fieldset class="chips">
-          <legend>Soal apa usulmu?</legend>
-          <div class="chips-row">
-            <label class="chip"><input type="radio" name="category" value="Fitur bot" checked><span>Fitur bot</span></label>
-            <label class="chip"><input type="radio" name="category" value="Event"><span>Event</span></label>
-            <label class="chip"><input type="radio" name="category" value="Channel &amp; voice"><span>Channel &amp; voice</span></label>
-            <label class="chip"><input type="radio" name="category" value="Laporan masalah"><span>Laporan masalah</span></label>
-            <label class="chip"><input type="radio" name="category" value="Lainnya"><span>Lainnya</span></label>
-          </div>
-        </fieldset>
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  padding: 22px;
+  border-top: 1px solid var(--panel-line);
+}
 
-        <label class="field">
-          <span>Nama Discord <em>(boleh dikosongin)</em></span>
-          <input type="text" name="name" maxlength="40" autocomplete="off" placeholder="contoh: marvin.">
-        </label>
-        <label class="field">
-          <span>Ceritain usul kamu</span>
-          <textarea name="message" rows="5" maxlength="800" required placeholder="Contoh: pengen ada command .daily buat klaim coin tiap hari."></textarea>
-        </label>
-        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="btn btn-primary btn-submit" type="submit">Kirim Saran</button>
-        <p class="vstatus" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-  </section>
+@media (prefers-reduced-motion: reduce) {
+  #splash { display: none; }
+  main { opacity: 1; }
+  .bubble, .splash-bar::after { animation: none; }
+}
 
-  <section class="cta-band">
-    <h2>Siap gabung?</h2>
-    <p>Satu klik doang, langsung bisa mabar dan ngobrol bareng ribuan member lain.</p>
-    <a class="btn btn-primary btn-lg" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Game Verse →</a>
-  </section>
+/* Pager disembunyiin di desktop; dimunculin di media query mobile */
+.mobile-pager { display: none; }
 
-  <footer>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen.</footer>
-</main>
+/* ===============================
+   MOBILE (<= 640px): fitur jadi 2 slide.
+   - .mobile-viewport motong slide, jadi slide sebelah gak ngintip
+   - tinggi viewport diatur JS = tinggi slide aktif (gak ada ruang kosong)
+   - pager ada di bawah kartu (bukan fixed), jadi gak nutupin "Siap gabung?"
+=============================== */
+@media (max-width: 640px) {
+  .features { padding-bottom: 8px; }
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3 id="modalTitle"></h3>
-      <button class="modal-close" id="modalClose" type="button" aria-label="Tutup">✕</button>
-    </div>
-    <div id="modalBody"></div>
-  </div>
-</div>
+  .mobile-viewport {
+    overflow: hidden;
+    transition: height 0.35s ease;
+    /* TANPA padding/margin di sini, biar slide sebelah gak ngintip */
+  }
 
-<script src="script.js"></script>
+  .mobile-track {
+    display: flex;
+    align-items: flex-start;
+    transform: translateX(calc(var(--page, 0) * -100%));
+    transition: transform 0.4s ease;
+  }
 
-</body>
-</html>
+  .features-group {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    /* ruang di dalam slide biar bayangan kartu gak kepotong */
+    padding: 4px 6px 10px;
+  }
+  .features-group + .features-group { margin-top: 0; }
+
+  .group-label { margin-bottom: 12px; }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .card {
+    min-width: 0;
+    padding: 20px 18px;
+  }
+
+  .mobile-pager {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0 4px;
+  }
+  .dots { display: flex; align-items: center; gap: 8px; }
+  .dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--panel-line);
+    cursor: pointer;
+    transition: width 0.2s ease, border-radius 0.2s ease, background 0.2s ease;
+  }
+  .dot.active {
+    width: 22px;
+    border-radius: 4px;
+    background: var(--mint-deep);
+  }
+
+  .pager-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .next-btn,
+  .prev-btn {
+    font-family: "Baloo 2", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: 999px;
+    min-height: 46px;
+    padding: 12px 22px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .next-btn {
+    flex: 1;
+    background: var(--aqua);
+    color: var(--btn-ink);
+    border: none;
+  }
+  .prev-btn {
+    background: rgba(255,255,255,0.7);
+    color: var(--ink);
+    border: 1px solid var(--panel-line);
+  }
+  .prev-btn[hidden] { display: none; }
+  .next-btn:active, .prev-btn:active { transform: scale(0.98); }
+
+  .cta-band {
+    padding: 36px 20px 48px;
+    margin-top: 20px;
+  }
+  .cta-band h2 { margin-bottom: 10px; }
+  .cta-band p { margin-bottom: 20px; line-height: 1.6; }
+}
+
+
+/* ===============================
+   Rating & Saran Fitur
+=============================== */
+.voice {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 24px clamp(20px, 5vw, 56px) 56px;
+  scroll-margin-top: 90px;
+}
+.voice h2 {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  text-align: center;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.voice .section-sub {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0 0 24px;
+}
+.voice-box {
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px rgba(15,61,58,0.08);
+  padding: 18px;
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  margin-bottom: 20px;
+  background: rgba(191,232,194,0.45);
+  border-radius: 999px;
+}
+.tab {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.tab.active {
+  background: #ffffff;
+  color: var(--btn-ink);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(15,61,58,0.12);
+}
+.tab:focus-visible, .btn-submit:focus-visible,
+.field input:focus-visible, .field textarea:focus-visible {
+  outline: 2px solid var(--mint-deep);
+  outline-offset: 2px;
+}
+.vform[hidden] { display: none; }
+.vform fieldset { border: none; margin: 0 0 18px; padding: 0; min-width: 0; }
+.vform legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+/* Bintang: urutan DOM 5..1 + row-reverse, jadi hover/pilih nyalain bintang di kirinya */
+.stars-row {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  gap: 4px;
+}
+.stars-row input {
+  position: absolute;
+  opacity: 0;
+  width: 1px; height: 1px;
+}
+.stars-row label {
+  font-size: 2.4rem;
+  line-height: 1;
+  padding: 4px 6px;
+  color: rgba(15,61,58,0.18);
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.stars-row input:checked ~ label,
+.stars-row label:hover,
+.stars-row label:hover ~ label { color: #f5b301; }
+.stars-row label:active { transform: scale(0.9); }
+.stars-row input:focus-visible + label {
+  outline: 2px solid var(--mint-deep);
+  border-radius: 8px;
+}
+.star-hint {
+  text-align: center;
+  margin: 6px 0 0;
+  min-height: 1.2em;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Pilihan kategori */
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid var(--panel-line);
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.chip input:checked + span {
+  background: var(--aqua);
+  border-color: var(--mint-deep);
+  color: var(--btn-ink);
+}
+.chip input:focus-visible + span { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+
+.field { display: block; margin-bottom: 16px; }
+.field span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.field span em { font-style: normal; font-weight: 400; color: var(--muted); }
+.field input, .field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--panel-line);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 16px; /* 16px biar iOS gak zoom otomatis */
+  line-height: 1.5;
+  resize: vertical;
+}
+.field input::placeholder, .field textarea::placeholder { color: rgba(91,122,79,0.7); }
+
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.btn-submit { width: 100%; }
+.btn-submit:disabled { opacity: 0.6; cursor: progress; }
+.vstatus { margin: 12px 0 0; min-height: 1.3em; text-align: center; font-size: 0.86rem; font-weight: 600; }
+.vstatus.ok { color: var(--btn-ink); }
+.vstatus.err { color: #b3261e; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .voice { padding-bottom: 24px; }
+  .voice-box { padding: 14px; }
+  .stars-row label { font-size: 2.2rem; padding: 4px; }
+}
+
+
+/* ===============================
+   Panduan langkah-demi-langkah (modal)
+=============================== */
+.card-guide .icon { background: var(--aqua); }
+
+.guide-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--mint-deep);
+  margin-bottom: 10px;
+}
+.guide-shot {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  margin-bottom: 14px;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 12px;
+}
+.guide-shot img {
+  display: block;
+  max-width: 100%;
+  max-height: 52vh;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+}
+.guide-title {
+  margin: 0 0 6px;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.guide-text {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.guide-points {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.guide-points li + li { margin-top: 4px; }
+.guide-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 16px;
+}
+.guide-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--panel-line);
+  cursor: pointer;
+  transition: width 0.2s ease, border-radius 0.2s ease, background 0.2s ease;
+}
+.guide-dot.active {
+  width: 22px;
+  border-radius: 4px;
+  background: var(--mint-deep);
+}
+.guide-nav { display: flex; gap: 10px; }
+.guide-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+}
+.guide-btn.primary { background: var(--aqua); color: var(--btn-ink); border: none; }
+.guide-btn.ghost {
+  flex: 0 0 auto;
+  background: #ffffff;
+  color: var(--ink);
+  border: 1px solid var(--panel-line);
+}
+.guide-btn:focus-visible, .guide-dot:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }

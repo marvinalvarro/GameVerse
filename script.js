@@ -313,3 +313,113 @@ const starTexts = {
     });
   });
 })();
+
+
+// ===== Panduan langkah-demi-langkah (KTP, CV, Streak, Ultah) =====
+const guideData = {
+  ktp: {
+    title: '🪪 Cara Bikin KTP Digital',
+    link: 'https://discord.com/channels/1477885864771322069/1534281400826728448',
+    steps: [
+      { img: 'img/ktp-1.webp', title: 'Isi data diri (1/2)',
+        text: 'Klik tombol Buat KTP di channel, lalu isi nama lengkap, tempat tanggal lahir, jenis kelamin, golongan darah, dan agama.' },
+      { img: 'img/ktp-2.webp', title: 'Isi data diri (2/2)',
+        text: 'Lanjut isi status perkawinan, pekerjaan, alamat, kel/desa, dan kecamatan. Kalau sudah semua, klik Submit.' },
+      { img: 'img/ktp-3.webp', title: 'KTP kamu jadi',
+        text: 'Bot langsung kirim KTP warga Game Verse lengkap dengan nomor KTP dan desain custom. Tinggal pamerin di server.' }
+    ]
+  },
+  cv: {
+    title: "💌 Cara Bikin CV Ta'aruf",
+    link: 'https://discord.com/channels/1477885864771322069/1477885865832218710',
+    steps: [
+      { img: 'img/cv-1.webp', title: 'Isi data CV',
+        text: 'Klik tombol Buat CV, lalu isi Asal (kota) dan Umur. Instagram, TikTok, dan Discord boleh dikosongin kalau tidak mau dicantumin.' },
+      { img: 'img/cv-2.webp', title: 'CV kamu jadi',
+        text: "Bot kirim kartu CV Ta'aruf kamu lengkap dengan kota asal, umur, dan akun sosial yang kamu isi." }
+    ]
+  },
+  streak: {
+    title: '🔥 Cara Main Streak Harian',
+    link: 'https://discord.com/channels/1477885864771322069/1531194725854482544',
+    steps: [
+      { img: 'img/streak-1.webp', title: 'TikTok Streak, tapi di Discord!',
+        text: 'Tag teman kamu di chat apa pun (teks, foto, atau video bebas), lalu temanmu harus balas dan tag balik kamu di hari yang sama.',
+        points: [
+          'Kalau kalian terus saling tag setiap hari, streak bertambah.',
+          'Kalau kelewat sehari tanpa saling tag, streak reset ke 0.',
+          'Bot akan mengumumkan streak terbaru kalian di channel.'
+        ] }
+    ]
+  },
+  ultah: {
+    title: '🎂 Cara Daftar Ultah',
+    link: 'https://discord.com/channels/1477885864771322069/1531332595336482917',
+    steps: [
+      { img: 'img/ultah-1.webp', title: 'Klik tombol daftar',
+        text: 'Di channel Ultah, klik tombol Daftar Ulang Tahun yang ada di bawah poster.' },
+      { img: 'img/ultah-2.webp', title: 'Isi tanggal lahir',
+        text: 'Isi tanggal lahir kamu dengan format DD-MM-YYYY, contohnya 17-08-2005, lalu klik Submit. Cukup sekali aja.' },
+      { img: 'img/ultah-3.webp', title: 'Bot ngucapin otomatis',
+        text: 'Pas hari-H, bot kirim kartu ucapan ulang tahun buat kamu. Member lain bisa klik Ikut Rayain atau Kirim Ucapan Juga.' }
+    ]
+  }
+};
+
+let activeGuide = null;
+let activeStep = 0;
+
+function renderGuide(key, step) {
+  const g = guideData[key];
+  if (!g) return;
+  activeGuide = key;
+  activeStep = Math.max(0, Math.min(g.steps.length - 1, step));
+  const s = g.steps[activeStep];
+  const total = g.steps.length;
+  const last = activeStep === total - 1;
+
+  modalTitle.textContent = g.title;
+  modalBody.innerHTML = `
+    ${total > 1 ? `<div class="guide-count">Langkah ${activeStep + 1} dari ${total}</div>` : ''}
+    <div class="guide-shot"><img src="${s.img}" alt="${s.title}"></div>
+    <h4 class="guide-title">${s.title}</h4>
+    <p class="guide-text">${s.text}</p>
+    ${s.points ? `<ul class="guide-points">${s.points.map((p) => `<li>${p}</li>`).join('')}</ul>` : ''}
+    ${total > 1 ? `<div class="guide-dots">${g.steps.map((_, i) =>
+      `<button type="button" class="guide-dot${i === activeStep ? ' active' : ''}" data-step="${i}" aria-label="Langkah ${i + 1}"></button>`).join('')}</div>` : ''}
+    <div class="guide-nav">
+      ${activeStep > 0 ? '<button type="button" class="guide-btn ghost" data-go="prev">Sebelumnya</button>' : ''}
+      ${last
+        ? `<a class="guide-btn primary" href="${g.link}" target="_blank" rel="noopener">Buka Channel di Discord</a>`
+        : '<button type="button" class="guide-btn primary" data-go="next">Lanjut</button>'}
+    </div>
+  `;
+
+  modalBody.querySelectorAll('[data-go]').forEach((b) => {
+    b.addEventListener('click', () => renderGuide(key, activeStep + (b.dataset.go === 'next' ? 1 : -1)));
+  });
+  modalBody.querySelectorAll('[data-step]').forEach((b) => {
+    b.addEventListener('click', () => renderGuide(key, parseInt(b.dataset.step, 10)));
+  });
+  const box = modalBody.closest('.modal-box');
+  if (box) box.scrollTop = 0;
+}
+
+document.querySelectorAll('[data-guide]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    renderGuide(btn.dataset.guide, 0);
+    modalOverlay.classList.add('open');
+  });
+});
+
+// Tombol panah kiri/kanan di keyboard buat pindah langkah
+document.addEventListener('keydown', (e) => {
+  if (!modalOverlay.classList.contains('open') || !activeGuide) return;
+  if (e.key === 'ArrowRight') renderGuide(activeGuide, activeStep + 1);
+  if (e.key === 'ArrowLeft') renderGuide(activeGuide, activeStep - 1);
+});
+
+// Modal info biasa (Voice/Economy/Event) gak lagi dianggap panduan
+document.querySelectorAll('[data-modal]').forEach((btn) => {
+  btn.addEventListener('click', () => { activeGuide = null; });
+});
