@@ -127,12 +127,7 @@
     <p class="section-sub">Kasih rating, kritik, atau usul fitur. Semua masuk langsung ke admin.</p>
 
     <div class="voice-box">
-      <div class="tabs" role="tablist" aria-label="Jenis masukan">
-        <button class="tab active" type="button" role="tab" id="tab-rating" aria-controls="panel-rating" aria-selected="true" data-tab="rating">Rating &amp; Kritik</button>
-        <button class="tab" type="button" role="tab" id="tab-saran" aria-controls="panel-saran" aria-selected="false" data-tab="saran">Saran Fitur</button>
-      </div>
-
-      <form class="vform" id="panel-rating" role="tabpanel" aria-labelledby="tab-rating" data-kind="rating" novalidate>
+      <form class="vform" id="feedbackForm" novalidate>
         <fieldset class="stars">
           <legend>Seberapa seru Game Verse buat kamu?</legend>
           <div class="stars-row">
@@ -145,26 +140,11 @@
           <p class="star-hint" id="starHint">Pilih bintang dulu</p>
         </fieldset>
 
-        <label class="field">
-          <span>Nama Discord <em>(boleh dikosongin)</em></span>
-          <input type="text" name="name" maxlength="40" autocomplete="off" placeholder="contoh: marvin.">
-        </label>
-        <label class="field">
-          <span>Kritik atau komentar <em>(opsional)</em></span>
-          <textarea name="message" rows="4" maxlength="600" placeholder="Apa yang kamu suka? Apa yang bikin kurang nyaman?"></textarea>
-        </label>
-        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="btn btn-primary btn-submit" type="submit">Kirim Rating</button>
-        <p class="vstatus" role="status" aria-live="polite"></p>
-      </form>
-
-      <form class="vform" id="panel-saran" role="tabpanel" aria-labelledby="tab-saran" data-kind="saran" hidden novalidate>
         <fieldset class="chips">
-          <legend>Soal apa usulmu?</legend>
+          <legend>Mau ngasih apa?</legend>
           <div class="chips-row">
-            <label class="chip"><input type="radio" name="category" value="Fitur bot" checked><span>Fitur bot</span></label>
-            <label class="chip"><input type="radio" name="category" value="Event"><span>Event</span></label>
-            <label class="chip"><input type="radio" name="category" value="Channel &amp; voice"><span>Channel &amp; voice</span></label>
+            <label class="chip"><input type="radio" name="category" value="Kritik" checked><span>Kritik</span></label>
+            <label class="chip"><input type="radio" name="category" value="Saran fitur"><span>Saran fitur</span></label>
             <label class="chip"><input type="radio" name="category" value="Laporan masalah"><span>Laporan masalah</span></label>
             <label class="chip"><input type="radio" name="category" value="Lainnya"><span>Lainnya</span></label>
           </div>
@@ -175,11 +155,11 @@
           <input type="text" name="name" maxlength="40" autocomplete="off" placeholder="contoh: marvin.">
         </label>
         <label class="field">
-          <span>Ceritain usul kamu</span>
-          <textarea name="message" rows="5" maxlength="800" required placeholder="Contoh: pengen ada command .daily buat klaim coin tiap hari."></textarea>
+          <span>Ceritain di sini <em>(opsional kalau sudah kasih bintang)</em></span>
+          <textarea name="message" rows="4" maxlength="800" placeholder="Apa yang kamu suka, kurang nyaman, atau pengen ditambah?"></textarea>
         </label>
         <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <button class="btn btn-primary btn-submit" type="submit">Kirim Saran</button>
+        <button class="btn btn-primary btn-submit" type="submit">Kirim Masukan</button>
         <p class="vstatus" role="status" aria-live="polite"></p>
       </form>
     </div>

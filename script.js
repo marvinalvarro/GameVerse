@@ -106,6 +106,21 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
   const mq = window.matchMedia('(max-width: 640px)');
   let currentPage = 0;
 
+  // Di HP, bagian "Suara kamu penting" dimasukin ke dalam halaman slide.
+  // 0 = halaman 1, 1 = halaman 2. Ganti angka ini kalau mau pindah halaman.
+  const VOICE_PAGE = 1;
+  const voiceSection = document.getElementById('suara');
+  const voiceHome = voiceSection ? voiceSection.nextElementSibling : null;
+
+  function placeVoice() {
+    if (!voiceSection || !voiceHome) return;
+    if (mq.matches) {
+      if (voiceSection.parentElement !== groups[VOICE_PAGE]) groups[VOICE_PAGE].appendChild(voiceSection);
+    } else if (voiceSection.parentElement !== voiceHome.parentElement) {
+      voiceHome.parentElement.insertBefore(voiceSection, voiceHome);
+    }
+  }
+
   // Tinggi jendela ngikutin tinggi slide yang aktif -> gak ada ruang kosong
   // di bawah kartu, jadi jarak ke "Siap gabung?" selalu pas.
   function syncHeight() {
@@ -156,12 +171,14 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
   dots.forEach((dot) => dot.addEventListener('click', () => goTo(parseInt(dot.dataset.page, 10))));
 
   // Geser kiri/kanan
-  let startX = 0, startY = 0;
+  let startX = 0, startY = 0, ignoreSwipe = false;
   mobileViewport.addEventListener('touchstart', (e) => {
+    ignoreSwipe = !!e.target.closest('.voice'); // jangan geser slide pas lagi ngisi form
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
   }, { passive: true });
   mobileViewport.addEventListener('touchend', (e) => {
+    if (ignoreSwipe) return;
     const dx = e.changedTouches[0].clientX - startX;
     const dy = e.changedTouches[0].clientY - startY;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
@@ -172,8 +189,15 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
   window.addEventListener('resize', () => renderPage(false));
   window.addEventListener('load', syncHeight);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncHeight);
-  if (mq.addEventListener) mq.addEventListener('change', () => renderPage(false));
+  if (mq.addEventListener) mq.addEventListener('change', () => { placeVoice(); renderPage(false); });
 
+  // Tinggi jendela ikut berubah kalau isi slide berubah (pesan status, textarea, dll)
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(() => syncHeight());
+    groups.forEach((g) => ro.observe(g));
+  }
+
+  placeVoice();
   renderPage(false);
 }
 
@@ -196,27 +220,22 @@ const starTexts = {
 };
 
 (function initVoice() {
-  const tabs = Array.from(document.querySelectorAll('.tab'));
-  const panels = Array.from(document.querySelectorAll('.vform'));
-  if (!tabs.length) return;
+  const form = document.getElementById('feedbackForm');
+  if (!form) return;
 
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      tabs.forEach((t) => {
-        const on = t === tab;
-        t.classList.toggle('active', on);
-        t.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      panels.forEach((p) => { p.hidden = p.dataset.kind !== tab.dataset.tab; });
-    });
-  });
-
-  // teks di bawah bintang
+  const status = form.querySelector('.vstatus');
+  const submitBtn = form.querySelector('.btn-submit');
   const starHint = document.getElementById('starHint');
-  document.querySelectorAll('input[name="rating"]').forEach((r) => {
+  const defaultLabel = submitBtn.textContent;
+
+  form.querySelectorAll('input[name="rating"]').forEach((r) => {
     r.addEventListener('change', () => { starHint.textContent = starTexts[r.value]; });
   });
 
+  function say(text, type) {
+    status.textContent = text;
+    status.className = 'vstatus ' + (type || '');
+  }
   function lastSent() {
     try { return parseInt(localStorage.getItem('gv_feedback_ts') || '0', 10); } catch (e) { return 0; }
   }
@@ -224,96 +243,77 @@ const starTexts = {
     try { localStorage.setItem('gv_feedback_ts', String(Date.now())); } catch (e) {}
   }
 
-  panels.forEach((form) => {
-    const status = form.querySelector('.vstatus');
-    const submitBtn = form.querySelector('.btn-submit');
-    const defaultLabel = submitBtn.textContent;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
 
-    function say(text, type) {
-      status.textContent = text;
-      status.className = 'vstatus ' + (type || '');
+    // honeypot: bot biasanya ngisi kolom tersembunyi ini
+    if (data.get('website')) return;
+
+    const rating = parseInt(data.get('rating') || '0', 10);
+    const category = (data.get('category') || 'Kritik').toString();
+    const name = (data.get('name') || '').toString().trim() || 'Anonim';
+    const message = (data.get('message') || '').toString().trim();
+
+    if (!rating && message.length < 10) {
+      say('Pilih bintang dulu, atau tulis masukanmu minimal 10 huruf.', 'err');
+      return;
+    }
+    const wait = FEEDBACK_COOLDOWN_MS - (Date.now() - lastSent());
+    if (wait > 0) {
+      say('Tunggu ' + Math.ceil(wait / 1000) + ' detik lagi sebelum kirim berikutnya.', 'err');
+      return;
+    }
+    if (!FEEDBACK_WEBHOOK) {
+      console.warn('FEEDBACK_WEBHOOK di script.js masih kosong.');
+      say('Form belum diaktifkan admin. Coba lagi nanti ya.', 'err');
+      return;
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
+    const fields = [
+      { name: 'Dari', value: name, inline: true },
+      { name: 'Jenis', value: category, inline: true }
+    ];
+    if (rating) fields.push({ name: 'Nilai', value: rating + ' / 5', inline: true });
+    fields.push({ name: 'Pesan', value: message || '(cuma kasih bintang)' });
 
-      // honeypot: bot biasanya ngisi kolom tersembunyi ini
-      if (data.get('website')) return;
+    const embed = {
+      title: rating
+        ? 'Masukan baru: ' + '★'.repeat(rating) + '☆'.repeat(5 - rating)
+        : 'Masukan baru: ' + category,
+      color: 0x50dcc5,
+      fields: fields,
+      timestamp: new Date().toISOString(),
+      footer: { text: 'Dikirim dari web Game Verse' }
+    };
 
-      const kind = form.dataset.kind;
-      const name = (data.get('name') || '').toString().trim() || 'Anonim';
-      const message = (data.get('message') || '').toString().trim();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Mengirim...';
+    say('');
 
-      if (kind === 'rating' && !data.get('rating')) {
-        say('Pilih jumlah bintang dulu ya.', 'err');
-        return;
-      }
-      if (kind === 'saran' && message.length < 10) {
-        say('Ceritain usulmu minimal 10 huruf ya, biar admin paham.', 'err');
-        return;
-      }
-      const wait = FEEDBACK_COOLDOWN_MS - (Date.now() - lastSent());
-      if (wait > 0) {
-        say('Tunggu ' + Math.ceil(wait / 1000) + ' detik lagi sebelum kirim berikutnya.', 'err');
-        return;
-      }
-      if (!FEEDBACK_WEBHOOK) {
-        console.warn('FEEDBACK_WEBHOOK di script.js masih kosong.');
-        say('Form belum diaktifkan admin. Coba lagi nanti ya.', 'err');
-        return;
-      }
-
-      const embed = kind === 'rating'
-        ? {
-            title: 'Rating baru: ' + '★'.repeat(+data.get('rating')) + '☆'.repeat(5 - +data.get('rating')),
-            color: 0x50dcc5,
-            fields: [
-              { name: 'Dari', value: name, inline: true },
-              { name: 'Nilai', value: data.get('rating') + ' / 5', inline: true },
-              { name: 'Kritik / komentar', value: message || '(kosong)' }
-            ]
-          }
-        : {
-            title: 'Saran baru: ' + data.get('category'),
-            color: 0xbfe8c2,
-            fields: [
-              { name: 'Dari', value: name, inline: true },
-              { name: 'Isi saran', value: message }
-            ]
-          };
-      embed.timestamp = new Date().toISOString();
-      embed.footer = { text: 'Dikirim dari web Game Verse' };
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Mengirim...';
-      say('');
-
-      try {
-        const res = await fetch(FEEDBACK_WEBHOOK, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: 'Game Verse Web',
-            allowed_mentions: { parse: [] },
-            embeds: [embed]
-          })
-        });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        markSent();
-        form.reset();
-        if (starHint) starHint.textContent = 'Pilih bintang dulu';
-        say('Makasih! Masukan kamu sudah terkirim ke admin.', 'ok');
-      } catch (err) {
-        say('Gagal kirim. Cek koneksi kamu lalu coba lagi.', 'err');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = defaultLabel;
-      }
-    });
+    try {
+      const res = await fetch(FEEDBACK_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'Game Verse Web',
+          allowed_mentions: { parse: [] },
+          embeds: [embed]
+        })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      markSent();
+      form.reset();
+      starHint.textContent = 'Pilih bintang dulu';
+      say('Makasih! Masukan kamu sudah terkirim ke admin.', 'ok');
+    } catch (err) {
+      say('Gagal kirim. Cek koneksi kamu lalu coba lagi.', 'err');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = defaultLabel;
+    }
   });
 })();
-
 
 // ===== Panduan langkah-demi-langkah (KTP, CV, Streak, Ultah) =====
 const guideData = {

@@ -861,3 +861,14 @@ footer {
   border: 1px solid var(--panel-line);
 }
 .guide-btn:focus-visible, .guide-dot:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+
+
+/* Di HP: bagian "Suara kamu penting" ada di dalam slide */
+@media (max-width: 640px) {
+  .features-group .voice {
+    max-width: none;
+    margin-top: 26px;
+    padding: 22px 0 4px;
+    border-top: 1px solid var(--panel-line);
+  }
+}
