@@ -34,13 +34,114 @@
 <meta name="twitter:description" content="Tempat nongkrong, mabar, dan naik level bareng. Gabung sekarang!">
 <meta name="twitter:image" content="https://marvinalvarro.github.io/GameVerse/img/og.png">
 
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Game Verse">
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebSite",
+   "name": "Game Verse",
+   "url": "https://marvinalvarro.github.io/GameVerse/",
+   "inLanguage": "id"
+  },
+  {
+   "@type": "Organization",
+   "name": "Game Verse",
+   "url": "https://marvinalvarro.github.io/GameVerse/",
+   "logo": "https://marvinalvarro.github.io/GameVerse/img/icon-512.png",
+   "description": "Komunitas Discord buat mabar, ngobrol santai, dan naik level bareng.",
+   "sameAs": [
+    "https://discord.gg/N8Wg9Zv3z5"
+   ]
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Gimana cara gabung?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Klik tombol Join Server di atas, nanti kamu diarahkan ke Discord. Gratis, tinggal klik dan masuk."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Gimana cara naik level?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Aktif ngobrol di chat dan nongkrong di voice channel. XP terkumpul otomatis. Ketik .rank di server buat cek posisimu."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Gimana cek coin dan main game?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Ketik .balance buat cek saldo coin. Game yang tersedia antara lain slot, blackjack, tebak angka, tic-tac-toe, dan trivia. Ketik .help buat lihat semua command."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Gimana bikin KTP atau CV Ta'aruf?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Buka kartunya di bagian Coba Langsung, ikuti langkah bergambarnya, lalu klik tombol Buat KTP atau Buat CV di channel-nya."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Kenapa streak aku reset ke 0?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Streak reset kalau kelewat sehari tanpa saling tag dengan temanmu. Kalian berdua harus saling tag setiap hari biar apinya terus nyala."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Ultahku kok gak diucapin bot?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Pastikan kamu sudah daftar lewat tombol Daftar Ulang Tahun di channel Ultah, dengan format tanggal DD-MM-YYYY, contoh 17-08-2005."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Bisa dipasang di layar HP?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Bisa. Di Chrome Android: menu titik tiga lalu Tambahkan ke layar utama. Di iPhone (Safari): tombol bagikan lalu Tambah ke Layar Utama. Setelah itu web ini terbuka seperti aplikasi."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Ini server resmi Discord?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Bukan. Game Verse adalah komunitas independen dan tidak berafiliasi dengan Discord."
+   }
+  }
+ ]
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -61,6 +162,12 @@
 </div>
 
 <main id="main">
+  <!-- Pengumuman: muncul otomatis kalau GV_CONFIG.announcement.text diisi di script.js -->
+  <div class="announce" id="announce" hidden>
+    <span class="ann-ico" aria-hidden="true">📢</span>
+    <p><span id="annText"></span> <a id="annLink" href="#" target="_blank" rel="noopener" hidden></a></p>
+    <button class="ann-close" id="annClose" type="button" aria-label="Tutup pengumuman">✕</button>
+  </div>
   <header>
     <div class="logo-sm"><span class="g">Game</span> Verse</div>
     <div class="header-actions">
@@ -206,6 +313,12 @@
     </div>
   </div>
 
+  <!-- Member spotlight: muncul otomatis kalau GV_CONFIG.spotlight.name diisi -->
+  <div class="sec spot" id="spotlight" hidden>
+    <h2 id="spotTitle">Member of the Month</h2>
+    <div class="spot-card" id="spotCard"></div>
+  </div>
+
   <!-- Testimoni: muncul otomatis kalau kamu isi di script.js (GV_CONFIG.testimonials) -->
   <div class="sec testi" id="testimoni" hidden>
     <h2>Kata mereka</h2>
@@ -253,6 +366,10 @@
       <details class="qa">
         <summary>Ultahku kok gak diucapin bot?</summary>
         <div class="qa-body">Pastikan kamu sudah daftar lewat tombol <b>Daftar Ulang Tahun</b> di channel Ultah, dengan format tanggal <code>DD-MM-YYYY</code>, contoh 17-08-2005.</div>
+      </details>
+      <details class="qa">
+        <summary>Bisa dipasang di layar HP?</summary>
+        <div class="qa-body">Bisa. Di Chrome Android: menu titik tiga lalu <b>Tambahkan ke layar utama</b>. Di iPhone (Safari): tombol bagikan lalu <b>Tambah ke Layar Utama</b>. Setelah itu web ini terbuka seperti aplikasi.</div>
       </details>
       <details class="qa">
         <summary>Ini server resmi Discord?</summary>
@@ -345,8 +462,10 @@
   <footer>
     <div class="socials">
       <a class="social" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Discord</a>
+      <button class="social" type="button" data-share>Ajak teman</button>
+      <button class="social" type="button" data-install hidden>Pasang di HP</button>
     </div>
-    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v9</small></p>
+    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v10</small></p>
   </footer>
 </main>
 
@@ -381,8 +500,14 @@
         </svg>
       </button>
   </div>
+  <div class="menu-actions">
+    <button class="btn btn-ghost" type="button" data-share>Ajak teman</button>
+    <button class="btn btn-ghost" type="button" data-install hidden>Pasang di layar utama</button>
+  </div>
   <a class="btn btn-primary btn-lg menu-join" href="https://discord.gg/N8Wg9Zv3z5" target="_blank" rel="noopener">Join Server</a>
 </aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
@@ -394,7 +519,7 @@
   </div>
 </div>
 
-<script src="script.js?v=9"></script>
+<script src="script.js?v=10"></script>
 
 </body>
 </html>

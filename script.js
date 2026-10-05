@@ -24,7 +24,60 @@ const GV_CONFIG = {
 
   // Admin / moderator (opsional). Kosong = section "Tim" disembunyiin.
   // Contoh: { name: 'Marvin', role: 'Owner', avatar: 'img/marvin.webp' }  (avatar boleh dikosongin)
-  team: []
+  team: [],
+
+  // Alamat web (dipakai tombol "Ajak teman")
+  siteUrl: 'https://marvinalvarro.github.io/GameVerse/',
+
+  // Pengumuman di paling atas web (opsional). Kosongkan text = disembunyiin.
+  // Ganti `id` setiap bikin pengumuman baru, supaya yang sudah ditutup pengunjung muncul lagi.
+  // Contoh: { id: 's2', text: 'Season 2 dimulai!', link: 'https://discord.gg/...', linkText: 'Gabung sekarang' }
+  announcement: { id: '', text: '', link: '', linkText: '' },
+
+  // Member of the Month (opsional). Kosongkan name = section disembunyiin.
+  // Contoh: { title: 'Member of the Month', name: 'marvin.', note: 'Paling aktif bulan ini!', avatar: '' }
+  spotlight: { title: 'Member of the Month', name: '', note: '', avatar: '' },
+
+  // Papan peringkat yang tampil di kartu "Voice & Chat Leveling".
+  // Ganti isinya kalau ganti season (title, footnote, rows).
+  season: {
+    title: '🏆 Leaderboard Juara Season 1 — Voice',
+    group: 'Top Voice',
+    footnote: 'Hasil akhir Season 1 — cek <code>.rank</code> di server buat lihat posisi kamu di season sekarang.',
+    rows: [
+      { name: 'NawNagaLiar', level: 75, xp: 3675 },
+      { name: 'Marvin.', level: 68, xp: 2425 },
+      { name: 'airaa', level: 62, xp: 2760 },
+      { name: 'UdinNagaLiar', level: 52, xp: 635 },
+      { name: 'AxellNagaliar', level: 44, xp: 1190 },
+      { name: 'rea', level: 39, xp: 1360 },
+      { name: 'v', level: 39, xp: 220 },
+      { name: 'Piuw', level: 29, xp: 1000 },
+      { name: 'KebabNagaLiar', level: 29, xp: 930 },
+      { name: 'Leviathan Baby Marvin', level: 23, xp: 335 }
+    ]
+  },
+
+  // Daftar command bot (bisa dicari & di-tap buat disalin). Tambah/ubah sesuai bot kamu.
+  // group: bebas, nanti otomatis jadi tombol filter.
+  commands: [
+    { cmd: '.balance',    desc: 'Cek saldo coin kamu',                    group: 'Ekonomi' },
+    { cmd: '.slot',       desc: 'Main slot, adu untung',                  group: 'Game' },
+    { cmd: '.blackjack',  desc: 'Main blackjack lawan bot',               group: 'Game' },
+    { cmd: '.tebakangka', desc: 'Tebak angka, menang dapat coin',         group: 'Game' },
+    { cmd: '.tictactoe',  desc: 'Tantang temen main tic-tac-toe',         group: 'Game' },
+    { cmd: '.trivia',     desc: 'Jawab trivia, dapat hadiah coin',        group: 'Game' },
+    { cmd: '.rank',       desc: 'Cek level dan posisimu di leaderboard',  group: 'Level' },
+    { cmd: '.help',       desc: 'Lihat semua command lengkap',            group: 'Umum' }
+  ],
+
+  // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
+  // Kalau event punya `time` sendiri di atas, itu yang dipakai.
+  reminderTime: '20:00',
+
+  // Statistik pengunjung tanpa cookie (opsional). Daftar gratis di goatcounter.com,
+  // lalu isi kode situsmu di sini. Contoh: 'gameverse' (dari gameverse.goatcounter.com). Kosong = mati.
+  goatcounter: ''
 };
 
 // bubble halus di splash
@@ -55,36 +108,154 @@ if (reduceMotion) {
 }
 
 // ===== Modal fitur server =====
+const modalOverlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+
+// ---- toast kecil ("Disalin!") ----
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+function copyText(text) {
+  const done = () => showToast('Disalin: ' + text);
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { showToast('Gagal menyalin'); }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+  else fallback();
+}
+
+// ---- papan peringkat (dari GV_CONFIG.season) ----
+function renderSeason() {
+  const S = GV_CONFIG.season;
+  const medal = ['🥇', '🥈', '🥉'];
+  return '<div class="rank-group-title">' + esc(S.group) + '</div>' +
+    S.rows.map((r, i) =>
+      '<div class="rank-row"><span class="num">' + (medal[i] || (i + 1)) + '</span>' +
+      '<span class="avatar">' + esc((r.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
+      '<span class="name">' + esc(r.name) + '</span>' +
+      '<span class="lvl">Lv. ' + esc(r.level) + ' · ' + esc(r.xp) + ' XP</span></div>').join('') +
+    '<p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">' + S.footnote + '</p>';
+}
+
+// ---- daftar command (cari + filter + tap buat salin) ----
+function renderCommands() {
+  const groups = Array.from(new Set(GV_CONFIG.commands.map((c) => c.group || 'Lainnya')));
+  return '<input class="cmd-search" id="cmdSearch" type="search" placeholder="Cari command..." autocomplete="off" aria-label="Cari command">' +
+    '<div class="cmd-filters" id="cmdFilters"><button type="button" class="cmd-chip active" data-group="">Semua</button>' +
+    groups.map((g) => '<button type="button" class="cmd-chip" data-group="' + esc(g) + '">' + esc(g) + '</button>').join('') + '</div>' +
+    '<div class="cmd-list" id="cmdList">' +
+    GV_CONFIG.commands.map((c) =>
+      '<button type="button" class="cmd-item" data-cmd="' + esc(c.cmd) + '" data-group="' + esc(c.group || 'Lainnya') + '">' +
+      '<code>' + esc(c.cmd) + '</code><span>' + esc(c.desc) + '</span><em>Salin</em></button>').join('') +
+    '</div><p class="cmd-empty" id="cmdEmpty" hidden>Gak ada yang cocok. Coba kata lain.</p>' +
+    '<p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">Tap command buat menyalinnya, lalu tempel di Discord. Ketik <code>.help</code> di server buat lihat yang lengkap.</p>';
+}
+function initCommandUI() {
+  const search = document.getElementById('cmdSearch');
+  const list = document.getElementById('cmdList');
+  const filters = document.getElementById('cmdFilters');
+  const empty = document.getElementById('cmdEmpty');
+  if (!search || !list || !filters) return;
+  let group = '';
+  function apply() {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    list.querySelectorAll('.cmd-item').forEach((it) => {
+      const ok = (!group || it.dataset.group === group) && (!q || it.textContent.toLowerCase().indexOf(q) !== -1);
+      it.hidden = !ok;
+      if (ok) shown++;
+    });
+    empty.hidden = shown !== 0;
+  }
+  search.addEventListener('input', apply);
+  filters.querySelectorAll('.cmd-chip').forEach((b) => b.addEventListener('click', () => {
+    group = b.dataset.group;
+    filters.querySelectorAll('.cmd-chip').forEach((x) => x.classList.toggle('active', x === b));
+    apply();
+  }));
+  list.querySelectorAll('.cmd-item').forEach((it) => it.addEventListener('click', () => copyText(it.dataset.cmd)));
+}
+
+// ---- jadwal event + tombol "Ingatkan aku" (file kalender .ics) ----
+function buildICS(ev) {
+  // Jam acara dalam WIB (UTC+7). Dikonversi ke UTC supaya jalan di semua aplikasi kalender.
+  const tm = (ev.time || GV_CONFIG.reminderTime || '20:00').split(':').map(Number);
+  const wib = new Date(Date.now() + 7 * 3600 * 1000);
+  const y = wib.getUTCFullYear(), mo = wib.getUTCMonth(), d = wib.getUTCDate(), wd = wib.getUTCDay();
+  const nowMin = wib.getUTCHours() * 60 + wib.getUTCMinutes();
+  const evMin = tm[0] * 60 + tm[1];
+  let startWib; // timestamp "WIB sebagai UTC"
+  if (typeof ev.weekday === 'number') {
+    let delta = (ev.weekday - wd + 7) % 7;
+    if (delta === 0 && nowMin >= evMin) delta = 7;
+    startWib = Date.UTC(y, mo, d + delta, tm[0], tm[1]);
+  } else {
+    startWib = Date.UTC(y, mo, ev.monthDay, tm[0], tm[1]);
+    if (startWib - 7 * 3600 * 1000 <= Date.now()) startWib = Date.UTC(y, mo + 1, ev.monthDay, tm[0], tm[1]);
+  }
+  const start = new Date(startWib - 7 * 3600 * 1000);       // UTC sebenarnya
+  const end = new Date(start.getTime() + 60 * 60 * 1000);   // durasi 1 jam
+  const p2 = (n) => String(n).padStart(2, '0');
+  const fmt = (dt) => dt.getUTCFullYear() + p2(dt.getUTCMonth() + 1) + p2(dt.getUTCDate()) + 'T' + p2(dt.getUTCHours()) + p2(dt.getUTCMinutes()) + '00Z';
+  const days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const rule = typeof ev.weekday === 'number'
+    ? 'FREQ=WEEKLY;BYDAY=' + days[start.getUTCDay()]
+    : 'FREQ=MONTHLY;BYMONTHDAY=' + start.getUTCDate();
+  return [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Game Verse//Event//ID', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:gv-' + ev.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '@gameverse',
+    'DTSTAMP:' + fmt(new Date()),
+    'DTSTART:' + fmt(start), 'DTEND:' + fmt(end),
+    'RRULE:' + rule,
+    'SUMMARY:' + ev.name + ' - Game Verse',
+    'DESCRIPTION:Event rutin di server Discord Game Verse. Gabung: https://discord.gg/' + GV_CONFIG.inviteCode,
+    'URL:https://discord.gg/' + GV_CONFIG.inviteCode,
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + ev.name + ' mulai 30 menit lagi', 'TRIGGER:-PT30M', 'END:VALARM',
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+}
+function downloadICS(ev) {
+  const blob = new Blob([buildICS(ev)], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = ev.name.replace(/\s+/g, '-') + '.ics';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showToast('Pengingat siap. Buka file-nya buat masuk kalender.');
+}
+function initEventModal() {
+  const rows = modalBody.querySelectorAll('.event-row');
+  GV_CONFIG.events.forEach((ev, i) => {
+    const row = rows[i];
+    if (!row) return;
+    const holder = row.querySelector('div');
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'ics-btn'; btn.textContent = '📅 Ingatkan aku';
+    btn.addEventListener('click', () => downloadICS(ev));
+    holder.appendChild(btn);
+  });
+  const note = document.createElement('p');
+  note.className = 'ics-note';
+  note.textContent = 'Jam acara: ' + (GV_CONFIG.reminderTime || '20:00') + ' WIB (kalau beda, ikuti pengumuman di server).';
+  modalBody.appendChild(note);
+}
+
 const modalData = {
-  voice: {
-    title: '🏆 Leaderboard Juara Season 1 — Voice',
-    body: `
-      <div class="rank-group-title">Top Voice</div>
-      <div class="rank-row"><span class="num">🥇</span><span class="avatar">N</span><span class="name">NawNagaLiar</span><span class="lvl">Lv. 75 · 3675 XP</span></div>
-      <div class="rank-row"><span class="num">🥈</span><span class="avatar">M</span><span class="name">Marvin.</span><span class="lvl">Lv. 68 · 2425 XP</span></div>
-      <div class="rank-row"><span class="num">🥉</span><span class="avatar">A</span><span class="name">airaa</span><span class="lvl">Lv. 62 · 2760 XP</span></div>
-      <div class="rank-row"><span class="num">4</span><span class="avatar">U</span><span class="name">UdinNagaLiar</span><span class="lvl">Lv. 52 · 635 XP</span></div>
-      <div class="rank-row"><span class="num">5</span><span class="avatar">A</span><span class="name">AxellNagaliar</span><span class="lvl">Lv. 44 · 1190 XP</span></div>
-      <div class="rank-row"><span class="num">6</span><span class="avatar">R</span><span class="name">rea</span><span class="lvl">Lv. 39 · 1360 XP</span></div>
-      <div class="rank-row"><span class="num">7</span><span class="avatar">V</span><span class="name">v</span><span class="lvl">Lv. 39 · 220 XP</span></div>
-      <div class="rank-row"><span class="num">8</span><span class="avatar">P</span><span class="name">Piuw</span><span class="lvl">Lv. 29 · 1000 XP</span></div>
-      <div class="rank-row"><span class="num">9</span><span class="avatar">K</span><span class="name">KebabNagaLiar</span><span class="lvl">Lv. 29 · 930 XP</span></div>
-      <div class="rank-row"><span class="num">10</span><span class="avatar">L</span><span class="name">Leviathan Baby Marvin</span><span class="lvl">Lv. 23 · 335 XP</span></div>
-      <p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">Hasil akhir Season 1 — cek <code>.rank</code> di server buat lihat posisi kamu di season sekarang.</p>
-    `
-  },
-  economy: {
-    title: '🎲 Daftar Command Economy & Game',
-    body: `
-      <div class="cmd-row"><code>.balance</code><span>Cek saldo coin kamu</span></div>
-      <div class="cmd-row"><code>.slot</code><span>Main slot, adu untung</span></div>
-      <div class="cmd-row"><code>.blackjack</code><span>Main blackjack lawan bot</span></div>
-      <div class="cmd-row"><code>.tebakangka</code><span>Tebak angka, menang dapat coin</span></div>
-      <div class="cmd-row"><code>.tictactoe</code><span>Tantang temen main tic-tac-toe</span></div>
-      <div class="cmd-row"><code>.trivia</code><span>Jawab trivia, dapat hadiah coin</span></div>
-      <p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">Ketik <code>.help</code> di server buat lihat semua command lengkap.</p>
-    `
-  },
+  voice: { title: GV_CONFIG.season.title, build: renderSeason },
+  economy: { title: '🎲 Daftar Command Economy & Game', build: renderCommands, after: initCommandUI },
   event: {
     title: '🎉 Jadwal Event Rutin',
     body: `
@@ -92,20 +263,18 @@ const modalData = {
       <div class="event-row"><span class="day">SABTU</span><div><h4>Mabar Night</h4><p>Nongkrong & mabar bareng di voice channel.</p></div></div>
       <div class="event-row"><span class="day">AWAL BULAN</span><div><h4>Giveaway Bulanan</h4><p>Giveaway buat member aktif, cek pengumuman.</p></div></div>
       <div class="event-row"><span class="day">TIAP HARI</span><div><h4>Streak Harian</h4><p>Jaga api streak kamu biar gak padam.</p></div></div>
-    `
+    `,
+    after: initEventModal
   }
 };
-
-const modalOverlay = document.getElementById('modalOverlay');
-const modalTitle = document.getElementById('modalTitle');
-const modalBody = document.getElementById('modalBody');
 
 document.querySelectorAll('[data-modal]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const data = modalData[btn.dataset.modal];
     if (!data) return;
     modalTitle.textContent = data.title;
-    modalBody.innerHTML = data.body;
+    modalBody.innerHTML = data.build ? data.build() : data.body;
+    if (typeof data.after === 'function') data.after();
     modalOverlay.classList.add('open');
   });
 });
@@ -148,7 +317,7 @@ const PAGE_INFO = [
 // Link langsung ke bagian tertentu, mis. .../GameVerse/#faq
 const HASH_PAGE = {
   'fitur-server': 0, 'coba-langsung': 1,
-  level: 2, galeri: 2, testimoni: 2, tim: 2,
+  level: 2, galeri: 2, spotlight: 2, testimoni: 2, tim: 2,
   faq: 3, suara: 4, masukan: 4
 };
 
@@ -874,4 +1043,108 @@ function esc(str) {
     });
   }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
   els.forEach((el) => io.observe(el));
+})();
+
+
+// =====================================================================
+// FITUR TAMBAHAN 2: bagikan, pasang di HP, pengumuman, spotlight, statistik
+// =====================================================================
+
+// ===== Tombol "Ajak teman" (menu share bawaan HP; di desktop salin link) =====
+(function initShare() {
+  const url = GV_CONFIG.siteUrl;
+  document.querySelectorAll('[data-share]').forEach((b) => b.addEventListener('click', async () => {
+    const data = {
+      title: 'Game Verse',
+      text: 'Gabung komunitas Discord Game Verse: mabar, ngobrol santai, dan naik level bareng!',
+      url: url
+    };
+    if (navigator.share) {
+      try { await navigator.share(data); } catch (e) { /* dibatalkan */ }
+    } else {
+      copyText(url);
+    }
+  }));
+})();
+
+// ===== Pasang di layar utama (muncul hanya kalau browser mengizinkan) =====
+(function initInstall() {
+  const btns = Array.from(document.querySelectorAll('[data-install]'));
+  if (!btns.length) return;
+  let deferred = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferred = e;
+    btns.forEach((b) => { b.hidden = false; });
+  });
+  btns.forEach((b) => b.addEventListener('click', async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    try { await deferred.userChoice; } catch (e) {}
+    deferred = null;
+    btns.forEach((x) => { x.hidden = true; });
+  }));
+  window.addEventListener('appinstalled', () => btns.forEach((x) => { x.hidden = true; }));
+})();
+
+// ===== Pengumuman di paling atas =====
+(function initAnnouncement() {
+  const A = GV_CONFIG.announcement;
+  const box = document.getElementById('announce');
+  if (!box || !A || !A.text) return;
+  const key = 'gv_ann_' + (A.id || 'x');
+  try { if (localStorage.getItem(key) === '1') return; } catch (e) {}
+
+  document.getElementById('annText').textContent = A.text;
+  const link = document.getElementById('annLink');
+  if (A.link) {
+    link.href = A.link;
+    link.textContent = A.linkText || 'Selengkapnya';
+    link.hidden = false;
+  }
+  box.hidden = false;
+  document.getElementById('annClose').addEventListener('click', () => {
+    box.hidden = true;
+    try { localStorage.setItem(key, '1'); } catch (e) {}
+  });
+})();
+
+// ===== Member of the Month =====
+(function initSpotlight() {
+  const S = GV_CONFIG.spotlight;
+  const sec = document.getElementById('spotlight');
+  const card = document.getElementById('spotCard');
+  if (!sec || !card || !S || !S.name) return;
+  document.getElementById('spotTitle').textContent = S.title || 'Member of the Month';
+  const initial = esc((S.name || '?').trim().charAt(0).toUpperCase());
+  const av = S.avatar ? '<img src="' + esc(S.avatar) + '" alt="' + esc(S.name) + '" loading="lazy">' : initial;
+  card.innerHTML = '<div class="avatar-lg spot-av">' + av + '</div>' +
+    '<div class="spot-body"><span class="spot-crown" aria-hidden="true">👑</span><b>' + esc(S.name) + '</b>' +
+    (S.note ? '<p>' + esc(S.note) + '</p>' : '') + '</div>';
+  sec.hidden = false;
+})();
+
+// ===== Statistik pengunjung tanpa cookie (GoatCounter, opsional) =====
+(function initAnalytics() {
+  const code = (GV_CONFIG.goatcounter || '').trim();
+  if (!code || location.protocol === 'file:') return;
+  window.goatcounter = { no_onload: false };
+  const sc = document.createElement('script');
+  sc.async = true;
+  sc.src = 'https://gc.zgo.at/count.js';
+  sc.setAttribute('data-goatcounter', 'https://' + code + '.goatcounter.com/count');
+  document.head.appendChild(sc);
+
+  // Hitung klik tombol Join & buka panduan, biar kelihatan apa yang paling diminati
+  function track(name) {
+    try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: name, title: name, event: true }); } catch (e) {}
+  }
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest ? e.target.closest('a[href*="discord.gg"]') : null;
+    if (a) track('klik-join-discord');
+    const g = e.target.closest ? e.target.closest('[data-guide]') : null;
+    if (g) track('buka-panduan-' + g.dataset.guide);
+    const tab = e.target.closest ? e.target.closest('.tab-pill') : null;
+    if (tab) track('tab-' + (tab.textContent || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+  }, { passive: true });
 })();

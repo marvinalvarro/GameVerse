@@ -1544,3 +1544,119 @@ html[data-theme="dark"] .menu-drawer { background: linear-gradient(170deg, #1130
 @media (prefers-reduced-motion: reduce) {
   .menu-overlay, .menu-drawer, .burger, .burger span { transition: none !important; }
 }
+
+
+/* =====================================================================
+   FITUR TAMBAHAN 2
+   ===================================================================== */
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; z-index: 130;
+  bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+  max-width: min(90vw, 420px);
+  padding: 12px 20px; border-radius: 999px;
+  background: #0f3d3a; color: #e6fbf5;
+  font-weight: 600; font-size: 0.9rem; text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0; transform: translate(-50%, 20px); pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+html[data-theme="dark"] .toast { background: #bfe8c2; color: #0f3d3a; }
+
+/* ---------- Pengumuman ---------- */
+.announce {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px clamp(14px, 4vw, 40px);
+  background: var(--aqua); color: var(--btn-ink);
+  font-size: 0.9rem; font-weight: 600;
+}
+.announce[hidden] { display: none; }
+.announce p { margin: 0; flex: 1; line-height: 1.45; }
+.announce a { color: inherit; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.ann-ico { font-size: 1.1rem; }
+.ann-close {
+  flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
+  border: 0; background: rgba(255, 255, 255, 0.45); color: inherit;
+  font-size: 0.95rem; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (hover: hover) { .ann-close:hover { transform: rotate(90deg) scale(1.12); } }
+.ann-close:active { transform: scale(0.88); }
+html[data-theme="dark"] .announce { background: #14423c; color: #bfe8c2; }
+html[data-theme="dark"] .ann-close { background: rgba(255, 255, 255, 0.12); }
+
+/* ---------- Daftar command ---------- */
+.cmd-search {
+  width: 100%; padding: 12px 14px; margin-bottom: 10px;
+  border: 1px solid var(--panel-line); border-radius: 12px;
+  background: #ffffff; color: var(--ink);
+  font-family: inherit; font-size: 16px;
+}
+.cmd-search:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+html[data-theme="dark"] .cmd-search { background: #0d2220; }
+.cmd-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.cmd-chip {
+  min-height: 36px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--panel-line); background: var(--panel); color: var(--ink);
+  font-family: inherit; font-weight: 600; font-size: 0.82rem; cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cmd-chip.active { background: var(--aqua); color: var(--btn-ink); border-color: var(--mint-deep); font-weight: 700; }
+@media (hover: hover) { .cmd-chip:hover { transform: translateY(-2px); } }
+.cmd-chip:active { transform: scale(0.93); }
+.cmd-list { display: grid; gap: 8px; }
+.cmd-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 12px; text-align: left;
+  background: var(--panel); border: 1px solid var(--panel-line); border-radius: 12px;
+  font-family: inherit; color: var(--ink); cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cmd-item[hidden] { display: none; }
+.cmd-item code { flex: 0 0 auto; }
+.cmd-item span { flex: 1; min-width: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.4; }
+.cmd-item em {
+  flex: 0 0 auto; font-style: normal; font-size: 0.72rem; font-weight: 700;
+  padding: 3px 9px; border-radius: 999px; background: var(--aqua); color: var(--btn-ink);
+}
+@media (hover: hover) { .cmd-item:hover { transform: translateX(4px); border-color: var(--mint-deep); } }
+.cmd-item:active { transform: scale(0.97); }
+.cmd-empty { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 18px 0 0; }
+.cmd-empty[hidden] { display: none; }
+
+/* ---------- Tombol kalender di jadwal event ---------- */
+.ics-btn {
+  margin-top: 8px; min-height: 34px; padding: 0 14px; border-radius: 999px;
+  border: 1px solid var(--panel-line); background: var(--panel); color: var(--btn-ink);
+  font-family: inherit; font-weight: 700; font-size: 0.78rem; cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+html[data-theme="dark"] .ics-btn { color: var(--aqua); }
+@media (hover: hover) { .ics-btn:hover { transform: translateY(-2px); background: var(--aqua); color: var(--btn-ink); } }
+.ics-btn:active { transform: scale(0.93); }
+.ics-note { margin: 14px 0 0; font-size: 0.8rem; color: var(--muted); }
+
+/* ---------- Member of the Month ---------- */
+.spot-card {
+  display: flex; align-items: center; gap: 18px;
+  max-width: 460px; margin: 0 auto; padding: 20px;
+  background: var(--panel); border: 1px solid var(--mint-deep); border-radius: var(--radius);
+  box-shadow: 0 10px 26px rgba(43, 179, 160, 0.2);
+}
+.spot-av { margin: 0; flex: 0 0 76px; width: 76px; height: 76px; }
+.spot-body { min-width: 0; }
+.spot-crown { display: block; font-size: 1.2rem; line-height: 1; margin-bottom: 4px; }
+.spot-body b { display: block; font-family: "Baloo 2", sans-serif; font-size: 1.3rem; color: var(--ink); }
+.spot-body p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+/* ---------- Aksi tambahan di menu HP ---------- */
+.menu-actions { display: grid; gap: 10px; }
+.menu-actions .btn { width: 100%; }
+.menu-actions [hidden] { display: none; }
+.social[hidden] { display: none; }
+button.social { font-family: inherit; cursor: pointer; }
