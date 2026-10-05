@@ -80,6 +80,14 @@
   },
   {
    "@type": "Question",
+   "name": "Apa saja aturan servernya?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Singkatnya: saling menghormati, tanpa spam, tanpa promosi, dan tanpa konten terlarang. Aturan lengkapnya ada 11 poin, baca di tab Panduan."
+   }
+  },
+  {
+   "@type": "Question",
    "name": "Gimana cara naik level?",
    "acceptedAnswer": {
     "@type": "Answer",
@@ -141,7 +149,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -223,9 +231,10 @@
     <div class="tabbar" id="tabbar" role="tablist" aria-label="Bagian situs">
       <button class="tab-pill active" type="button" role="tab" aria-selected="true" data-page="0"><span aria-hidden="true">🧩</span>Fitur</button>
       <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="1"><span aria-hidden="true">🎮</span>Coba Langsung</button>
-      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="2"><span aria-hidden="true">🏆</span>Level &amp; Galeri</button>
-      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="3"><span aria-hidden="true">❓</span>FAQ</button>
-      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="4"><span aria-hidden="true">💬</span>Masukan</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="2"><span aria-hidden="true">🧭</span>Panduan</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="3"><span aria-hidden="true">🏆</span>Level &amp; Galeri</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="4"><span aria-hidden="true">❓</span>FAQ</button>
+      <button class="tab-pill" type="button" role="tab" aria-selected="false" data-page="5"><span aria-hidden="true">💬</span>Masukan</button>
     </div>
 
     <!-- viewport = jendela yang motong slide (biar slide sebelah gak keliatan ngintip) -->
@@ -285,7 +294,32 @@
           </div>
         </div>
 
-        <!-- Halaman 3: Level & Galeri -->
+        <!-- Halaman 3: Panduan & Aturan -->
+        <div class="features-group" id="page-panduan" role="tabpanel">
+          <div class="group-label">Panduan &amp; Aturan (klik buat baca)</div>
+          <div class="grid">
+            <button class="card card-doc" data-doc="rules" type="button">
+              <div class="icon">📜</div>
+              <h3>Aturan Server</h3>
+              <p>11 aturan biar server tetap nyaman buat semua orang. Baca dulu sebelum ikut ngobrol.</p>
+              <span class="go-tag">Baca Aturan</span>
+            </button>
+            <button class="card card-doc" data-doc="start" type="button">
+              <div class="icon">🧭</div>
+              <h3>Panduan Awal Bermain</h3>
+              <p>Baru main Discord? Ini cara ngobrol, ambil role game, sampai minta bantuan admin.</p>
+              <span class="go-tag">Baca Panduan</span>
+            </button>
+            <button class="card card-doc" data-doc="template" type="button">
+              <div class="icon">🧩</div>
+              <h3>Template Server Gratis</h3>
+              <p>Mau bikin server sendiri tapi males ngatur channel dan role? Ambil yang sudah jadi.</p>
+              <span class="go-tag">Lihat Template</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Halaman 4: Level & Galeri -->
         <div class="features-group" id="page-level" role="tabpanel">
   <!-- Cara naik level -->
   <div class="sec levels" id="level">
@@ -335,7 +369,7 @@
 
         </div>
 
-        <!-- Halaman 4: FAQ & aturan -->
+        <!-- Halaman 5: FAQ -->
         <div class="features-group" id="page-faq" role="tabpanel">
   <!-- FAQ & aturan -->
   <div class="sec faq" id="faq">
@@ -346,6 +380,10 @@
       <details class="qa">
         <summary>Gimana cara gabung?</summary>
         <div class="qa-body">Klik tombol <b>Join Server</b> di atas, nanti kamu diarahkan ke Discord. Gratis, tinggal klik dan masuk.</div>
+      </details>
+      <details class="qa">
+        <summary>Apa saja aturan servernya?</summary>
+        <div class="qa-body">Singkatnya: saling menghormati, tanpa spam, tanpa promosi, dan tanpa konten terlarang. Aturan lengkapnya ada 11 poin, baca di <a href="#panduan" data-gopage="2">tab Panduan</a>.</div>
       </details>
       <details class="qa">
         <summary>Gimana cara naik level?</summary>
@@ -377,20 +415,11 @@
       </details>
     </div>
 
-    <!-- Aturan dasar: SESUAIKAN dengan aturan server kamu yang sebenarnya -->
-    <h3 class="sub-h">Aturan dasar server</h3>
-    <ol class="rules">
-      <li>Saling menghargai sesama member, gak ada bully atau ngatain.</li>
-      <li>Dilarang spam dan promosi tanpa izin admin.</li>
-      <li>Dilarang konten SARA, ujaran kebencian, dan konten dewasa.</li>
-      <li>Jaga privasi: jangan sebar data pribadi, baik punyamu maupun orang lain.</li>
-      <li>Ikuti arahan admin dan moderator.</li>
-    </ol>
   </div>
 
         </div>
 
-        <!-- Halaman 5: Masukan -->
+        <!-- Halaman 6: Masukan -->
         <div class="features-group" id="page-masukan" role="tabpanel">
   <div class="voice" id="suara">
     <h2>Suara kamu penting</h2>
@@ -446,6 +475,7 @@
         <button class="dot" type="button" data-page="2" aria-label="Halaman 3"></button>
         <button class="dot" type="button" data-page="3" aria-label="Halaman 4"></button>
         <button class="dot" type="button" data-page="4" aria-label="Halaman 5"></button>
+        <button class="dot" type="button" data-page="5" aria-label="Halaman 6"></button>
       </div>
       <div class="pager-row">
         <button class="next-btn" id="mobileNext" type="button">Lanjut</button>
@@ -465,7 +495,7 @@
       <button class="social" type="button" data-share>Ajak teman</button>
       <button class="social" type="button" data-install hidden>Pasang di HP</button>
     </div>
-    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v10</small></p>
+    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v11</small></p>
   </footer>
 </main>
 
@@ -481,9 +511,10 @@
     <button class="pick" type="button" data-go="top"><span class="pi" aria-hidden="true">🏠</span><span><b>Beranda</b><small>Kembali ke bagian paling atas</small></span></button>
     <button class="pick" type="button" data-go="0"><span class="pi" aria-hidden="true">🧩</span><span><b>Fitur Server</b><small>Voice leveling, economy, event rutin</small></span></button>
     <button class="pick" type="button" data-go="1"><span class="pi" aria-hidden="true">🎮</span><span><b>Coba Langsung</b><small>KTP digital, CV Ta'aruf, streak, ultah</small></span></button>
-    <button class="pick" type="button" data-go="2"><span class="pi" aria-hidden="true">🏆</span><span><b>Level &amp; Galeri</b><small>Cara naik level dan sekilas isi server</small></span></button>
-    <button class="pick" type="button" data-go="3"><span class="pi" aria-hidden="true">❓</span><span><b>FAQ &amp; Aturan</b><small>Jawaban cepat dan aturan dasar</small></span></button>
-    <button class="pick" type="button" data-go="4"><span class="pi" aria-hidden="true">💬</span><span><b>Kasih Masukan</b><small>Rating, kritik, dan saran fitur</small></span></button>
+    <button class="pick" type="button" data-go="2"><span class="pi" aria-hidden="true">🧭</span><span><b>Panduan &amp; Aturan</b><small>Aturan server, panduan awal, template</small></span></button>
+    <button class="pick" type="button" data-go="3"><span class="pi" aria-hidden="true">🏆</span><span><b>Level &amp; Galeri</b><small>Cara naik level dan sekilas isi server</small></span></button>
+    <button class="pick" type="button" data-go="4"><span class="pi" aria-hidden="true">❓</span><span><b>FAQ</b><small>Jawaban cepat buat pertanyaan umum</small></span></button>
+    <button class="pick" type="button" data-go="5"><span class="pi" aria-hidden="true">💬</span><span><b>Kasih Masukan</b><small>Rating, kritik, dan saran fitur</small></span></button>
   </nav>
   <div class="menu-theme">
     <div><b>Tampilan</b><small data-theme-label>Mode terang</small></div>
@@ -519,7 +550,7 @@
   </div>
 </div>
 
-<script src="script.js?v=10"></script>
+<script src="script.js?v=11"></script>
 
 </body>
 </html>

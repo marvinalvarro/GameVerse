@@ -1660,3 +1660,60 @@ html[data-theme="dark"] .ics-btn { color: var(--aqua); }
 .menu-actions [hidden] { display: none; }
 .social[hidden] { display: none; }
 button.social { font-family: inherit; cursor: pointer; }
+
+
+/* =====================================================================
+   PANDUAN & ATURAN (popup baca) + rapikan jadwal event
+   ===================================================================== */
+.card-doc .icon { background: var(--aqua); }
+
+.doc-intro { margin: 0 0 16px; color: var(--muted); font-size: 0.92rem; line-height: 1.6; }
+.doc-intro b { color: var(--ink); }
+.doc-h { margin: 18px 0 8px; font-family: "Baloo 2", sans-serif; font-size: 1.02rem; color: var(--ink); }
+.doc-p { margin: 0 0 6px; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.doc-p b, .doc-list b { color: var(--ink); }
+.doc-list { margin: 0; padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.doc-list li + li { margin-top: 8px; }
+.doc-steps { margin: 0; padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+.doc-steps li + li { margin-top: 6px; }
+.doc-steps b { color: var(--ink); }
+.doc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.doc-chips span {
+  padding: 6px 14px; border-radius: 999px;
+  background: var(--aqua); color: var(--btn-ink);
+  font-size: 0.82rem; font-weight: 700;
+}
+.doc-thanks { margin: 16px 0 0; text-align: center; color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+.doc-nav { margin-top: 18px; }
+
+.rule-item {
+  margin-bottom: 10px; padding: 12px 14px;
+  background: var(--panel); border: 1px solid var(--panel-line); border-radius: 12px;
+}
+.rule-item b { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 0.95rem; }
+.rule-item .rn {
+  flex: 0 0 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--aqua); color: var(--btn-ink); font-size: 0.8rem; font-weight: 800;
+}
+.rule-item ul { margin: 8px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+.rule-item li + li { margin-top: 4px; }
+.rule-note {
+  margin-top: 6px; padding: 12px 14px; border-radius: 12px;
+  background: rgba(191, 232, 194, 0.35); border: 1px solid var(--mint-deep);
+}
+.rule-note b { color: var(--ink); font-size: 0.9rem; }
+.rule-note p { margin: 6px 0 0; color: var(--muted); font-size: 0.86rem; line-height: 1.55; }
+@media (hover: hover) { .rule-item { transition: transform 0.2s ease, border-color 0.2s ease; } .rule-item:hover { transform: translateX(4px); border-color: var(--mint-deep); } }
+
+/* ---------- Jadwal event: kolom label hari dibuat sama lebar biar rapi ---------- */
+.event-row { align-items: flex-start; gap: 14px; }
+.event-row .day {
+  flex: 0 0 96px;
+  width: 96px;
+  text-align: center;
+  white-space: nowrap;
+}
+.event-row > div { flex: 1; min-width: 0; }
+.event-row h4 { margin: 0 0 3px; }
+.ics-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; }

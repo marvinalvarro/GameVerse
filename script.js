@@ -26,6 +26,15 @@ const GV_CONFIG = {
   // Contoh: { name: 'Marvin', role: 'Owner', avatar: 'img/marvin.webp' }  (avatar boleh dikosongin)
   team: [],
 
+  // ID server Discord + ID thread untuk Aturan, Panduan Awal, dan Template.
+  // (Klik kanan thread di Discord > Copy Link, angka paling belakang itulah ID thread-nya.)
+  guildId: '1477885864771322069',
+  threads: {
+    rules:    '1544284081477394432',
+    start:    '1544283690404679750',
+    template: '1546845430380503110'
+  },
+
   // Alamat web (dipakai tombol "Ajak teman")
   siteUrl: 'https://marvinalvarro.github.io/GameVerse/',
 
@@ -134,6 +143,101 @@ function copyText(text) {
   };
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
   else fallback();
+}
+
+// ---- Panduan & Aturan (isi popup). Edit teks di sini kalau ada perubahan. ----
+const threadUrl = (id) => 'https://discord.com/channels/' + GV_CONFIG.guildId + '/' + id;
+
+const GV_DOCS = {
+  rules: {
+    title: '📜 Aturan Server',
+    cta: 'Buka Thread Aturan di Discord',
+    url: () => threadUrl(GV_CONFIG.threads.rules),
+    html: () => {
+      const R = [
+        ['Hormati Sesama', ['Bersikap sopan kepada seluruh member.', 'Dilarang toxic, menghina, melecehkan, atau memprovokasi.']],
+        ['Dilarang Spam', ['Jangan spam chat, emoji, sticker, GIF, atau mention.']],
+        ['Gunakan Channel dengan Benar', ['Kirim pesan sesuai dengan topik channel yang tersedia.']],
+        ['Dilarang Promosi', ['Dilarang mempromosikan server, media sosial, atau produk tanpa izin Staff.']],
+        ['Konten Terlarang', ['Dilarang mengirim konten NSFW, gore, scam, phishing, malware, atau konten berbahaya lainnya.']],
+        ['Voice Chat', ['Jangan earrape, menggunakan soundboard berlebihan, atau mengganggu pengguna lain di Voice Channel.']],
+        ['Marketplace', ['Seluruh transaksi menjadi tanggung jawab masing-masing.', 'Gunakan Middleman resmi jika tersedia.']],
+        ['Event', ['Ikuti aturan yang diumumkan pada setiap event.', 'Dilarang melakukan kecurangan, menggunakan akun lain, atau mengganggu jalannya event.', 'Keputusan Host atau Staff selama event bersifat final.']],
+        ['Hormati Staff', ['Ikuti arahan Staff.', 'Gunakan Ticket apabila ingin mengajukan banding atau melaporkan masalah.']],
+        ['Multi Account', ['Dilarang menggunakan akun lain untuk menghindari hukuman atau memperoleh keuntungan yang tidak adil.']],
+        ['Sanksi', ['Warn \u2192 Timeout \u2192 Kick \u2192 Ban.', 'Jenis hukuman disesuaikan dengan tingkat pelanggaran.']]
+      ];
+      return '<p class="doc-intro">Dengan bergabung di <b>Game Verse</b>, kamu dianggap telah menyetujui seluruh peraturan berikut.</p>' +
+        R.map((r, i) => '<div class="rule-item"><b><span class="rn">' + (i + 1) + '</span>' + esc(r[0]) + '</b><ul>' +
+          r[1].map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul></div>').join('') +
+        '<div class="rule-note"><b>\uD83D\uDCE2 Catatan</b><p>Staff berhak mengambil tindakan terhadap pelanggaran yang tidak tercantum di atas demi menjaga keamanan, kenyamanan, dan ketertiban server.</p></div>' +
+        '<p class="doc-thanks">Terima kasih telah bergabung di Game Verse! Selamat bermain dan semoga betah!</p>';
+    }
+  },
+
+  start: {
+    title: '🧭 Panduan Awal Bermain',
+    cta: 'Buka Panduan di Discord',
+    url: () => threadUrl(GV_CONFIG.threads.start),
+    html: () =>
+      '<p class="doc-intro">Di Discord itu intinya cuma dua: <b>ngetik</b> (text channel) atau <b>ngomong</b> (voice channel). Kamu bebas nongkrong di mana aja sesuai mood.</p>' +
+
+      '<h4 class="doc-h">1. Area umum (wajib cek dulu)</h4>' +
+      '<ul class="doc-list">' +
+        '<li><code>#welcome</code> Tempat di-welcome pas baru join. Boleh pamer diri kalau mau kenalan.</li>' +
+        '<li><code>#info-server</code> Baca dulu sebelum aktif, biar gak kena banned.</li>' +
+        '<li><code>#caravoice</code> <b>Penting!</b> Klik role game yang kamu mainin biar channel khusus game itu muncul (GTA V, Valorant, Minecraft, dll). Kalau di-skip, channel game favoritmu bakal invisible.</li>' +
+        '<li><code>#yapping</code> Alun-alun utama, bebas bahas apa aja, asbun juga boleh.</li>' +
+      '</ul>' +
+
+      '<h4 class="doc-h">2. Area ngetik per game</h4>' +
+      '<p class="doc-p">Setelah ambil role di <code>#caravoice</code>, kategori game yang kamu pilih bakal kebuka.</p>' +
+
+      '<h4 class="doc-h">3. Area ngomong (voice)</h4>' +
+      '<p class="doc-p">Bosen ngetik dan pengen mabar pakai suara asli? Langsung aja masuk ke <b>General Voice</b>. Tinggal klik dan masuk. Awal-awal malu boleh diem dulu, gapapa kok!</p>' +
+
+      '<h4 class="doc-h">Aturan singkat (wajib baca)</h4>' +
+      '<ul class="doc-list">' +
+        '<li><b>No SARA &amp; politik.</b> Kita di sini nyari temen mabar dan tempat santai, bukan buat debat.</li>' +
+        '<li><b>No NSFW / porno.</b> Hargai warga lain. Salah kirim link atau kata terlarang bisa kena kick atau banned.</li>' +
+        '<li><b>Respect the staff.</b> Kalau ditegur moderator, tolong diturutin biar tongkrongan tetap asik.</li>' +
+      '</ul>' +
+
+      '<h4 class="doc-h">Masih bingung?</h4>' +
+      '<p class="doc-p">Kalau ada yang belum kamu ngerti, mau lapor orang rusuh, atau butuh bantuan, langsung aja bikin tiket di <code>#ticket</code>. Admin bakal turun tangan bantuin.</p>' +
+      '<p class="doc-thanks">Have fun and see you in-game!</p>'
+  },
+
+  template: {
+    title: '🧩 Template Server Gratis',
+    cta: 'Buka Thread Template di Discord',
+    url: () => threadUrl(GV_CONFIG.threads.template),
+    html: () =>
+      '<p class="doc-intro">Mau bikin server sendiri tapi males ngedit channel dan role satu-satu? Ambil <b>template server Discord</b> yang sudah jadi, <b>gratis</b>.</p>' +
+      '<h4 class="doc-h">Cara pakainya</h4>' +
+      '<ol class="doc-steps">' +
+        '<li>Buka thread template di Discord (tombol di bawah).</li>' +
+        '<li>Pilih template yang kamu suka, lalu klik <b>View Template</b>.</li>' +
+        '<li>Beri nama servermu, klik <b>Create</b>. Channel dan role-nya langsung tertata.</li>' +
+      '</ol>' +
+      '<h4 class="doc-h">Pilihan yang tersedia</h4>' +
+      '<div class="doc-chips">' +
+        ['Advance Server', 'Fruit Simple Template', 'Cute Community', 'Minimal Aesthetic', 'Good Template'].map((n) => '<span>' + esc(n) + '</span>').join('') +
+      '</div>' +
+      '<p class="doc-p">Daftar template bisa bertambah, jadi cek thread-nya buat yang terbaru.</p>'
+  }
+};
+
+function renderDoc(key) {
+  const d = GV_DOCS[key];
+  if (!d) return;
+  activeGuide = null;
+  modalTitle.textContent = d.title;
+  modalBody.innerHTML = d.html() +
+    '<div class="guide-nav doc-nav"><a class="guide-btn primary" href="' + esc(d.url()) + '" target="_blank" rel="noopener">' + esc(d.cta) + '</a></div>';
+  const box = modalBody.closest('.modal-box');
+  if (box) box.scrollTop = 0;
+  modalOverlay.classList.add('open');
 }
 
 // ---- papan peringkat (dari GV_CONFIG.season) ----
@@ -308,17 +412,19 @@ const tabbar = document.getElementById('tabbar');
 
 // Isi pemilih "Lihat Fitur" (urutannya sama dengan urutan halaman)
 const PAGE_INFO = [
-  { icon: '🧩', title: 'Fitur Server',   desc: 'Voice leveling, economy & mini game, event rutin' },
-  { icon: '🎮', title: 'Coba Langsung',  desc: "KTP digital, CV Ta'aruf, streak harian, ultah" },
-  { icon: '🏆', title: 'Level & Galeri', desc: 'Cara naik level dan sekilas isi server' },
-  { icon: '❓', title: 'FAQ & Aturan',   desc: 'Jawaban cepat dan aturan dasar server' },
-  { icon: '💬', title: 'Kasih Masukan',  desc: 'Rating, kritik, dan saran fitur' }
+  { icon: '🧩', title: 'Fitur Server',     desc: 'Voice leveling, economy & mini game, event rutin' },
+  { icon: '🎮', title: 'Coba Langsung',    desc: "KTP digital, CV Ta'aruf, streak harian, ultah" },
+  { icon: '🧭', title: 'Panduan & Aturan', desc: 'Aturan server, panduan awal, template gratis' },
+  { icon: '🏆', title: 'Level & Galeri',   desc: 'Cara naik level dan sekilas isi server' },
+  { icon: '❓', title: 'FAQ',              desc: 'Jawaban cepat buat pertanyaan yang sering muncul' },
+  { icon: '💬', title: 'Kasih Masukan',    desc: 'Rating, kritik, dan saran fitur' }
 ];
 // Link langsung ke bagian tertentu, mis. .../GameVerse/#faq
 const HASH_PAGE = {
   'fitur-server': 0, 'coba-langsung': 1,
-  level: 2, galeri: 2, spotlight: 2, testimoni: 2, tim: 2,
-  faq: 3, suara: 4, masukan: 4
+  panduan: 2, aturan: 2, rules: 2, template: 2,
+  level: 3, galeri: 3, spotlight: 3, testimoni: 3, tim: 3,
+  faq: 4, suara: 5, masukan: 5
 };
 
 let gvGoTo = () => {};
@@ -1147,4 +1253,19 @@ function esc(str) {
     const tab = e.target.closest ? e.target.closest('.tab-pill') : null;
     if (tab) track('tab-' + (tab.textContent || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-'));
   }, { passive: true });
+})();
+
+
+// ===== Kartu Panduan & Aturan + link internal =====
+(function initDocs() {
+  document.querySelectorAll('[data-doc]').forEach((btn) => {
+    btn.addEventListener('click', () => renderDoc(btn.dataset.doc));
+  });
+  // Link seperti "tab Panduan" di FAQ: pindah halaman tanpa loncat/refresh
+  document.querySelectorAll('a[data-gopage]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      gvGoTo(parseInt(a.dataset.gopage, 10), true);
+    });
+  });
 })();
