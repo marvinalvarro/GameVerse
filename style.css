@@ -1451,3 +1451,96 @@ html[data-theme="dark"] .step-ico, html[data-theme="dark"] .card .icon { backgro
 @media (prefers-reduced-motion: reduce) {
   .ts-ico, .ts-track, .ts-knob { transition: none !important; }
 }
+
+
+/* ===============================
+   Menu garis tiga (khusus HP)
+=============================== */
+.burger { display: none; }
+
+.menu-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(8, 24, 22, 0.5);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+.menu-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 95;
+  width: min(88vw, 340px);
+  display: flex; flex-direction: column; gap: 16px;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  background: linear-gradient(170deg, #ffffff 0%, #dcf9f3 100%);
+  border-radius: 24px 0 0 24px;
+  box-shadow: -18px 0 50px rgba(8, 24, 22, 0.28);
+  transform: translateX(106%);
+  visibility: hidden;
+  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.38s;
+}
+.menu-drawer.open { transform: none; visibility: visible; transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s; }
+html[data-theme="dark"] .menu-drawer { background: linear-gradient(170deg, #11302d 0%, #0a1f1d 100%); box-shadow: -18px 0 50px rgba(0, 0, 0, 0.5); }
+
+.menu-head { display: flex; align-items: center; justify-content: space-between; }
+.menu-head h2 { margin: 0; font-family: "Baloo 2", sans-serif; font-size: 1.4rem; color: var(--ink); }
+.menu-close {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid var(--panel-line); background: var(--panel); color: var(--ink);
+  font-size: 1rem; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.menu-close:active { transform: rotate(90deg) scale(0.9); }
+.menu-close:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+
+.menu-list .pick { padding: 10px 12px; }
+.menu-list .pick .pi { width: 42px; height: 42px; font-size: 1.35rem; }
+
+.menu-theme {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 14px;
+  background: var(--panel); border: 1px solid var(--panel-line); border-radius: 14px;
+}
+.menu-theme b { display: block; font-size: 0.95rem; color: var(--ink); }
+.menu-theme small { display: block; margin-top: 2px; color: var(--muted); font-size: 0.82rem; }
+.menu-theme .ts-ico { width: 26px; height: 26px; }
+.menu-theme .ts-track { width: 48px; height: 26px; }
+.menu-theme .ts-knob { width: 16px; height: 16px; margin-top: -8px; transform: translateX(21px); }
+:root[data-theme="dark"] .menu-theme .ts-knob { transform: translateX(0); }
+
+.menu-join { margin-top: auto; width: 100%; }
+
+@media (max-width: 640px) {
+  .header-actions > .theme-switch { display: none; }
+  .header-actions { gap: 8px; }
+  .burger {
+    display: inline-block; position: relative; flex: 0 0 auto;
+    width: 44px; height: 44px; padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--panel-line);
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
+  }
+  html[data-theme="dark"] .burger { background: rgba(255, 255, 255, 0.08); }
+  .burger span {
+    position: absolute; left: 12px; right: 12px; height: 2.5px; border-radius: 2px;
+    background: var(--ink);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease, top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .burger span:nth-child(1) { top: 14px; }
+  .burger span:nth-child(2) { top: 20.75px; }
+  .burger span:nth-child(3) { top: 27.5px; }
+  .burger[aria-expanded="true"] span:nth-child(1) { top: 20.75px; transform: rotate(45deg); }
+  .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scaleX(0.3); }
+  .burger[aria-expanded="true"] span:nth-child(3) { top: 20.75px; transform: rotate(-45deg); }
+  .burger:active { transform: scale(0.9); }
+  .burger:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+}
+@media (min-width: 641px) {
+  .menu-overlay, .menu-drawer { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-overlay, .menu-drawer, .burger, .burger span { transition: none !important; }
+}

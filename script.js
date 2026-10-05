@@ -603,26 +603,70 @@ function esc(str) {
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// ===== Tema terang / gelap =====
+// ===== Tema terang / gelap (saklar di header desktop + saklar di dalam menu HP) =====
 (function initTheme() {
   const root = document.documentElement;
-  const btn = document.getElementById('themeToggle');
+  const btns = Array.from(document.querySelectorAll('[data-theme-toggle]'));
+  const labels = Array.from(document.querySelectorAll('[data-theme-label]'));
   const meta = document.getElementById('themeColor');
 
   function apply(t) {
     root.setAttribute('data-theme', t);
     if (meta) meta.setAttribute('content', t === 'dark' ? '#0b1f1d' : '#50dcc5');
-    if (btn) btn.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false');
+    btns.forEach((b) => b.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false'));
+    labels.forEach((l) => { l.textContent = t === 'dark' ? 'Mode gelap' : 'Mode terang'; });
   }
   apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
 
-  if (btn) {
-    btn.addEventListener('click', () => {
-      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      apply(next);
-      try { localStorage.setItem('gv_theme', next); } catch (e) {}
-    });
+  btns.forEach((b) => b.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(next);
+    try { localStorage.setItem('gv_theme', next); } catch (e) {}
+  }));
+})();
+
+// ===== Menu garis tiga (HP): daftar bagian + saklar tema =====
+(function initMenu() {
+  const burger = document.getElementById('menuToggle');
+  const drawer = document.getElementById('menuDrawer');
+  const overlay = document.getElementById('menuOverlay');
+  const closeBtn = document.getElementById('menuClose');
+  if (!burger || !drawer || !overlay) return;
+  const mq = window.matchMedia('(max-width: 640px)');
+
+  function setOpen(open, returnFocus) {
+    drawer.classList.toggle('open', open);
+    overlay.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    burger.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+    drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (open) drawer.removeAttribute('inert'); else drawer.setAttribute('inert', '');
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open && closeBtn) closeBtn.focus({ preventScroll: true });
+    if (!open && returnFocus) burger.focus({ preventScroll: true });
   }
+
+  burger.addEventListener('click', () => setOpen(!drawer.classList.contains('open')));
+  overlay.addEventListener('click', () => setOpen(false));
+  if (closeBtn) closeBtn.addEventListener('click', () => setOpen(false, true));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) setOpen(false, true);
+  });
+  // kalau layar dilebarkan (mis. HP diputar), tutup menunya
+  const onChange = () => { if (!mq.matches) setOpen(false); };
+  if (mq.addEventListener) mq.addEventListener('change', onChange);
+
+  // Pilih bagian -> menu nutup, lalu langsung loncat ke bagian itu
+  drawer.querySelectorAll('[data-go]').forEach((el) => {
+    el.addEventListener('click', () => {
+      const go = el.dataset.go;
+      setOpen(false);
+      setTimeout(() => {
+        if (go === 'top') { scrollToTop(); gvGoTo(0); }
+        else gvGoTo(parseInt(go, 10), true);
+      }, 160);
+    });
+  });
 })();
 
 // ===== Event berikutnya (hitung mundur, WIB) =====
