@@ -69,16 +69,21 @@ const GV_CONFIG = {
 
   // Daftar command bot (bisa dicari & di-tap buat disalin). Tambah/ubah sesuai bot kamu.
   // group: bebas, nanti otomatis jadi tombol filter.
-  commands: [
-    { cmd: '.balance',    desc: 'Cek saldo coin kamu',                    group: 'Ekonomi' },
-    { cmd: '.slot',       desc: 'Main slot, adu untung',                  group: 'Game' },
-    { cmd: '.blackjack',  desc: 'Main blackjack lawan bot',               group: 'Game' },
-    { cmd: '.tebakangka', desc: 'Tebak angka, menang dapat coin',         group: 'Game' },
-    { cmd: '.tictactoe',  desc: 'Tantang temen main tic-tac-toe',         group: 'Game' },
-    { cmd: '.trivia',     desc: 'Jawab trivia, dapat hadiah coin',        group: 'Game' },
-    { cmd: '.rank',       desc: 'Cek level dan posisimu di leaderboard',  group: 'Level' },
-    { cmd: '.help',       desc: 'Lihat semua command lengkap',            group: 'Umum' }
-  ],
+commands: [
+  { cmd: '.balance',           desc: 'Cek saldo coin kamu',                                  group: 'Ekonomi' },
+  { cmd: '.slot',              desc: 'Main slot, adu untung',                                group: 'Game' },
+  { cmd: '.blackjack',         desc: 'Main blackjack lawan bot',                             group: 'Game' },
+  { cmd: '.tebakangka',        desc: 'Tebak angka, menang dapat coin',                       group: 'Game' },
+  { cmd: '.tictactoe',         desc: 'Tantang temen main tic-tac-toe',                       group: 'Game' },
+  { cmd: '.trivia',            desc: 'Jawab trivia, dapat hadiah coin',                      group: 'Game' },
+  { cmd: '.rank',              desc: 'Cek level dan posisimu di leaderboard',                group: 'Level' },
+  { cmd: '.voiceleaderboard',  desc: 'Lihat posisi rank & level voice kamu di leaderboard',  group: 'Level' },
+  { cmd: '.rankchat',          desc: 'Pantau progres level chat kamu',                       group: 'Level' },
+  { cmd: '.season1',           desc: 'Lihat leaderboard voice dari season yang sudah lewat', group: 'Umum' },
+  { cmd: '.streak',            desc: 'Cek progres api streak kamu',                          group: 'Umum' },
+  { cmd: '.streakleaderboard', desc: 'Lihat posisi streak kamu di leaderboard',              group: 'Umum' },
+  { cmd: '.help',              desc: 'Lihat semua command lengkap',                          group: 'Umum' }
+],
 
   // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
   // Kalau event punya `time` sendiri di atas, itu yang dipakai.
