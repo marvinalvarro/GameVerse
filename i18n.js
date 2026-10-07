@@ -115,7 +115,6 @@
  "Ceritain di sini <em>(opsional kalau sudah kasih bintang)</em>": "Tell us here <em>(optional if you gave stars)</em>",
  "Kirim Masukan": "Send Feedback",
  "Siap gabung?": "Ready to join?",
- "Satu klik doang, langsung bisa mabar dan ngobrol bareng ribuan member lain.": "Just one click and you can play and chat with thousands of other members.",
  "Ajak teman": "Invite friends",
  "Pasang di HP": "Install on phone",
  "© 2026 Game Verse. Bukan server resmi Discord, komunitas independen.": "© 2026 Game Verse. Not an official Discord server, an independent community.",
@@ -169,14 +168,15 @@
  "Fitur": "Features",
  "Panduan": "Guides",
  "Masukan": "Feedback",
- "Navigasi utama": "Main navigation"
+ "Navigasi utama": "Main navigation",
+ "Satu klik doang, langsung bisa mabar dan ngobrol bareng <span id=\"ctaScale\">ratusan</span> member lain.": "Just one click and you can play and chat with <span id=\"ctaScale\">hundreds of</span> other members."
 }/*END*/;
 
   var ATTRS = ['placeholder', 'aria-label', 'title', 'alt', 'data-cap'];
   var INLINE = { B: 1, I: 1, EM: 1, STRONG: 1, CODE: 1, SMALL: 1, SPAN: 1, A: 1, BR: 1, MARK: 1, U: 1 };
   // Bagian yang diisi/diganti oleh script.js (jangan diterjemahkan otomatis di sini)
   var DYNAMIC = '#statMembers, #statOnline, #statOnlineLabel, #evName, #evWhen, #annText, #annLink, #starHint, ' +
-    '#mobileNext, #modalTitle, #modalBody, #toast, #spotTitle, #spotCard, #testiGrid, #teamGrid, #tiers, ' +
+    '#mobileNext, #onlineNow, #modalTitle, #modalBody, #toast, #spotTitle, #spotCard, #testiGrid, #teamGrid, #tiers, ' +
     '#menuToggle, .vstatus, [data-theme-label], [data-no-i18n], svg, script, style';
 
   function norm(s) { return s.replace(/\s+/g, ' ').trim(); }

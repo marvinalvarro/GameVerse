@@ -91,6 +91,11 @@ const GV_CONFIG = {
     { cmd: '.streakleaderboard', group: 'Umum',    desc: 'Lihat posisi kamu di leaderboard streak',          descEn: 'See your position on the streak leaderboard' }
   ],
 
+  // Member online (dari Widget Discord). Butuh: Pengaturan Server > Engagement > aktifkan "Server Widget".
+  // Kalau Widget mati, bagian ini otomatis tersembunyi.
+  //   showNames: true = nama muncul saat kursor diarahkan ke foto  |  maxAvatars: jumlah foto yang ditampilkan
+  online: { enabled: true, showNames: false, maxAvatars: 10 },
+
   // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
   // Kalau event punya `time` sendiri di atas, itu yang dipakai.
   reminderTime: '20:00',
@@ -1151,7 +1156,7 @@ function esc(str) {
     })(start);
   }
   function show(members, online) {
-    if (members > 0) countUp(mEl, members);
+    if (members > 0) { countUp(mEl, members); setScale(members); }
     if (online > 0) {
       countUp(oEl, online);
       live = true; setLabel();
@@ -1412,4 +1417,73 @@ function esc(str) {
   document.querySelectorAll('.top-nav [data-nav]').forEach((b) => {
     b.addEventListener('click', () => gvGoTo(parseInt(b.dataset.nav, 10), true));
   });
+})();
+
+
+// ===== Kata "ratusan / ribuan" di ajakan gabung mengikuti jumlah member asli =====
+let memberTotal = 0;
+function applyScale() {
+  const el = document.getElementById('ctaScale');
+  if (!el) return;
+  const big = memberTotal >= 1000;
+  el.textContent = tr(big ? 'ribuan' : 'ratusan', big ? 'thousands of' : 'hundreds of');
+}
+function setScale(n) { memberTotal = n; applyScale(); }
+document.addEventListener('gv:lang', applyScale);
+
+// ===== Member online sekarang (Widget Discord, tanpa bot & tanpa API key) =====
+(function initOnline() {
+  const box = document.getElementById('onlineNow');
+  const O = GV_CONFIG.online || {};
+  if (!box || O.enabled === false || !GV_CONFIG.guildId) return;
+  let data = null;
+
+  function render() {
+    if (!data) return;
+    const members = Array.isArray(data.members) ? data.members : [];
+    const total = Math.max(data.presence_count || 0, members.length);
+    if (!total) { box.hidden = true; return; }
+
+    const shown = members.slice(0, O.maxAvatars || 10);
+    const rest = Math.max(0, total - shown.length);
+
+    // siapa lagi di voice channel mana
+    const names = {};
+    (data.channels || []).forEach((c) => { names[c.id] = c.name; });
+    const perCh = {};
+    members.forEach((m) => { if (m.channel_id) perCh[m.channel_id] = (perCh[m.channel_id] || 0) + 1; });
+    const chips = Object.keys(perCh).sort((a, b) => perCh[b] - perCh[a]).slice(0, 3).map((id) =>
+      '<span class="on-chip">\uD83D\uDD0A ' + esc(names[id] || tr('Voice', 'Voice')) + ' \u00B7 ' + perCh[id] + '</span>').join('');
+
+    const avatars = shown.map((m) => {
+      const nm = (m.username || '?').trim();
+      const title = O.showNames ? ' title="' + esc(nm) + '"' : '';
+      const img = m.avatar_url ? '<img src="' + esc(m.avatar_url) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '';
+      return '<span class="on-av"' + title + '><i>' + esc(nm.charAt(0).toUpperCase()) + '</i>' + img + '</span>';
+    }).join('');
+
+    box.setAttribute('aria-label', tr('Member yang sedang online', 'Members online now'));
+    box.innerHTML =
+      '<div class="on-head"><span class="on-dot" aria-hidden="true"></span><b>' + total + '</b> ' +
+        tr('member online sekarang', 'members online now') + '</div>' +
+      '<div class="on-row"><div class="on-stack">' + avatars + '</div>' +
+        (rest ? '<span class="on-more">+' + rest + ' ' + tr('lainnya', 'more') + '</span>' : '') + '</div>' +
+      (chips ? '<div class="on-voice">' + chips + '</div>' : '');
+    // foto gagal dimuat -> tampil huruf awal saja
+    box.querySelectorAll('.on-av img').forEach((im) => im.addEventListener('error', () => im.remove()));
+    box.hidden = false;
+  }
+
+  function load() {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 7000);
+    fetch('https://discord.com/api/guilds/' + encodeURIComponent(GV_CONFIG.guildId) + '/widget.json', { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status))))
+      .then((j) => { clearTimeout(timer); data = j; render(); })
+      .catch(() => { box.hidden = true; }); // Widget belum aktif / gagal: sembunyikan
+  }
+
+  load();
+  setInterval(() => { if (!document.hidden) load(); }, 2 * 60 * 1000);
+  document.addEventListener('gv:lang', render);
 })();
