@@ -512,6 +512,9 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       t.tabIndex = on ? 0 : -1;
     });
+    document.querySelectorAll('.top-nav [data-nav]').forEach((n) => {
+      n.classList.toggle('active', parseInt(n.dataset.nav, 10) === currentPage);
+    });
 
     // Tab aktif digeser ke tengah (tanpa ikut menggeser halaman)
     const at = tabs[currentPage];
@@ -1400,5 +1403,13 @@ function esc(str) {
       e.preventDefault();
       gvGoTo(parseInt(a.dataset.gopage, 10), true);
     });
+  });
+})();
+
+
+// ===== Menu navigasi di header (layar lebar): loncat langsung ke halaman =====
+(function initTopNav() {
+  document.querySelectorAll('.top-nav [data-nav]').forEach((b) => {
+    b.addEventListener('click', () => gvGoTo(parseInt(b.dataset.nav, 10), true));
   });
 })();

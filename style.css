@@ -1744,3 +1744,101 @@ html[data-theme="dark"] .lang-switch { background: rgba(255, 255, 255, 0.06); }
   .header-actions > .lang-switch { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .lang-switch button { transition: none; } }
+
+/* =====================================================================
+   TAMPILAN DESKTOP (layar lebar)
+   ===================================================================== */
+
+/* ---------- Menu di header ---------- */
+.top-nav { display: none; }
+.hero-art { display: none; }
+
+@media (min-width: 1100px) {
+  .top-nav { display: flex; align-items: center; gap: 2px; margin: 0 auto; }
+  .top-nav button {
+    min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--ink);
+    font-family: "Plus Jakarta Sans", sans-serif; font-weight: 600; font-size: 0.9rem;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .top-nav button.active { background: var(--aqua); color: var(--btn-ink); font-weight: 700; }
+  .top-nav button:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+  @media (hover: hover) { .top-nav button:not(.active):hover { background: var(--panel); transform: translateY(-2px); } }
+  .top-nav button:active { transform: scale(0.94); }
+  header { padding-top: 14px; padding-bottom: 14px; }
+  .logo-sm { font-size: 1.3rem; }
+}
+
+/* ---------- Bagian atas: teks di kiri, kolase di kanan ---------- */
+@media (min-width: 1024px) {
+  .top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    grid-template-areas: "hero art" "stats art" "event art";
+    grid-template-rows: auto auto 1fr;
+    column-gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 clamp(24px, 5vw, 56px);
+  }
+  .top .hero {
+    grid-area: hero; text-align: left; max-width: none; margin: 0;
+    padding: clamp(56px, 8vh, 96px) 0 24px;
+  }
+  .top .hero h1 { font-size: clamp(2.8rem, 4.4vw, 4.4rem); line-height: 1.04; }
+  .top .hero p { margin-left: 0; margin-right: 0; font-size: 1.12rem; max-width: 52ch; }
+  .top .hero-ctas { justify-content: flex-start; }
+  .top .stats { grid-area: stats; justify-content: flex-start; padding: 8px 0 28px; gap: clamp(28px, 4vw, 56px); }
+  .top .stat { text-align: left; }
+  .top .stat b { font-size: 2.1rem; }
+  .top .next-event { grid-area: event; margin: 0; max-width: 480px; padding: 0 0 56px; }
+
+  .hero-art {
+    grid-area: art; display: block; position: relative;
+    width: 100%; max-width: 540px; aspect-ratio: 1 / 1.02;
+    margin: clamp(40px, 7vh, 80px) 0 0 auto;
+  }
+  .art-glow {
+    position: absolute; inset: 6% 4%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(80, 220, 197, 0.55) 0%, rgba(80, 220, 197, 0) 68%);
+    filter: blur(24px);
+  }
+  .art {
+    position: absolute; height: auto; border-radius: 16px; background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 0 26px 50px rgba(15, 61, 58, 0.28);
+    animation: art-float 7s ease-in-out infinite;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+  }
+  .art-ktp   { width: 64%; left: 0;    top: 12%;   z-index: 2; --r: -5deg; transform: rotate(var(--r)); }
+  .art-cv    { width: 38%; right: 0;   top: 0;     z-index: 3; --r: 6deg;  transform: rotate(var(--r)); animation-delay: -2.3s; }
+  .art-ultah { width: 40%; right: 12%; bottom: 0;  z-index: 1; --r: -3deg; transform: rotate(var(--r)); animation-delay: -4.6s; }
+  .hero-art { pointer-events: auto; }
+  @media (hover: hover) {
+    .art:hover { z-index: 5; animation-play-state: paused; transform: rotate(0deg) scale(1.05); box-shadow: 0 34px 64px rgba(15, 61, 58, 0.36); }
+  }
+  html[data-theme="dark"] .art { box-shadow: 0 26px 50px rgba(0, 0, 0, 0.5); border-color: rgba(255, 255, 255, 0.18); filter: brightness(0.95); }
+}
+@keyframes art-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+@media (prefers-reduced-motion: reduce) { .art { animation: none; } }
+
+/* ---------- Layar besar: kontainer lebih lebar, tulisan sedikit lebih besar ---------- */
+@media (min-width: 1200px) {
+  .features { max-width: 1180px; }
+  .cta-band h2 { font-size: 2.6rem; }
+}
+@media (min-width: 1600px) {
+  html { font-size: 112.5%; }
+  .top { max-width: 1380px; }
+  .features { max-width: 1300px; }
+}
+@media (min-width: 2000px) {
+  html { font-size: 125%; }
+  .top { max-width: 1560px; }
+  .features { max-width: 1440px; }
+}

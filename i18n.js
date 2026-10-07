@@ -165,7 +165,11 @@
  "Tutup menu": "Close menu",
  "Tutup": "Close",
  "Game Verse | Komunitas Discord: Mabar, Ngobrol, Naik Level": "Game Verse | Discord Community: Play Together, Chat, Level Up",
- "Komunitas Discord buat mabar, ngobrol santai, dan naik level bareng. Ada voice leveling, event rutin, economy game, KTP digital, dan banyak lagi.": "A Discord community to play together, chat casually, and level up. Voice leveling, regular events, an economy game, digital ID cards, and more."
+ "Komunitas Discord buat mabar, ngobrol santai, dan naik level bareng. Ada voice leveling, event rutin, economy game, KTP digital, dan banyak lagi.": "A Discord community to play together, chat casually, and level up. Voice leveling, regular events, an economy game, digital ID cards, and more.",
+ "Fitur": "Features",
+ "Panduan": "Guides",
+ "Masukan": "Feedback",
+ "Navigasi utama": "Main navigation"
 }/*END*/;
 
   var ATTRS = ['placeholder', 'aria-label', 'title', 'alt', 'data-cap'];

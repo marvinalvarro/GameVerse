@@ -149,7 +149,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -178,6 +178,14 @@
   </div>
   <header>
     <div class="logo-sm"><span class="g">Game</span> Verse</div>
+    <nav class="top-nav" aria-label="Navigasi utama">
+      <button type="button" data-nav="0">Fitur</button>
+      <button type="button" data-nav="1">Coba Langsung</button>
+      <button type="button" data-nav="2">Panduan</button>
+      <button type="button" data-nav="3">Level &amp; Galeri</button>
+      <button type="button" data-nav="4">FAQ</button>
+      <button type="button" data-nav="5">Masukan</button>
+    </nav>
     <div class="header-actions">
       <div class="lang-switch" role="group" aria-label="Bahasa / Language"><button type="button" data-lang="id" aria-pressed="true" class="active">ID</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
       <button class="theme-switch" id="themeToggle" data-theme-toggle type="button" role="switch" aria-checked="false" aria-label="Mode gelap" title="Ganti tema terang / gelap">
@@ -197,6 +205,7 @@
     </div>
   </header>
 
+  <div class="top">
   <section class="hero" id="atas">
     <h1>Tempat nongkrong, mabar, dan <em>naik level</em> bareng.</h1>
     <p>Game Verse itu komunitas Discord buat siapa aja yang suka main game, ngobrol santai, atau sekadar cari temen baru. Ada voice leveling, event rutin, sampai economy game—semua dalam satu server.</p>
@@ -224,6 +233,15 @@
       <span class="go-tag">Jadwal ⌄</span>
     </button>
   </section>
+
+  <!-- Hiasan di kanan hero (hanya tampil di layar lebar) -->
+  <aside class="hero-art" aria-hidden="true">
+    <div class="art-glow"></div>
+    <img class="art art-ktp" src="img/ktp-3.webp" alt="" loading="lazy">
+    <img class="art art-cv" src="img/cv-2.webp" alt="" loading="lazy">
+    <img class="art art-ultah" src="img/ultah-3.webp" alt="" loading="lazy">
+  </aside>
+  </div>
 
   <section class="features" id="fitur">
     <h2>Yang bisa kamu temuin di sini</h2>
@@ -555,8 +573,8 @@
   </div>
 </div>
 
-<script src="i18n.js?v=13"></script>
-<script src="script.js?v=13"></script>
+<script src="i18n.js?v=14"></script>
+<script src="script.js?v=14"></script>
 
 </body>
 </html>
