@@ -94,7 +94,9 @@ const GV_CONFIG = {
   // Member online (dari Widget Discord). Butuh: Pengaturan Server > Engagement > aktifkan "Server Widget".
   // Kalau Widget mati, bagian ini otomatis tersembunyi.
   //   showNames: true = nama muncul saat kursor diarahkan ke foto  |  maxAvatars: jumlah foto yang ditampilkan
-  online: { enabled: true, showNames: true, maxAvatars: 10 },
+  //   hideNames: nama akun BOT yang mau disembunyikan dari daftar online (tulis persis seperti namanya di Discord).
+  //   Contoh: hideNames: ['Nova Verse', 'Nama Bot Lain']  (widget Discord tidak bisa membedakan bot otomatis)
+  online: { enabled: true, showNames: true, maxAvatars: 10, hideNames: ['Nova Verse'] },
 
   // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
   // Kalau event punya `time` sendiri di atas, itu yang dipakai.
@@ -1145,20 +1147,26 @@ function esc(str) {
   document.addEventListener('gv:lang', setLabel);
   setLabel();
 
-  function countUp(el, to) {
+  function countUp(el, to, done) {
     const fmt = (n) => Math.round(n).toLocaleString('id-ID');
-    if (reduceMotion) { el.textContent = fmt(to); return; }
+    if (reduceMotion) { el.textContent = fmt(to); if (done) done(); return; }
     const start = performance.now(), dur = 900;
     (function tick(now) {
       const k = Math.min(1, (now - start) / dur);
       el.textContent = fmt(to * (1 - Math.pow(1 - k, 3)));
-      if (k < 1) requestAnimationFrame(tick);
+      if (k < 1) requestAnimationFrame(tick); else if (done) done();
     })(start);
   }
+  // jumlah online dikurangi bot yang disembunyikan (diisi oleh kartu "online sekarang")
+  let onlineBase = 0;
+  window.gvRefreshOnline = function () {
+    if (onlineBase > 0) oEl.textContent = Math.max(0, onlineBase - (window.__gvBots || 0)).toLocaleString('id-ID');
+  };
   function show(members, online) {
     if (members > 0) { countUp(mEl, members); setScale(members); }
     if (online > 0) {
-      countUp(oEl, online);
+      onlineBase = online;
+      countUp(oEl, Math.max(0, online - (window.__gvBots || 0)), window.gvRefreshOnline);
       live = true; setLabel();
       if (oLabel) oLabel.classList.add('live');
     }
@@ -1440,8 +1448,13 @@ document.addEventListener('gv:lang', applyScale);
 
   function render() {
     if (!data) return;
-    const members = Array.isArray(data.members) ? data.members : [];
-    const total = Math.max(data.presence_count || 0, members.length);
+    const all = Array.isArray(data.members) ? data.members : [];
+    const hide = (O.hideNames || []).map((x) => String(x).trim().toLowerCase());
+    const members = all.filter((m) => hide.indexOf(String(m.username || '').trim().toLowerCase()) === -1);
+    const hiddenCount = all.length - members.length;      // bot yang disembunyikan
+    window.__gvBots = hiddenCount;
+    if (window.gvRefreshOnline) window.gvRefreshOnline();   // angka "Online sekarang" di atas ikut dikurangi
+    const total = Math.max((data.presence_count || 0) - hiddenCount, members.length);
     if (!total) { box.hidden = true; return; }
 
     const shown = members.slice(0, O.maxAvatars || 10);
@@ -1457,7 +1470,7 @@ document.addEventListener('gv:lang', applyScale);
 
     const avatars = shown.map((m) => {
       const nm = (m.username || '?').trim();
-      const title = O.showNames ? ' title="' + esc(nm) + '"' : '';
+      const title = O.showNames ? ' data-name="' + esc(nm) + '" tabindex="0" aria-label="' + esc(nm) + '"' : '';
       const img = m.avatar_url ? '<img src="' + esc(m.avatar_url) + '" alt="" loading="lazy" referrerpolicy="no-referrer">' : '';
       return '<span class="on-av"' + title + '><i>' + esc(nm.charAt(0).toUpperCase()) + '</i>' + img + '</span>';
     }).join('');

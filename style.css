@@ -1857,7 +1857,7 @@ html[data-theme="dark"] .lang-switch { background: rgba(255, 255, 255, 0.06); }
 .on-stack { display: flex; }
 .on-av {
   position: relative; width: 38px; height: 38px; margin-left: -10px; flex: 0 0 auto;
-  border-radius: 50%; overflow: hidden;
+  border-radius: 50%; overflow: visible;
   border: 2.5px solid var(--bg-edge, #e9fffb);
   background: var(--aqua); color: var(--btn-ink);
   display: flex; align-items: center; justify-content: center;
@@ -1866,7 +1866,7 @@ html[data-theme="dark"] .lang-switch { background: rgba(255, 255, 255, 0.06); }
 }
 .on-av:first-child { margin-left: 0; }
 .on-av i { font-style: normal; }
-.on-av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.on-av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 @media (hover: hover) { .on-av:hover { transform: translateY(-4px) scale(1.12); z-index: 2; } }
 html[data-theme="dark"] .on-av { --bg-edge: #0c2a27; }
 .on-more { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
@@ -1877,3 +1877,26 @@ html[data-theme="dark"] .on-av { --bg-edge: #0c2a27; }
   font-size: 0.8rem; font-weight: 600; color: var(--ink);
 }
 @media (prefers-reduced-motion: reduce) { .on-dot { animation: none; } .on-av { transition: none; } }
+
+
+/* Nama member muncul langsung saat kursor diarahkan / foto di-tap */
+.on-av[data-name] { cursor: default; }
+.on-av[data-name]::after {
+  content: attr(data-name);
+  position: absolute; left: 50%; bottom: calc(100% + 10px);
+  transform: translate(-50%, 4px);
+  max-width: 220px; overflow: hidden; text-overflow: ellipsis;
+  padding: 5px 11px; border-radius: 9px;
+  background: #0f3d3a; color: #e6fbf5;
+  font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10;
+}
+.on-av[data-name]:hover::after,
+.on-av[data-name]:focus::after { opacity: 1; transform: translate(-50%, 0); }
+.on-av[data-name]:hover, .on-av[data-name]:focus { z-index: 5; }
+.on-av[data-name]:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; }
+html[data-theme="dark"] .on-av[data-name]::after { background: #bfe8c2; color: #0f3d3a; }
+@media (prefers-reduced-motion: reduce) { .on-av[data-name]::after { transition: none; } }
