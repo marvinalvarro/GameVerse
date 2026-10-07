@@ -1717,3 +1717,30 @@ button.social { font-family: inherit; cursor: pointer; }
 .event-row > div { flex: 1; min-width: 0; }
 .event-row h4 { margin: 0 0 3px; }
 .ics-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; }
+
+/* ===============================
+   Pilih bahasa (ID | EN)
+=============================== */
+.lang-switch {
+  display: inline-flex; align-items: center; flex: 0 0 auto;
+  padding: 3px; gap: 2px;
+  border: 1px solid var(--panel-line); border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+}
+html[data-theme="dark"] .lang-switch { background: rgba(255, 255, 255, 0.06); }
+.lang-switch button {
+  min-width: 40px; min-height: 36px; padding: 0 10px;
+  border: 0; border-radius: 999px; background: transparent; color: var(--muted);
+  font-family: "Plus Jakarta Sans", sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.04em;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.lang-switch button.active { background: var(--aqua); color: var(--btn-ink); }
+@media (hover: hover) { .lang-switch button:not(.active):hover { color: var(--ink); transform: translateY(-1px); } }
+.lang-switch button:active { transform: scale(0.92); }
+.lang-switch button:focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 1px; }
+.menu-lang .lang-switch button { min-width: 48px; }
+@media (max-width: 640px) {
+  .header-actions > .lang-switch { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .lang-switch button { transition: none; } }

@@ -1,3 +1,6 @@
+// Fungsi tr('indonesia','english') berasal dari i18n.js. Ini cadangan kalau file itu gagal termuat.
+if (typeof window.tr !== 'function') { window.tr = function (id) { return id; }; window.GV_LANG = { get: function () { return 'id'; }, set: function () {} }; }
+
 // =====================================================================
 // PENGATURAN SITUS: edit bagian ini kalau mau ganti isi tanpa nyentuh kode lain
 // =====================================================================
@@ -6,24 +9,24 @@ const GV_CONFIG = {
   inviteCode: 'N8Wg9Zv3z5',
 
   // Jadwal event buat hitung mundur (zona waktu WIB).
-  //   weekday: 0=Minggu, 1=Senin, ... 5=Jumat, 6=Sabtu   |   monthDay: tanggal tiap bulan
+  //   weekday: 0=Minggu, 1=Senin, ... 5=Jumat, 6=Sabtu   |   monthDay: tanggal tiap bulan   |   daily: true = tiap hari
   //   time: 'HH:MM' (opsional). Kalau diisi, hitung mundur sampai jam/menit. Kalau kosong, per hari.
   events: [
-    { name: 'Trivia',           weekday: 5 },
-    { name: 'Mabar Night',      weekday: 6 },
-    { name: 'Giveaway Bulanan', monthDay: 1 }
+    { name: 'Mabar Night',      nameEn: 'Mabar Night (Game Night)', weekday: 6 },
+    { name: 'Giveaway Bulanan', nameEn: 'Monthly Giveaway',         monthDay: 1 },
+    { name: 'Trivia',           nameEn: 'Trivia',                   daily: true }   // tiap hari: gak masuk hitung mundur, tapi tetap bisa "Ingatkan aku"
   ],
 
   // Daftar role per level (opsional). Kosong = bagian ini disembunyiin.
-  // Contoh: { level: 10, role: 'Nama Role' }
+  // Contoh: { level: 10, role: 'Nama Role' }   (versi Inggris opsional: roleEn)
   roleTiers: [],
 
   // Testimoni member (opsional). Kosong = section "Kata mereka" disembunyiin.
-  // Contoh: { text: 'Servernya seru banget!', name: 'marvin.', rating: 5 }
+  // Contoh: { text: 'Servernya seru banget!', textEn: 'The server is so fun!', name: 'marvin.', rating: 5 }   (textEn opsional)
   testimonials: [],
 
   // Admin / moderator (opsional). Kosong = section "Tim" disembunyiin.
-  // Contoh: { name: 'Marvin', role: 'Owner', avatar: 'img/marvin.webp' }  (avatar boleh dikosongin)
+  // Contoh: { name: 'Marvin', role: 'Owner', roleEn: 'Owner', avatar: 'img/marvin.webp' }  (avatar & roleEn boleh dikosongin)
   team: [],
 
   // ID server Discord + ID thread untuk Aturan, Panduan Awal, dan Template.
@@ -40,19 +43,22 @@ const GV_CONFIG = {
 
   // Pengumuman di paling atas web (opsional). Kosongkan text = disembunyiin.
   // Ganti `id` setiap bikin pengumuman baru, supaya yang sudah ditutup pengunjung muncul lagi.
-  // Contoh: { id: 's2', text: 'Season 2 dimulai!', link: 'https://discord.gg/...', linkText: 'Gabung sekarang' }
-  announcement: { id: '', text: '', link: '', linkText: '' },
+  // Contoh: { id: 's2', text: 'Season 2 dimulai!', textEn: 'Season 2 has started!', link: 'https://discord.gg/...', linkText: 'Gabung sekarang', linkTextEn: 'Join now' }
+  announcement: { id: '', text: '', textEn: '', link: '', linkText: '', linkTextEn: '' },
 
   // Member of the Month (opsional). Kosongkan name = section disembunyiin.
-  // Contoh: { title: 'Member of the Month', name: 'marvin.', note: 'Paling aktif bulan ini!', avatar: '' }
-  spotlight: { title: 'Member of the Month', name: '', note: '', avatar: '' },
+  // Contoh: { title: 'Member of the Month', name: 'marvin.', note: 'Paling aktif bulan ini!', noteEn: 'Most active this month!', avatar: '' }
+  spotlight: { title: 'Member of the Month', name: '', note: '', noteEn: '', avatar: '' },
 
   // Papan peringkat yang tampil di kartu "Voice & Chat Leveling".
   // Ganti isinya kalau ganti season (title, footnote, rows).
   season: {
     title: '🏆 Leaderboard Juara Season 1 — Voice',
+    titleEn: '🏆 Season 1 Champions Leaderboard — Voice',
     group: 'Top Voice',
+    groupEn: 'Top Voice',
     footnote: 'Hasil akhir Season 1 — cek <code>.rank</code> di server buat lihat posisi kamu di season sekarang.',
+    footnoteEn: 'Final results of Season 1. Use <code>.rank</code> in the server to see your position this season.',
     rows: [
       { name: 'NawNagaLiar', level: 75, xp: 3675 },
       { name: 'Marvin.', level: 68, xp: 2425 },
@@ -68,22 +74,22 @@ const GV_CONFIG = {
   },
 
   // Daftar command bot (bisa dicari & di-tap buat disalin). Tambah/ubah sesuai bot kamu.
-  // group: bebas, nanti otomatis jadi tombol filter.
-commands: [
-  { cmd: '.balance',           desc: 'Cek saldo coin kamu',                                  group: 'Ekonomi' },
-  { cmd: '.slot',              desc: 'Main slot, adu untung',                                group: 'Game' },
-  { cmd: '.blackjack',         desc: 'Main blackjack lawan bot',                             group: 'Game' },
-  { cmd: '.tebakangka',        desc: 'Tebak angka, menang dapat coin',                       group: 'Game' },
-  { cmd: '.tictactoe',         desc: 'Tantang temen main tic-tac-toe',                       group: 'Game' },
-  { cmd: '.trivia',            desc: 'Jawab trivia, dapat hadiah coin',                      group: 'Game' },
-  { cmd: '.rank',              desc: 'Cek level dan posisimu di leaderboard',                group: 'Level' },
-  { cmd: '.voiceleaderboard',  desc: 'Lihat posisi rank & level voice kamu di leaderboard',  group: 'Level' },
-  { cmd: '.rankchat',          desc: 'Pantau progres level chat kamu',                       group: 'Level' },
-  { cmd: '.season1',           desc: 'Lihat leaderboard voice dari season yang sudah lewat', group: 'Umum' },
-  { cmd: '.streak',            desc: 'Cek progres api streak kamu',                          group: 'Umum' },
-  { cmd: '.streakleaderboard', desc: 'Lihat posisi streak kamu di leaderboard',              group: 'Umum' },
-  { cmd: '.help',              desc: 'Lihat semua command lengkap',                          group: 'Umum' }
-],
+  // group: bebas, nanti otomatis jadi tombol filter.  descEn = deskripsi versi Inggris.
+  commands: [
+    { cmd: '.balance',           group: 'Ekonomi', desc: 'Cek saldo coin kamu',                              descEn: 'Check your coin balance' },
+    { cmd: '.slot',              group: 'Game',    desc: 'Main slot, adu untung',                            descEn: 'Play slots and test your luck' },
+    { cmd: '.blackjack',         group: 'Game',    desc: 'Main blackjack lawan bot',                         descEn: 'Play blackjack against the bot' },
+    { cmd: '.tebakangka',        group: 'Game',    desc: 'Tebak angka, menang dapat coin',                   descEn: 'Guess the number and win coins' },
+    { cmd: '.tictactoe',         group: 'Game',    desc: 'Tantang temen main tic-tac-toe',                   descEn: 'Challenge a friend to tic-tac-toe' },
+    { cmd: '.trivia',            group: 'Game',    desc: 'Jawab trivia, dapat hadiah coin',                  descEn: 'Answer trivia and earn coin rewards' },
+    { cmd: '.rank',              group: 'Level',   desc: 'Cek level dan posisimu di leaderboard',            descEn: 'Check your level and leaderboard position' },
+    { cmd: '.rankchat',          group: 'Level',   desc: 'Lihat progres level chat kamu',                    descEn: 'See your chat level progress' },
+    { cmd: '.voiceleaderboard',  group: 'Level',   desc: 'Lihat posisi rank dan level voice kamu',           descEn: 'See your voice rank and level position' },
+    { cmd: '.help',              group: 'Umum',    desc: 'Lihat semua command lengkap',                      descEn: 'See the full list of commands' },
+    { cmd: '.season 1',          group: 'Umum',    desc: 'Lihat leaderboard voice dari season yang sudah lewat', descEn: 'See the voice leaderboard from a past season' },
+    { cmd: '.streak',            group: 'Umum',    desc: 'Lihat progres streak api kamu',                    descEn: 'Check your streak flame progress' },
+    { cmd: '.streakleaderboard', group: 'Umum',    desc: 'Lihat posisi kamu di leaderboard streak',          descEn: 'See your position on the streak leaderboard' }
+  ],
 
   // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
   // Kalau event punya `time` sendiri di atas, itu yang dipakai.
@@ -137,13 +143,13 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 function copyText(text) {
-  const done = () => showToast('Disalin: ' + text);
+  const done = () => showToast(tr('Disalin: ', 'Copied: ') + text);
   const fallback = () => {
     const ta = document.createElement('textarea');
     ta.value = text; ta.setAttribute('readonly', '');
     ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); done(); } catch (e) { showToast('Gagal menyalin'); }
+    try { document.execCommand('copy'); done(); } catch (e) { showToast(tr('Gagal menyalin', 'Copy failed')); }
     document.body.removeChild(ta);
   };
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
@@ -151,85 +157,125 @@ function copyText(text) {
 }
 
 // ---- Panduan & Aturan (isi popup). Edit teks di sini kalau ada perubahan. ----
+// Pola penulisan: tr('teks Indonesia', 'English text')
 const threadUrl = (id) => 'https://discord.com/channels/' + GV_CONFIG.guildId + '/' + id;
 
 const GV_DOCS = {
   rules: {
-    title: '📜 Aturan Server',
-    cta: 'Buka Thread Aturan di Discord',
+    title: () => tr('📜 Aturan Server', '📜 Server Rules'),
+    cta: () => tr('Buka Thread Aturan di Discord', 'Open Rules Thread on Discord'),
     url: () => threadUrl(GV_CONFIG.threads.rules),
     html: () => {
       const R = [
-        ['Hormati Sesama', ['Bersikap sopan kepada seluruh member.', 'Dilarang toxic, menghina, melecehkan, atau memprovokasi.']],
-        ['Dilarang Spam', ['Jangan spam chat, emoji, sticker, GIF, atau mention.']],
-        ['Gunakan Channel dengan Benar', ['Kirim pesan sesuai dengan topik channel yang tersedia.']],
-        ['Dilarang Promosi', ['Dilarang mempromosikan server, media sosial, atau produk tanpa izin Staff.']],
-        ['Konten Terlarang', ['Dilarang mengirim konten NSFW, gore, scam, phishing, malware, atau konten berbahaya lainnya.']],
-        ['Voice Chat', ['Jangan earrape, menggunakan soundboard berlebihan, atau mengganggu pengguna lain di Voice Channel.']],
-        ['Marketplace', ['Seluruh transaksi menjadi tanggung jawab masing-masing.', 'Gunakan Middleman resmi jika tersedia.']],
-        ['Event', ['Ikuti aturan yang diumumkan pada setiap event.', 'Dilarang melakukan kecurangan, menggunakan akun lain, atau mengganggu jalannya event.', 'Keputusan Host atau Staff selama event bersifat final.']],
-        ['Hormati Staff', ['Ikuti arahan Staff.', 'Gunakan Ticket apabila ingin mengajukan banding atau melaporkan masalah.']],
-        ['Multi Account', ['Dilarang menggunakan akun lain untuk menghindari hukuman atau memperoleh keuntungan yang tidak adil.']],
-        ['Sanksi', ['Warn \u2192 Timeout \u2192 Kick \u2192 Ban.', 'Jenis hukuman disesuaikan dengan tingkat pelanggaran.']]
+        ['Hormati Sesama', 'Respect Everyone', [
+          ['Bersikap sopan kepada seluruh member.', 'Be polite to all members.'],
+          ['Dilarang toxic, menghina, melecehkan, atau memprovokasi.', 'No toxicity, insults, harassment, or provocation.']]],
+        ['Dilarang Spam', 'No Spam', [
+          ['Jangan spam chat, emoji, sticker, GIF, atau mention.', 'Do not spam chat, emojis, stickers, GIFs, or mentions.']]],
+        ['Gunakan Channel dengan Benar', 'Use Channels Properly', [
+          ['Kirim pesan sesuai dengan topik channel yang tersedia.', "Post messages that match each channel's topic."]]],
+        ['Dilarang Promosi', 'No Promotion', [
+          ['Dilarang mempromosikan server, media sosial, atau produk tanpa izin Staff.', 'Do not promote servers, social media, or products without Staff permission.']]],
+        ['Konten Terlarang', 'Prohibited Content', [
+          ['Dilarang mengirim konten NSFW, gore, scam, phishing, malware, atau konten berbahaya lainnya.', 'Do not post NSFW, gore, scam, phishing, malware, or other harmful content.']]],
+        ['Voice Chat', 'Voice Chat', [
+          ['Jangan earrape, menggunakan soundboard berlebihan, atau mengganggu pengguna lain di Voice Channel.', 'No earrape, excessive soundboard use, or disturbing other users in Voice Channels.']]],
+        ['Marketplace', 'Marketplace', [
+          ['Seluruh transaksi menjadi tanggung jawab masing-masing.', "All transactions are each party's own responsibility."],
+          ['Gunakan Middleman resmi jika tersedia.', 'Use an official Middleman if one is available.']]],
+        ['Event', 'Events', [
+          ['Ikuti aturan yang diumumkan pada setiap event.', 'Follow the rules announced for each event.'],
+          ['Dilarang melakukan kecurangan, menggunakan akun lain, atau mengganggu jalannya event.', 'No cheating, using other accounts, or disrupting the event.'],
+          ['Keputusan Host atau Staff selama event bersifat final.', 'Decisions by the Host or Staff during an event are final.']]],
+        ['Hormati Staff', 'Respect Staff', [
+          ['Ikuti arahan Staff.', 'Follow Staff instructions.'],
+          ['Gunakan Ticket apabila ingin mengajukan banding atau melaporkan masalah.', 'Use a Ticket if you want to appeal or report a problem.']]],
+        ['Multi Account', 'Multiple Accounts', [
+          ['Dilarang menggunakan akun lain untuk menghindari hukuman atau memperoleh keuntungan yang tidak adil.', 'Do not use another account to avoid punishment or gain an unfair advantage.']]],
+        ['Sanksi', 'Sanctions', [
+          ['Warn \u2192 Timeout \u2192 Kick \u2192 Ban.', 'Warn \u2192 Timeout \u2192 Kick \u2192 Ban.'],
+          ['Jenis hukuman disesuaikan dengan tingkat pelanggaran.', 'The punishment depends on how serious the violation is.']]]
       ];
-      return '<p class="doc-intro">Dengan bergabung di <b>Game Verse</b>, kamu dianggap telah menyetujui seluruh peraturan berikut.</p>' +
-        R.map((r, i) => '<div class="rule-item"><b><span class="rn">' + (i + 1) + '</span>' + esc(r[0]) + '</b><ul>' +
-          r[1].map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul></div>').join('') +
-        '<div class="rule-note"><b>\uD83D\uDCE2 Catatan</b><p>Staff berhak mengambil tindakan terhadap pelanggaran yang tidak tercantum di atas demi menjaga keamanan, kenyamanan, dan ketertiban server.</p></div>' +
-        '<p class="doc-thanks">Terima kasih telah bergabung di Game Verse! Selamat bermain dan semoga betah!</p>';
+      return '<p class="doc-intro">' + tr(
+          'Dengan bergabung di <b>Game Verse</b>, kamu dianggap telah menyetujui seluruh peraturan berikut.',
+          'By joining <b>Game Verse</b>, you are considered to have agreed to all of the following rules.') + '</p>' +
+        R.map((r, i) => '<div class="rule-item"><b><span class="rn">' + (i + 1) + '</span>' + esc(tr(r[0], r[1])) + '</b><ul>' +
+          r[2].map((p) => '<li>' + esc(tr(p[0], p[1])) + '</li>').join('') + '</ul></div>').join('') +
+        '<div class="rule-note"><b>\uD83D\uDCE2 ' + tr('Catatan', 'Note') + '</b><p>' + tr(
+          'Staff berhak mengambil tindakan terhadap pelanggaran yang tidak tercantum di atas demi menjaga keamanan, kenyamanan, dan ketertiban server.',
+          'Staff may take action against violations not listed above to keep the server safe, comfortable, and orderly.') + '</p></div>' +
+        '<p class="doc-thanks">' + tr(
+          'Terima kasih telah bergabung di Game Verse! Selamat bermain dan semoga betah!',
+          'Thank you for joining Game Verse! Have fun and we hope you enjoy your stay!') + '</p>';
     }
   },
 
   start: {
-    title: '🧭 Panduan Awal Bermain',
-    cta: 'Buka Panduan di Discord',
+    title: () => tr('🧭 Panduan Awal Bermain', '🧭 Beginner Guide'),
+    cta: () => tr('Buka Panduan di Discord', 'Open Guide on Discord'),
     url: () => threadUrl(GV_CONFIG.threads.start),
     html: () =>
-      '<p class="doc-intro">Di Discord itu intinya cuma dua: <b>ngetik</b> (text channel) atau <b>ngomong</b> (voice channel). Kamu bebas nongkrong di mana aja sesuai mood.</p>' +
+      '<p class="doc-intro">' + tr(
+        'Di Discord itu intinya cuma dua: <b>ngetik</b> (text channel) atau <b>ngomong</b> (voice channel). Kamu bebas nongkrong di mana aja sesuai mood.',
+        'On Discord it really comes down to two things: <b>typing</b> (text channels) or <b>talking</b> (voice channels). Hang out wherever fits your mood.') + '</p>' +
 
-      '<h4 class="doc-h">1. Area umum (wajib cek dulu)</h4>' +
+      '<h4 class="doc-h">' + tr('1. Area umum (wajib cek dulu)', '1. General areas (check these first)') + '</h4>' +
       '<ul class="doc-list">' +
-        '<li><code>#welcome</code> Tempat di-welcome pas baru join. Boleh pamer diri kalau mau kenalan.</li>' +
-        '<li><code>#info-server</code> Baca dulu sebelum aktif, biar gak kena banned.</li>' +
-        '<li><code>#caravoice</code> <b>Penting!</b> Klik role game yang kamu mainin biar channel khusus game itu muncul (GTA V, Valorant, Minecraft, dll). Kalau di-skip, channel game favoritmu bakal invisible.</li>' +
-        '<li><code>#yapping</code> Alun-alun utama, bebas bahas apa aja, asbun juga boleh.</li>' +
+        '<li><code>#welcome</code> ' + tr('Tempat di-welcome pas baru join. Boleh pamer diri kalau mau kenalan.', 'Where you get welcomed when you join. Feel free to introduce yourself.') + '</li>' +
+        '<li><code>#info-server</code> ' + tr('Baca dulu sebelum aktif, biar gak kena banned.', 'Read this before getting active so you do not get banned.') + '</li>' +
+        '<li><code>#caravoice</code> ' + tr(
+          '<b>Penting!</b> Klik role game yang kamu mainin biar channel khusus game itu muncul (GTA V, Valorant, Minecraft, dll). Kalau di-skip, channel game favoritmu bakal invisible.',
+          '<b>Important!</b> Click the role of the game you play so its dedicated channels appear (GTA V, Valorant, Minecraft, etc.). If you skip this, your favorite game\'s channels stay invisible.') + '</li>' +
+        '<li><code>#yapping</code> ' + tr('Alun-alun utama, bebas bahas apa aja, asbun juga boleh.', 'The main square. Talk about anything, random chatter is welcome.') + '</li>' +
       '</ul>' +
 
-      '<h4 class="doc-h">2. Area ngetik per game</h4>' +
-      '<p class="doc-p">Setelah ambil role di <code>#caravoice</code>, kategori game yang kamu pilih bakal kebuka.</p>' +
+      '<h4 class="doc-h">' + tr('2. Area ngetik per game', '2. Text areas per game') + '</h4>' +
+      '<p class="doc-p">' + tr('Setelah ambil role di <code>#caravoice</code>, kategori game yang kamu pilih bakal kebuka.', 'After picking a role in <code>#caravoice</code>, the game category you chose will open up.') + '</p>' +
 
-      '<h4 class="doc-h">3. Area ngomong (voice)</h4>' +
-      '<p class="doc-p">Bosen ngetik dan pengen mabar pakai suara asli? Langsung aja masuk ke <b>General Voice</b>. Tinggal klik dan masuk. Awal-awal malu boleh diem dulu, gapapa kok!</p>' +
+      '<h4 class="doc-h">' + tr('3. Area ngomong (voice)', '3. Voice areas') + '</h4>' +
+      '<p class="doc-p">' + tr(
+        'Bosen ngetik dan pengen mabar pakai suara asli? Langsung aja masuk ke <b>General Voice</b>. Tinggal klik dan masuk. Awal-awal malu boleh diem dulu, gapapa kok!',
+        'Tired of typing and want to play with real voices? Jump into <b>General Voice</b>. Just click and join. Feel free to stay quiet at first, that is totally fine!') + '</p>' +
 
-      '<h4 class="doc-h">Aturan singkat (wajib baca)</h4>' +
+      '<h4 class="doc-h">' + tr('Aturan singkat (wajib baca)', 'Quick rules (must read)') + '</h4>' +
       '<ul class="doc-list">' +
-        '<li><b>No SARA &amp; politik.</b> Kita di sini nyari temen mabar dan tempat santai, bukan buat debat.</li>' +
-        '<li><b>No NSFW / porno.</b> Hargai warga lain. Salah kirim link atau kata terlarang bisa kena kick atau banned.</li>' +
-        '<li><b>Respect the staff.</b> Kalau ditegur moderator, tolong diturutin biar tongkrongan tetap asik.</li>' +
+        '<li>' + tr(
+          '<b>No SARA &amp; politik.</b> Kita di sini nyari temen mabar dan tempat santai, bukan buat debat.',
+          '<b>No SARA &amp; politics.</b> (SARA = ethnic, religious, racial, and inter-group topics.) We are here to find gaming buddies and relax, not to debate.') + '</li>' +
+        '<li>' + tr(
+          '<b>No NSFW / porno.</b> Hargai warga lain. Salah kirim link atau kata terlarang bisa kena kick atau banned.',
+          '<b>No NSFW / porn.</b> Respect other members. Sending a forbidden link or word by mistake can still get you kicked or banned.') + '</li>' +
+        '<li>' + tr(
+          '<b>Respect the staff.</b> Kalau ditegur moderator, tolong diturutin biar tongkrongan tetap asik.',
+          '<b>Respect the staff.</b> If a moderator warns you, please follow it so the community stays fun.') + '</li>' +
       '</ul>' +
 
-      '<h4 class="doc-h">Masih bingung?</h4>' +
-      '<p class="doc-p">Kalau ada yang belum kamu ngerti, mau lapor orang rusuh, atau butuh bantuan, langsung aja bikin tiket di <code>#ticket</code>. Admin bakal turun tangan bantuin.</p>' +
-      '<p class="doc-thanks">Have fun and see you in-game!</p>'
+      '<h4 class="doc-h">' + tr('Masih bingung?', 'Still confused?') + '</h4>' +
+      '<p class="doc-p">' + tr(
+        'Kalau ada yang belum kamu ngerti, mau lapor orang rusuh, atau butuh bantuan, langsung aja bikin tiket di <code>#ticket</code>. Admin bakal turun tangan bantuin.',
+        'If there is something you do not understand, want to report a troublemaker, or need help, just open a ticket in <code>#ticket</code>. The admins will step in to help.') + '</p>' +
+      '<p class="doc-thanks">' + tr('Have fun and see you in-game!', 'Have fun and see you in-game!') + '</p>'
   },
 
   template: {
-    title: '🧩 Template Server Gratis',
-    cta: 'Buka Thread Template di Discord',
+    title: () => tr('🧩 Template Server Gratis', '🧩 Free Server Templates'),
+    cta: () => tr('Buka Thread Template di Discord', 'Open Template Thread on Discord'),
     url: () => threadUrl(GV_CONFIG.threads.template),
     html: () =>
-      '<p class="doc-intro">Mau bikin server sendiri tapi males ngedit channel dan role satu-satu? Ambil <b>template server Discord</b> yang sudah jadi, <b>gratis</b>.</p>' +
-      '<h4 class="doc-h">Cara pakainya</h4>' +
+      '<p class="doc-intro">' + tr(
+        'Mau bikin server sendiri tapi males ngedit channel dan role satu-satu? Ambil <b>template server Discord</b> yang sudah jadi, <b>gratis</b>.',
+        'Want to build your own server but hate editing channels and roles one by one? Grab a ready-made <b>Discord server template</b>, <b>free</b>.') + '</p>' +
+      '<h4 class="doc-h">' + tr('Cara pakainya', 'How to use it') + '</h4>' +
       '<ol class="doc-steps">' +
-        '<li>Buka thread template di Discord (tombol di bawah).</li>' +
-        '<li>Pilih template yang kamu suka, lalu klik <b>View Template</b>.</li>' +
-        '<li>Beri nama servermu, klik <b>Create</b>. Channel dan role-nya langsung tertata.</li>' +
+        '<li>' + tr('Buka thread template di Discord (tombol di bawah).', 'Open the template thread on Discord (button below).') + '</li>' +
+        '<li>' + tr('Pilih template yang kamu suka, lalu klik <b>View Template</b>.', 'Pick a template you like, then click <b>View Template</b>.') + '</li>' +
+        '<li>' + tr('Beri nama servermu, klik <b>Create</b>. Channel dan role-nya langsung tertata.', 'Name your server and click <b>Create</b>. Channels and roles are set up instantly.') + '</li>' +
       '</ol>' +
-      '<h4 class="doc-h">Pilihan yang tersedia</h4>' +
+      '<h4 class="doc-h">' + tr('Pilihan yang tersedia', 'Available options') + '</h4>' +
       '<div class="doc-chips">' +
         ['Advance Server', 'Fruit Simple Template', 'Cute Community', 'Minimal Aesthetic', 'Good Template'].map((n) => '<span>' + esc(n) + '</span>').join('') +
       '</div>' +
-      '<p class="doc-p">Daftar template bisa bertambah, jadi cek thread-nya buat yang terbaru.</p>'
+      '<p class="doc-p">' + tr('Daftar template bisa bertambah, jadi cek thread-nya buat yang terbaru.', 'The list may grow, so check the thread for the latest ones.') + '</p>'
   }
 };
 
@@ -237,9 +283,9 @@ function renderDoc(key) {
   const d = GV_DOCS[key];
   if (!d) return;
   activeGuide = null;
-  modalTitle.textContent = d.title;
+  modalTitle.textContent = d.title();
   modalBody.innerHTML = d.html() +
-    '<div class="guide-nav doc-nav"><a class="guide-btn primary" href="' + esc(d.url()) + '" target="_blank" rel="noopener">' + esc(d.cta) + '</a></div>';
+    '<div class="guide-nav doc-nav"><a class="guide-btn primary" href="' + esc(d.url()) + '" target="_blank" rel="noopener">' + esc(d.cta()) + '</a></div>';
   const box = modalBody.closest('.modal-box');
   if (box) box.scrollTop = 0;
   modalOverlay.classList.add('open');
@@ -249,27 +295,32 @@ function renderDoc(key) {
 function renderSeason() {
   const S = GV_CONFIG.season;
   const medal = ['🥇', '🥈', '🥉'];
-  return '<div class="rank-group-title">' + esc(S.group) + '</div>' +
+  return '<div class="rank-group-title">' + esc(tr(S.group, S.groupEn || S.group)) + '</div>' +
     S.rows.map((r, i) =>
       '<div class="rank-row"><span class="num">' + (medal[i] || (i + 1)) + '</span>' +
       '<span class="avatar">' + esc((r.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
       '<span class="name">' + esc(r.name) + '</span>' +
       '<span class="lvl">Lv. ' + esc(r.level) + ' · ' + esc(r.xp) + ' XP</span></div>').join('') +
-    '<p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">' + S.footnote + '</p>';
+    '<p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">' + tr(S.footnote, S.footnoteEn || S.footnote) + '</p>';
 }
 
 // ---- daftar command (cari + filter + tap buat salin) ----
+const GROUP_EN = { Ekonomi: 'Economy', Game: 'Games', Level: 'Level', Umum: 'General', Lainnya: 'Other' };
+const groupLabel = (g) => tr(g, GROUP_EN[g] || g);
+
 function renderCommands() {
   const groups = Array.from(new Set(GV_CONFIG.commands.map((c) => c.group || 'Lainnya')));
-  return '<input class="cmd-search" id="cmdSearch" type="search" placeholder="Cari command..." autocomplete="off" aria-label="Cari command">' +
-    '<div class="cmd-filters" id="cmdFilters"><button type="button" class="cmd-chip active" data-group="">Semua</button>' +
-    groups.map((g) => '<button type="button" class="cmd-chip" data-group="' + esc(g) + '">' + esc(g) + '</button>').join('') + '</div>' +
+  return '<input class="cmd-search" id="cmdSearch" type="search" placeholder="' + esc(tr('Cari command...', 'Search commands...')) + '" autocomplete="off" aria-label="' + esc(tr('Cari command', 'Search commands')) + '">' +
+    '<div class="cmd-filters" id="cmdFilters"><button type="button" class="cmd-chip active" data-group="">' + tr('Semua', 'All') + '</button>' +
+    groups.map((g) => '<button type="button" class="cmd-chip" data-group="' + esc(g) + '">' + esc(groupLabel(g)) + '</button>').join('') + '</div>' +
     '<div class="cmd-list" id="cmdList">' +
     GV_CONFIG.commands.map((c) =>
       '<button type="button" class="cmd-item" data-cmd="' + esc(c.cmd) + '" data-group="' + esc(c.group || 'Lainnya') + '">' +
-      '<code>' + esc(c.cmd) + '</code><span>' + esc(c.desc) + '</span><em>Salin</em></button>').join('') +
-    '</div><p class="cmd-empty" id="cmdEmpty" hidden>Gak ada yang cocok. Coba kata lain.</p>' +
-    '<p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">Tap command buat menyalinnya, lalu tempel di Discord. Ketik <code>.help</code> di server buat lihat yang lengkap.</p>';
+      '<code>' + esc(c.cmd) + '</code><span>' + esc(tr(c.desc, c.descEn || c.desc)) + '</span><em>' + tr('Salin', 'Copy') + '</em></button>').join('') +
+    '</div><p class="cmd-empty" id="cmdEmpty" hidden>' + tr('Gak ada yang cocok. Coba kata lain.', 'No matches. Try another word.') + '</p>' +
+    '<p style="margin-top:14px;font-size:0.8rem;color:var(--muted)">' + tr(
+      'Tap command buat menyalinnya, lalu tempel di Discord. Ketik <code>.help</code> di server buat lihat yang lengkap.',
+      'Tap a command to copy it, then paste it in Discord. Type <code>.help</code> in the server to see the full list.') + '</p>';
 }
 function initCommandUI() {
   const search = document.getElementById('cmdSearch');
@@ -298,6 +349,8 @@ function initCommandUI() {
 }
 
 // ---- jadwal event + tombol "Ingatkan aku" (file kalender .ics) ----
+const evLabel = (ev) => tr(ev.name, ev.nameEn || ev.name);
+
 function buildICS(ev) {
   // Jam acara dalam WIB (UTC+7). Dikonversi ke UTC supaya jalan di semua aplikasi kalender.
   const tm = (ev.time || GV_CONFIG.reminderTime || '20:00').split(':').map(Number);
@@ -306,7 +359,9 @@ function buildICS(ev) {
   const nowMin = wib.getUTCHours() * 60 + wib.getUTCMinutes();
   const evMin = tm[0] * 60 + tm[1];
   let startWib; // timestamp "WIB sebagai UTC"
-  if (typeof ev.weekday === 'number') {
+  if (ev.daily) {
+    startWib = Date.UTC(y, mo, d + (nowMin >= evMin ? 1 : 0), tm[0], tm[1]);
+  } else if (typeof ev.weekday === 'number') {
     let delta = (ev.weekday - wd + 7) % 7;
     if (delta === 0 && nowMin >= evMin) delta = 7;
     startWib = Date.UTC(y, mo, d + delta, tm[0], tm[1]);
@@ -319,9 +374,12 @@ function buildICS(ev) {
   const p2 = (n) => String(n).padStart(2, '0');
   const fmt = (dt) => dt.getUTCFullYear() + p2(dt.getUTCMonth() + 1) + p2(dt.getUTCDate()) + 'T' + p2(dt.getUTCHours()) + p2(dt.getUTCMinutes()) + '00Z';
   const days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
-  const rule = typeof ev.weekday === 'number'
-    ? 'FREQ=WEEKLY;BYDAY=' + days[start.getUTCDay()]
-    : 'FREQ=MONTHLY;BYMONTHDAY=' + start.getUTCDate();
+  const rule = ev.daily
+    ? 'FREQ=DAILY'
+    : typeof ev.weekday === 'number'
+      ? 'FREQ=WEEKLY;BYDAY=' + days[start.getUTCDay()]
+      : 'FREQ=MONTHLY;BYMONTHDAY=' + start.getUTCDate();
+  const nm = evLabel(ev);
   return [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Game Verse//Event//ID', 'CALSCALE:GREGORIAN',
     'BEGIN:VEVENT',
@@ -329,10 +387,10 @@ function buildICS(ev) {
     'DTSTAMP:' + fmt(new Date()),
     'DTSTART:' + fmt(start), 'DTEND:' + fmt(end),
     'RRULE:' + rule,
-    'SUMMARY:' + ev.name + ' - Game Verse',
-    'DESCRIPTION:Event rutin di server Discord Game Verse. Gabung: https://discord.gg/' + GV_CONFIG.inviteCode,
+    'SUMMARY:' + nm + ' - Game Verse',
+    'DESCRIPTION:' + tr('Event rutin di server Discord Game Verse. Gabung: ', 'Regular event on the Game Verse Discord server. Join: ') + 'https://discord.gg/' + GV_CONFIG.inviteCode,
     'URL:https://discord.gg/' + GV_CONFIG.inviteCode,
-    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + ev.name + ' mulai 30 menit lagi', 'TRIGGER:-PT30M', 'END:VALARM',
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + nm + tr(' mulai 30 menit lagi', ' starts in 30 minutes'), 'TRIGGER:-PT30M', 'END:VALARM',
     'END:VEVENT', 'END:VCALENDAR'
   ].join('\r\n');
 }
@@ -343,7 +401,14 @@ function downloadICS(ev) {
   a.href = url; a.download = ev.name.replace(/\s+/g, '-') + '.ics';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 2000);
-  showToast('Pengingat siap. Buka file-nya buat masuk kalender.');
+  showToast(tr('Pengingat siap. Buka file-nya buat masuk kalender.', 'Reminder ready. Open the file to add it to your calendar.'));
+}
+function renderEventBody() {
+  return '' +
+    '<div class="event-row"><span class="day">' + tr('SABTU', 'SATURDAY') + '</span><div><h4>Mabar Night</h4><p>' + tr('Nongkrong & mabar bareng di voice channel.', 'Hang out and play together in the voice channel.') + '</p></div></div>' +
+    '<div class="event-row"><span class="day">' + tr('AWAL BULAN', 'MONTHLY') + '</span><div><h4>' + tr('Giveaway Bulanan', 'Monthly Giveaway') + '</h4><p>' + tr('Giveaway buat member aktif, cek pengumuman.', 'A giveaway for active members, check the announcements.') + '</p></div></div>' +
+    '<div class="event-row"><span class="day">' + tr('TIAP HARI', 'DAILY') + '</span><div><h4>' + tr('Trivia Setiap Hari', 'Daily Trivia') + '</h4><p>' + tr('Jawab trivia bareng, hadiah coin & role spesial.', 'Answer trivia together for coins and special roles.') + '</p></div></div>' +
+    '<div class="event-row"><span class="day">' + tr('TIAP HARI', 'DAILY') + '</span><div><h4>' + tr('Streak Harian', 'Daily Streak') + '</h4><p>' + tr('Jaga api streak kamu biar gak padam.', 'Keep your streak flame from going out.') + '</p></div></div>';
 }
 function initEventModal() {
   const rows = modalBody.querySelectorAll('.event-row');
@@ -352,37 +417,29 @@ function initEventModal() {
     if (!row) return;
     const holder = row.querySelector('div');
     const btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'ics-btn'; btn.textContent = '📅 Ingatkan aku';
+    btn.type = 'button'; btn.className = 'ics-btn'; btn.textContent = tr('📅 Ingatkan aku', '📅 Remind me');
     btn.addEventListener('click', () => downloadICS(ev));
     holder.appendChild(btn);
   });
   const note = document.createElement('p');
   note.className = 'ics-note';
-  note.textContent = 'Jam acara: ' + (GV_CONFIG.reminderTime || '20:00') + ' WIB (kalau beda, ikuti pengumuman di server).';
+  const t = GV_CONFIG.reminderTime || '20:00';
+  note.textContent = tr('Jam acara: ' + t + ' WIB (kalau beda, ikuti pengumuman di server).', 'Event time: ' + t + ' WIB (if it differs, follow the announcements in the server).');
   modalBody.appendChild(note);
 }
 
 const modalData = {
-  voice: { title: GV_CONFIG.season.title, build: renderSeason },
-  economy: { title: '🎲 Daftar Command Economy & Game', build: renderCommands, after: initCommandUI },
-  event: {
-    title: '🎉 Jadwal Event Rutin',
-    body: `
-      <div class="event-row"><span class="day">JUMAT</span><div><h4>Trivia Setiap Hari</h4><p>Jawab trivia bareng, hadiah coin & role spesial.</p></div></div>
-      <div class="event-row"><span class="day">SABTU</span><div><h4>Mabar Night</h4><p>Nongkrong & mabar bareng di voice channel.</p></div></div>
-      <div class="event-row"><span class="day">AWAL BULAN</span><div><h4>Giveaway Bulanan</h4><p>Giveaway buat member aktif, cek pengumuman.</p></div></div>
-      <div class="event-row"><span class="day">TIAP HARI</span><div><h4>Streak Harian</h4><p>Jaga api streak kamu biar gak padam.</p></div></div>
-    `,
-    after: initEventModal
-  }
+  voice:   { title: () => tr(GV_CONFIG.season.title, GV_CONFIG.season.titleEn || GV_CONFIG.season.title), build: renderSeason },
+  economy: { title: () => tr('🎲 Daftar Command Economy & Game', '🎲 Economy & Game Commands'), build: renderCommands, after: initCommandUI },
+  event:   { title: () => tr('🎉 Jadwal Event Rutin', '🎉 Regular Event Schedule'), build: renderEventBody, after: initEventModal }
 };
 
 document.querySelectorAll('[data-modal]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const data = modalData[btn.dataset.modal];
     if (!data) return;
-    modalTitle.textContent = data.title;
-    modalBody.innerHTML = data.build ? data.build() : data.body;
+    modalTitle.textContent = data.title();
+    modalBody.innerHTML = data.build();
     if (typeof data.after === 'function') data.after();
     modalOverlay.classList.add('open');
   });
@@ -417,12 +474,12 @@ const tabbar = document.getElementById('tabbar');
 
 // Isi pemilih "Lihat Fitur" (urutannya sama dengan urutan halaman)
 const PAGE_INFO = [
-  { icon: '🧩', title: 'Fitur Server',     desc: 'Voice leveling, economy & mini game, event rutin' },
-  { icon: '🎮', title: 'Coba Langsung',    desc: "KTP digital, CV Ta'aruf, streak harian, ultah" },
-  { icon: '🧭', title: 'Panduan & Aturan', desc: 'Aturan server, panduan awal, template gratis' },
-  { icon: '🏆', title: 'Level & Galeri',   desc: 'Cara naik level dan sekilas isi server' },
-  { icon: '❓', title: 'FAQ',              desc: 'Jawaban cepat buat pertanyaan yang sering muncul' },
-  { icon: '💬', title: 'Kasih Masukan',    desc: 'Rating, kritik, dan saran fitur' }
+  { icon: '🧩', title: 'Fitur Server',     titleEn: 'Server Features',   desc: 'Voice leveling, economy & mini game, event rutin',        descEn: 'Voice leveling, economy & mini games, regular events' },
+  { icon: '🎮', title: 'Coba Langsung',    titleEn: 'Try It Live',       desc: "KTP digital, CV Ta'aruf, streak harian, ultah",           descEn: "Digital ID, Ta'aruf CV, daily streak, birthdays" },
+  { icon: '🧭', title: 'Panduan & Aturan', titleEn: 'Guides & Rules',    desc: 'Aturan server, panduan awal, template gratis',            descEn: 'Server rules, beginner guide, free templates' },
+  { icon: '🏆', title: 'Level & Galeri',   titleEn: 'Levels & Gallery',  desc: 'Cara naik level dan sekilas isi server',                  descEn: 'How to level up and a glimpse of the server' },
+  { icon: '❓', title: 'FAQ',              titleEn: 'FAQ',               desc: 'Jawaban cepat buat pertanyaan yang sering muncul',        descEn: 'Quick answers to common questions' },
+  { icon: '💬', title: 'Kasih Masukan',    titleEn: 'Give Feedback',     desc: 'Rating, kritik, dan saran fitur',                         descEn: 'Ratings, criticism, and feature ideas' }
 ];
 // Link langsung ke bagian tertentu, mis. .../GameVerse/#faq
 const HASH_PAGE = {
@@ -462,7 +519,7 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
       tabbar.scrollTo({ left: at.offsetLeft - (tabbar.clientWidth - at.offsetWidth) / 2, behavior: 'smooth' });
     }
 
-    mobileNextBtn.textContent = currentPage === totalPages - 1 ? 'Ke Halaman Utama' : 'Lanjut';
+    mobileNextBtn.textContent = currentPage === totalPages - 1 ? tr('Ke Halaman Utama', 'Back to Top') : tr('Lanjut', 'Next');
 
     // Halaman yang gak aktif gak bisa difokus / diklik lewat keyboard
     groups.forEach((g, i) => {
@@ -544,6 +601,7 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
   window.addEventListener('hashchange', openFromHash);
   if (location.hash) window.addEventListener('load', () => setTimeout(openFromHash, 350));
 
+  document.addEventListener('gv:lang', renderPage);
   renderPage();
 }
 
@@ -554,10 +612,10 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
     activeGuide = null;
-    modalTitle.textContent = 'Mau lihat apa?';
+    modalTitle.textContent = tr('Mau lihat apa?', 'What would you like to see?');
     modalBody.innerHTML = '<div class="pick-grid">' + PAGE_INFO.map((p, i) =>
       '<button type="button" class="pick" data-pick="' + i + '"><span class="pi" aria-hidden="true">' + p.icon + '</span>' +
-      '<span><b>' + p.title + '</b><small>' + p.desc + '</small></span></button>').join('') + '</div>';
+      '<span><b>' + esc(tr(p.title, p.titleEn)) + '</b><small>' + esc(tr(p.desc, p.descEn)) + '</small></span></button>').join('') + '</div>';
     modalOverlay.classList.add('open');
     modalBody.querySelectorAll('[data-pick]').forEach((b) => {
       b.addEventListener('click', () => {
@@ -578,13 +636,9 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
 const FEEDBACK_WEBHOOK = 'https://discord.com/api/webhooks/1556138301516284015/r_SHW3y_olapcAcXuAsFud0W_VlqYpY1UxnHsmXsmtoHRvweN71Gldi8On0fGzwsPCq2';
 const FEEDBACK_COOLDOWN_MS = 60 * 1000;
 
-const starTexts = {
-  1: 'Kurang banget',
-  2: 'Kurang seru',
-  3: 'Lumayan',
-  4: 'Seru!',
-  5: 'Mantap banget!'
-};
+const starTextsId = { 1: 'Kurang banget', 2: 'Kurang seru', 3: 'Lumayan', 4: 'Seru!', 5: 'Mantap banget!' };
+const starTextsEn = { 1: 'Not good at all', 2: 'Not that fun', 3: 'Decent', 4: 'Fun!', 5: 'Awesome!' };
+const starText = (n) => tr(starTextsId[n], starTextsEn[n]);
 
 (function initVoice() {
   const form = document.getElementById('feedbackForm');
@@ -595,9 +649,13 @@ const starTexts = {
   const starHint = document.getElementById('starHint');
   const defaultLabel = submitBtn.textContent;
 
-  form.querySelectorAll('input[name="rating"]').forEach((r) => {
-    r.addEventListener('change', () => { starHint.textContent = starTexts[r.value]; });
-  });
+  function refreshHint() {
+    const c = form.querySelector('input[name="rating"]:checked');
+    starHint.textContent = c ? starText(c.value) : tr('Pilih bintang dulu', 'Pick your stars first');
+  }
+  form.querySelectorAll('input[name="rating"]').forEach((r) => r.addEventListener('change', refreshHint));
+  document.addEventListener('gv:lang', refreshHint);
+  refreshHint();
 
   function say(text, type) {
     status.textContent = text;
@@ -623,17 +681,17 @@ const starTexts = {
     const message = (data.get('message') || '').toString().trim();
 
     if (!rating && message.length < 10) {
-      say('Pilih bintang dulu, atau tulis masukanmu minimal 10 huruf.', 'err');
+      say(tr('Pilih bintang dulu, atau tulis masukanmu minimal 10 huruf.', 'Pick your stars first, or write at least 10 characters of feedback.'), 'err');
       return;
     }
     const wait = FEEDBACK_COOLDOWN_MS - (Date.now() - lastSent());
     if (wait > 0) {
-      say('Tunggu ' + Math.ceil(wait / 1000) + ' detik lagi sebelum kirim berikutnya.', 'err');
+      say(tr('Tunggu ' + Math.ceil(wait / 1000) + ' detik lagi sebelum kirim berikutnya.', 'Please wait ' + Math.ceil(wait / 1000) + ' more seconds before sending again.'), 'err');
       return;
     }
     if (!FEEDBACK_WEBHOOK) {
       console.warn('FEEDBACK_WEBHOOK di script.js masih kosong.');
-      say('Form belum diaktifkan admin. Coba lagi nanti ya.', 'err');
+      say(tr('Form belum diaktifkan admin. Coba lagi nanti ya.', 'The form has not been activated by the admin yet. Please try again later.'), 'err');
       return;
     }
 
@@ -655,7 +713,7 @@ const starTexts = {
     };
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Mengirim...';
+    submitBtn.textContent = tr('Mengirim...', 'Sending...');
     say('');
 
     try {
@@ -671,13 +729,13 @@ const starTexts = {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       markSent();
       form.reset();
-      starHint.textContent = 'Pilih bintang dulu';
-      say('Makasih! Masukan kamu sudah terkirim ke admin.', 'ok');
+      refreshHint();
+      say(tr('Makasih! Masukan kamu sudah terkirim ke admin.', 'Thank you! Your feedback has been sent to the admins.'), 'ok');
     } catch (err) {
-      say('Gagal kirim. Cek koneksi kamu lalu coba lagi.', 'err');
+      say(tr('Gagal kirim. Cek koneksi kamu lalu coba lagi.', 'Failed to send. Check your connection and try again.'), 'err');
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = defaultLabel;
+      submitBtn.textContent = tr('Kirim Masukan', 'Send Feedback');
     }
   });
 })();
@@ -733,11 +791,49 @@ const guideData = {
   }
 };
 
+// Terjemahan Inggris panduan (urutan langkah sama persis dengan guideData di atas)
+const GUIDE_EN = {
+  ktp: { title: '🪪 How to Make a Digital ID', steps: [
+    { title: 'Fill in your details (1/2)', text: 'Click the "Buat KTP" button in the channel, then fill in your full name, place and date of birth, gender, blood type, and religion.' },
+    { title: 'Fill in your details (2/2)', text: 'Continue with marital status, occupation, address, village, and district. When everything is filled in, click Submit.' },
+    { title: 'Your ID is ready', text: 'The bot immediately sends your Game Verse resident ID with an ID number and a custom design. Show it off in the server.' }
+  ] },
+  cv: { title: "💌 How to Make a Ta'aruf CV", steps: [
+    { title: 'Fill in your CV details', text: 'Click the "Buat CV" button, then fill in your Origin (city) and Age. Instagram, TikTok, and Discord can be left blank if you do not want them shown.' },
+    { title: 'Your CV is ready', text: "The bot sends your Ta'aruf CV card with your home city, age, and the social accounts you filled in." }
+  ] },
+  streak: { title: '🔥 How to Play Daily Streak', steps: [
+    { title: 'TikTok Streak, but on Discord!', text: 'Tag a friend in any chat (text, photo, or video, anything goes), then your friend must reply and tag you back on the same day.',
+      points: [
+        'If you keep tagging each other every day, your streak grows.',
+        'If you skip a day without tagging each other, the streak resets to 0.',
+        'The bot announces your latest streak in the channel.'
+      ] }
+  ] },
+  ultah: { title: '🎂 How to Register Your Birthday', steps: [
+    { title: 'Click the sign-up button', text: 'In the Birthday channel, click the "Daftar Ulang Tahun" button under the poster.' },
+    { title: 'Enter your birth date', text: 'Enter your birth date in the DD-MM-YYYY format, for example 17-08-2005, then click Submit. You only need to do this once.' },
+    { title: 'The bot greets you automatically', text: 'On the day itself, the bot sends you a birthday greeting card. Other members can click "Ikut Rayain" or "Kirim Ucapan Juga".' }
+  ] }
+};
+
+// Ambil panduan sesuai bahasa yang dipilih
+function guideLang(key) {
+  const base = guideData[key];
+  const en = GUIDE_EN[key];
+  if (!base) return null;
+  if (!en || tr('id', 'en') !== 'en') return base;
+  return Object.assign({}, base, {
+    title: en.title,
+    steps: base.steps.map((st, i) => Object.assign({}, st, en.steps[i] || {}))
+  });
+}
+
 let activeGuide = null;
 let activeStep = 0;
 
 function renderGuide(key, step) {
-  const g = guideData[key];
+  const g = guideLang(key);
   if (!g) return;
   activeGuide = key;
   activeStep = Math.max(0, Math.min(g.steps.length - 1, step));
@@ -747,18 +843,18 @@ function renderGuide(key, step) {
 
   modalTitle.textContent = g.title;
   modalBody.innerHTML = `
-    ${total > 1 ? `<div class="guide-count">Langkah ${activeStep + 1} dari ${total}</div>` : ''}
+    ${total > 1 ? `<div class="guide-count">${tr('Langkah ' + (activeStep + 1) + ' dari ' + total, 'Step ' + (activeStep + 1) + ' of ' + total)}</div>` : ''}
     <div class="guide-shot"><img src="${s.img}" alt="${s.title}"></div>
     <h4 class="guide-title">${s.title}</h4>
     <p class="guide-text">${s.text}</p>
     ${s.points ? `<ul class="guide-points">${s.points.map((p) => `<li>${p}</li>`).join('')}</ul>` : ''}
     ${total > 1 ? `<div class="guide-dots">${g.steps.map((_, i) =>
-      `<button type="button" class="guide-dot${i === activeStep ? ' active' : ''}" data-step="${i}" aria-label="Langkah ${i + 1}"></button>`).join('')}</div>` : ''}
+      `<button type="button" class="guide-dot${i === activeStep ? ' active' : ''}" data-step="${i}" aria-label="${tr('Langkah ', 'Step ')}${i + 1}"></button>`).join('')}</div>` : ''}
     <div class="guide-nav">
-      ${activeStep > 0 ? '<button type="button" class="guide-btn ghost" data-go="prev">Sebelumnya</button>' : ''}
+      ${activeStep > 0 ? '<button type="button" class="guide-btn ghost" data-go="prev">' + tr('Sebelumnya', 'Previous') + '</button>' : ''}
       ${last
-        ? `<a class="guide-btn primary" href="${g.link}" target="_blank" rel="noopener">Buka Channel di Discord</a>`
-        : '<button type="button" class="guide-btn primary" data-go="next">Lanjut</button>'}
+        ? `<a class="guide-btn primary" href="${g.link}" target="_blank" rel="noopener">${tr('Buka Channel di Discord', 'Open Channel on Discord')}</a>`
+        : '<button type="button" class="guide-btn primary" data-go="next">' + tr('Lanjut', 'Next') + '</button>'}
     </div>
   `;
 
@@ -894,9 +990,10 @@ function esc(str) {
     root.setAttribute('data-theme', t);
     if (meta) meta.setAttribute('content', t === 'dark' ? '#0b1f1d' : '#50dcc5');
     btns.forEach((b) => b.setAttribute('aria-checked', t === 'dark' ? 'true' : 'false'));
-    labels.forEach((l) => { l.textContent = t === 'dark' ? 'Mode gelap' : 'Mode terang'; });
+    labels.forEach((l) => { l.textContent = t === 'dark' ? tr('Mode gelap', 'Dark mode') : tr('Mode terang', 'Light mode'); });
   }
   apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+  document.addEventListener('gv:lang', () => apply(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'));
 
   btns.forEach((b) => b.addEventListener('click', () => {
     const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -913,12 +1010,15 @@ function esc(str) {
   const closeBtn = document.getElementById('menuClose');
   if (!burger || !drawer || !overlay) return;
   const mq = window.matchMedia('(max-width: 640px)');
+  const refreshLabel = () => burger.setAttribute('aria-label', burger.getAttribute('aria-expanded') === 'true' ? tr('Tutup menu', 'Close menu') : tr('Buka menu', 'Open menu'));
+  document.addEventListener('gv:lang', refreshLabel);
+  refreshLabel();
 
   function setOpen(open, returnFocus) {
     drawer.classList.toggle('open', open);
     overlay.classList.toggle('open', open);
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    burger.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+    burger.setAttribute('aria-label', open ? tr('Tutup menu', 'Close menu') : tr('Buka menu', 'Open menu'));
     drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
     if (open) drawer.removeAttribute('inert'); else drawer.setAttribute('inert', '');
     document.body.style.overflow = open ? 'hidden' : '';
@@ -956,6 +1056,7 @@ function esc(str) {
   if (!nameEl || !whenEl || !GV_CONFIG.events || !GV_CONFIG.events.length) return;
 
   const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const HARI_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   function compute() {
     // WIB = UTC+7 (tanpa DST), jadi cukup geser 7 jam lalu baca field UTC
@@ -965,6 +1066,7 @@ function esc(str) {
     let best = null;
 
     GV_CONFIG.events.forEach((ev) => {
+      if (ev.daily) return; // tiap hari: bukan "event berikutnya"
       const t = ev.time ? ev.time.split(':').map(Number) : null;
       const evMin = t ? t[0] * 60 + t[1] : null;
       let delta;
@@ -990,29 +1092,32 @@ function esc(str) {
     const b = compute();
     if (!b) return;
     const { ev, delta, evMin, nowMin } = b;
-    const label = typeof ev.weekday === 'number' ? HARI[ev.weekday] : 'Tanggal ' + ev.monthDay;
+    const label = typeof ev.weekday === 'number'
+      ? tr(HARI[ev.weekday], HARI_EN[ev.weekday])
+      : tr('Tanggal ' + ev.monthDay, 'Day ' + ev.monthDay + ' of the month');
 
     let text;
     if (delta === 0) {
       if (evMin !== null && evMin > nowMin) {
         const left = evMin - nowMin;
         const h = Math.floor(left / 60), m = left % 60;
-        text = (h ? h + ' jam ' : '') + m + ' menit lagi';
+        text = tr((h ? h + ' jam ' : '') + m + ' menit lagi', 'in ' + (h ? h + ' h ' : '') + m + ' min');
       } else {
-        text = 'Hari ini!';
+        text = tr('Hari ini!', 'Today!');
       }
     } else if (delta === 1) {
-      text = 'Besok';
+      text = tr('Besok', 'Tomorrow');
     } else {
-      text = delta + ' hari lagi';
+      text = tr(delta + ' hari lagi', 'in ' + delta + (delta === 1 ? ' day' : ' days'));
     }
 
-    nameEl.textContent = ev.name;
+    nameEl.textContent = evLabel(ev);
     whenEl.textContent = label + ' · ' + text;
     whenEl.classList.toggle('today', delta === 0);
   }
 
   render();
+  document.addEventListener('gv:lang', render);
   setInterval(render, 60 * 1000);
 })();
 
@@ -1023,6 +1128,14 @@ function esc(str) {
   const oLabel = document.getElementById('statOnlineLabel');
   const code = GV_CONFIG.inviteCode;
   if (!mEl || !oEl || !code) return;
+
+  let live = false;
+  function setLabel() {
+    if (!oLabel) return;
+    oLabel.textContent = live ? tr('Online sekarang', 'Online now') : tr('Aktif Ngobrol', 'Always chatting');
+  }
+  document.addEventListener('gv:lang', setLabel);
+  setLabel();
 
   function countUp(el, to) {
     const fmt = (n) => Math.round(n).toLocaleString('id-ID');
@@ -1038,7 +1151,8 @@ function esc(str) {
     if (members > 0) countUp(mEl, members);
     if (online > 0) {
       countUp(oEl, online);
-      if (oLabel) { oLabel.textContent = 'Online sekarang'; oLabel.classList.add('live'); }
+      live = true; setLabel();
+      if (oLabel) oLabel.classList.add('live');
     }
   }
 
@@ -1065,37 +1179,41 @@ function esc(str) {
 (function initOptionalData() {
   const C = GV_CONFIG;
 
-  const tiers = document.getElementById('tiers');
-  if (tiers && C.roleTiers && C.roleTiers.length) {
-    tiers.innerHTML = '<h3 class="sub-h">Role yang bisa kamu dapat</h3><div class="tier-list">' +
-      C.roleTiers.map((t) => '<div class="tier"><b>Lv. ' + esc(t.level) + '</b><span>' + esc(t.role) + '</span></div>').join('') +
-      '</div>';
-    tiers.hidden = false;
-  }
+  function render() {
+    const tiers = document.getElementById('tiers');
+    if (tiers && C.roleTiers && C.roleTiers.length) {
+      tiers.innerHTML = '<h3 class="sub-h">' + tr('Role yang bisa kamu dapat', 'Roles you can earn') + '</h3><div class="tier-list">' +
+        C.roleTiers.map((t) => '<div class="tier"><b>Lv. ' + esc(t.level) + '</b><span>' + esc(tr(t.role, t.roleEn || t.role)) + '</span></div>').join('') +
+        '</div>';
+      tiers.hidden = false;
+    }
 
-  const testi = document.getElementById('testimoni');
-  const testiGrid = document.getElementById('testiGrid');
-  if (testi && testiGrid && C.testimonials && C.testimonials.length) {
-    testiGrid.innerHTML = C.testimonials.map((t) => {
-      const r = Math.max(0, Math.min(5, parseInt(t.rating || 0, 10)));
-      return '<figure class="tcard">' +
-        (r ? '<div class="tstars" aria-label="' + r + ' dari 5 bintang">' + '★'.repeat(r) + '<span>' + '★'.repeat(5 - r) + '</span></div>' : '') +
-        '<blockquote>' + esc(t.text) + '</blockquote>' +
-        '<figcaption>' + esc(t.name || 'Member Game Verse') + '</figcaption></figure>';
-    }).join('');
-    testi.hidden = false;
-  }
+    const testi = document.getElementById('testimoni');
+    const testiGrid = document.getElementById('testiGrid');
+    if (testi && testiGrid && C.testimonials && C.testimonials.length) {
+      testiGrid.innerHTML = C.testimonials.map((t) => {
+        const r = Math.max(0, Math.min(5, parseInt(t.rating || 0, 10)));
+        return '<figure class="tcard">' +
+          (r ? '<div class="tstars" aria-label="' + esc(tr(r + ' dari 5 bintang', r + ' out of 5 stars')) + '">' + '★'.repeat(r) + '<span>' + '★'.repeat(5 - r) + '</span></div>' : '') +
+          '<blockquote>' + esc(tr(t.text, t.textEn || t.text)) + '</blockquote>' +
+          '<figcaption>' + esc(t.name || tr('Member Game Verse', 'Game Verse member')) + '</figcaption></figure>';
+      }).join('');
+      testi.hidden = false;
+    }
 
-  const team = document.getElementById('tim');
-  const teamGrid = document.getElementById('teamGrid');
-  if (team && teamGrid && C.team && C.team.length) {
-    teamGrid.innerHTML = C.team.map((m) => {
-      const initial = esc((m.name || '?').trim().charAt(0).toUpperCase());
-      const av = m.avatar ? '<img src="' + esc(m.avatar) + '" alt="' + esc(m.name) + '" loading="lazy">' : initial;
-      return '<div class="member"><div class="avatar-lg">' + av + '</div><b>' + esc(m.name) + '</b><span>' + esc(m.role || '') + '</span></div>';
-    }).join('');
-    team.hidden = false;
+    const team = document.getElementById('tim');
+    const teamGrid = document.getElementById('teamGrid');
+    if (team && teamGrid && C.team && C.team.length) {
+      teamGrid.innerHTML = C.team.map((m) => {
+        const initial = esc((m.name || '?').trim().charAt(0).toUpperCase());
+        const av = m.avatar ? '<img src="' + esc(m.avatar) + '" alt="' + esc(m.name) + '" loading="lazy">' : initial;
+        return '<div class="member"><div class="avatar-lg">' + av + '</div><b>' + esc(m.name) + '</b><span>' + esc(tr(m.role || '', m.roleEn || m.role || '')) + '</span></div>';
+      }).join('');
+      team.hidden = false;
+    }
   }
+  render();
+  document.addEventListener('gv:lang', render);
 })();
 
 // ===== Galeri: geser pakai mouse + klik buat memperbesar =====
@@ -1167,7 +1285,7 @@ function esc(str) {
   document.querySelectorAll('[data-share]').forEach((b) => b.addEventListener('click', async () => {
     const data = {
       title: 'Game Verse',
-      text: 'Gabung komunitas Discord Game Verse: mabar, ngobrol santai, dan naik level bareng!',
+      text: tr('Gabung komunitas Discord Game Verse: mabar, ngobrol santai, dan naik level bareng!', 'Join the Game Verse Discord community: play together, chat, and level up!'),
       url: url
     };
     if (navigator.share) {
@@ -1206,13 +1324,17 @@ function esc(str) {
   const key = 'gv_ann_' + (A.id || 'x');
   try { if (localStorage.getItem(key) === '1') return; } catch (e) {}
 
-  document.getElementById('annText').textContent = A.text;
   const link = document.getElementById('annLink');
-  if (A.link) {
-    link.href = A.link;
-    link.textContent = A.linkText || 'Selengkapnya';
-    link.hidden = false;
+  function fill() {
+    document.getElementById('annText').textContent = tr(A.text, A.textEn || A.text);
+    if (A.link) {
+      link.href = A.link;
+      link.textContent = tr(A.linkText || 'Selengkapnya', A.linkTextEn || A.linkText || 'Read more');
+      link.hidden = false;
+    }
   }
+  fill();
+  document.addEventListener('gv:lang', fill);
   box.hidden = false;
   document.getElementById('annClose').addEventListener('click', () => {
     box.hidden = true;
@@ -1226,13 +1348,19 @@ function esc(str) {
   const sec = document.getElementById('spotlight');
   const card = document.getElementById('spotCard');
   if (!sec || !card || !S || !S.name) return;
-  document.getElementById('spotTitle').textContent = S.title || 'Member of the Month';
-  const initial = esc((S.name || '?').trim().charAt(0).toUpperCase());
-  const av = S.avatar ? '<img src="' + esc(S.avatar) + '" alt="' + esc(S.name) + '" loading="lazy">' : initial;
-  card.innerHTML = '<div class="avatar-lg spot-av">' + av + '</div>' +
-    '<div class="spot-body"><span class="spot-crown" aria-hidden="true">👑</span><b>' + esc(S.name) + '</b>' +
-    (S.note ? '<p>' + esc(S.note) + '</p>' : '') + '</div>';
-  sec.hidden = false;
+
+  function render() {
+    document.getElementById('spotTitle').textContent = S.title || 'Member of the Month';
+    const initial = esc((S.name || '?').trim().charAt(0).toUpperCase());
+    const av = S.avatar ? '<img src="' + esc(S.avatar) + '" alt="' + esc(S.name) + '" loading="lazy">' : initial;
+    const note = tr(S.note || '', S.noteEn || S.note || '');
+    card.innerHTML = '<div class="avatar-lg spot-av">' + av + '</div>' +
+      '<div class="spot-body"><span class="spot-crown" aria-hidden="true">👑</span><b>' + esc(S.name) + '</b>' +
+      (note ? '<p>' + esc(note) + '</p>' : '') + '</div>';
+    sec.hidden = false;
+  }
+  render();
+  document.addEventListener('gv:lang', render);
 })();
 
 // ===== Statistik pengunjung tanpa cookie (GoatCounter, opsional) =====

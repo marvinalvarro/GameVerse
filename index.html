@@ -149,7 +149,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -179,6 +179,7 @@
   <header>
     <div class="logo-sm"><span class="g">Game</span> Verse</div>
     <div class="header-actions">
+      <div class="lang-switch" role="group" aria-label="Bahasa / Language"><button type="button" data-lang="id" aria-pressed="true" class="active">ID</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
       <button class="theme-switch" id="themeToggle" data-theme-toggle type="button" role="switch" aria-checked="false" aria-label="Mode gelap" title="Ganti tema terang / gelap">
         <svg class="ts-ico ts-moon" viewBox="0 0 32 32" aria-hidden="true">
           <path d="M10.5 3.5A13 13 0 1 1 3.5 22.5 10.2 10.2 0 0 0 10.5 3.5z"/>
@@ -495,7 +496,7 @@
       <button class="social" type="button" data-share>Ajak teman</button>
       <button class="social" type="button" data-install hidden>Pasang di HP</button>
     </div>
-    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen. <small style="opacity:.45">v11</small></p>
+    <p>© 2026 Game Verse. Bukan server resmi Discord, komunitas independen.</p>
   </footer>
 </main>
 
@@ -516,6 +517,10 @@
     <button class="pick" type="button" data-go="4"><span class="pi" aria-hidden="true">❓</span><span><b>FAQ</b><small>Jawaban cepat buat pertanyaan umum</small></span></button>
     <button class="pick" type="button" data-go="5"><span class="pi" aria-hidden="true">💬</span><span><b>Kasih Masukan</b><small>Rating, kritik, dan saran fitur</small></span></button>
   </nav>
+  <div class="menu-theme menu-lang">
+    <div><b>Bahasa</b><small>Pilih bahasa tampilan</small></div>
+    <div class="lang-switch" role="group" aria-label="Bahasa / Language"><button type="button" data-lang="id" aria-pressed="true" class="active">ID</button><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
+  </div>
   <div class="menu-theme">
     <div><b>Tampilan</b><small data-theme-label>Mode terang</small></div>
     <button class="theme-switch" data-theme-toggle type="button" role="switch" aria-checked="false" aria-label="Mode gelap" >
@@ -550,7 +555,8 @@
   </div>
 </div>
 
-<script src="script.js?v=11"></script>
+<script src="i18n.js?v=13"></script>
+<script src="script.js?v=13"></script>
 
 </body>
 </html>
