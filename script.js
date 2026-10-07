@@ -94,7 +94,7 @@ const GV_CONFIG = {
   // Member online (dari Widget Discord). Butuh: Pengaturan Server > Engagement > aktifkan "Server Widget".
   // Kalau Widget mati, bagian ini otomatis tersembunyi.
   //   showNames: true = nama muncul saat kursor diarahkan ke foto  |  maxAvatars: jumlah foto yang ditampilkan
-  online: { enabled: true, showNames: false, maxAvatars: 10 },
+  online: { enabled: true, showNames: true, maxAvatars: 10 },
 
   // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
   // Kalau event punya `time` sendiri di atas, itu yang dipakai.
