@@ -96,7 +96,17 @@ const GV_CONFIG = {
   //   showNames: true = nama muncul saat kursor diarahkan ke foto  |  maxAvatars: jumlah foto yang ditampilkan
   //   hideNames: nama akun BOT yang mau disembunyikan dari daftar online (tulis persis seperti namanya di Discord).
   //   Contoh: hideNames: ['Nova Verse', 'Nama Bot Lain']  (widget Discord tidak bisa membedakan bot otomatis)
-  online: { enabled: true, showNames: true, maxAvatars: 10, hideNames: ['Nova Verse'] },
+  online: {
+    enabled: true, showNames: true, maxAvatars: 10,
+    // Akun BOT yang disembunyikan dari daftar online. Tanda * di akhir = semua nama yang diawali itu.
+    hideNames: [
+      'Nova Verse',
+      'Lofy',
+      'Music',
+      '[ m!p ] *',          // Jock Owie 1, 2, 3, 4
+      'GAME VERSE BOT'
+    ]
+  },
 
   // Jam default buat tombol "Ingatkan aku" (kalender HP), format 24 jam WIB.
   // Kalau event punya `time` sendiri di atas, itu yang dipakai.
@@ -1449,8 +1459,13 @@ document.addEventListener('gv:lang', applyScale);
   function render() {
     if (!data) return;
     const all = Array.isArray(data.members) ? data.members : [];
-    const hide = (O.hideNames || []).map((x) => String(x).trim().toLowerCase());
-    const members = all.filter((m) => hide.indexOf(String(m.username || '').trim().toLowerCase()) === -1);
+    const clean = (x) => String(x == null ? '' : x).trim().toLowerCase().replace(/\s+/g, ' ');
+    const hide = (O.hideNames || []).map(clean);
+    const isHidden = (name) => {
+      const n = clean(name);
+      return hide.some((p) => (p.slice(-1) === '*' ? n.indexOf(p.slice(0, -1)) === 0 : n === p));
+    };
+    const members = all.filter((m) => !isHidden(m.username));
     const hiddenCount = all.length - members.length;      // bot yang disembunyikan
     window.__gvBots = hiddenCount;
     if (window.gvRefreshOnline) window.gvRefreshOnline();   // angka "Online sekarang" di atas ikut dikurangi
