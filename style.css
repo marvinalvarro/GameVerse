@@ -25,23 +25,31 @@ html, body {
   overflow-x: hidden;
 }
 
-/* ===== Splash ===== */
+/* ===== Layar loading (splash) ===== */
 #splash {
   position: fixed;
   inset: 0;
+  z-index: 50;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 24px;
+  overflow: hidden;
   background: linear-gradient(160deg, #ffffff 0%, #d9faf4 45%, var(--mint) 100%);
-  z-index: 50;
-  transition: opacity 0.9s ease, transform 0.9s ease;
+  clip-path: circle(150% at 50% 50%);
+  transition: clip-path 0.95s cubic-bezier(0.7, 0, 0.2, 1), opacity 0.4s ease 0.6s;
 }
-#splash.hide {
-  opacity: 0;
-  transform: translateY(-24px);
+#splash::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.75), transparent 60%);
   pointer-events: none;
 }
+html[data-theme="dark"] #splash::before { background: radial-gradient(circle at 50% 40%, rgba(80, 220, 197, 0.2), transparent 60%); }
+/* keluar: lingkaran menutup ke tengah, halaman terbuka dari belakangnya */
+#splash.hide { clip-path: circle(0% at 50% 50%); opacity: 0; pointer-events: none; }
+.sp-stack { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+
 .bubble {
   position: absolute;
   border-radius: 50%;
@@ -49,42 +57,65 @@ html, body {
   animation: float 6s ease-in-out infinite;
 }
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+
+/* logo GV + cincin + titik yang berputar */
+.sp-orbit { position: relative; width: 132px; height: 132px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.sp-logo {
+  position: relative; z-index: 2;
+  width: 88px; height: 88px; border-radius: 26px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #e9fffb 0%, var(--mint) 100%);
+  box-shadow: 0 18px 40px rgba(43, 179, 160, 0.45), inset 0 2px 0 rgba(255, 255, 255, 0.7);
+  font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 2.3rem; letter-spacing: -0.02em;
+  color: #0f3d3a;
+  animation: sp-pop 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) both, sp-breathe 2.6s ease-in-out 0.7s infinite;
+}
+@keyframes sp-pop { from { transform: scale(0.3) rotate(-18deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sp-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-5px) scale(1.04); } }
+.sp-ring { position: absolute; inset: 14px; border-radius: 50%; border: 2px solid var(--mint); opacity: 0; animation: sp-ring 2.4s ease-out infinite; }
+.sp-ring.r2 { animation-delay: 1.2s; }
+@keyframes sp-ring { 0% { transform: scale(0.7); opacity: 0.7; } 100% { transform: scale(1.55); opacity: 0; } }
+.sp-dot { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--mint-deep); animation: sp-orbit 2.8s linear infinite; }
+.sp-dot.d2 { width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; background: #ffc107; animation-duration: 3.4s; animation-delay: -0.95s; }
+.sp-dot.d3 { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--aqua); border: 1.5px solid var(--mint-deep); animation-duration: 3.1s; animation-delay: -1.9s; animation-direction: reverse; }
+@keyframes sp-orbit { from { transform: rotate(0deg) translateX(62px) rotate(0deg); } to { transform: rotate(360deg) translateX(62px) rotate(-360deg); } }
+
+/* tulisan GAME VERSE naik satu-satu */
 .splash-mark {
-  font-family: "Baloo 2", sans-serif;
-  font-weight: 700;
-  font-size: clamp(2.6rem, 9vw, 5.2rem);
-  letter-spacing: -0.01em;
-  display: flex;
-  flex-direction: column;
-  line-height: 0.95;
-  text-align: center;
+  font-family: "Baloo 2", sans-serif; font-weight: 800;
+  font-size: clamp(2.2rem, 7vw, 3.6rem); letter-spacing: -0.01em; line-height: 1;
+  display: flex; gap: 0.28em;
 }
-.splash-mark span:first-child { color: #ffffff; text-shadow: 0 2px 18px rgba(15,61,58,0.15); }
-.splash-mark span:last-child { color: var(--ink); }
-.splash-tag {
-  margin-top: 18px;
-  color: var(--ink);
-  opacity: 0.65;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
+.splash-mark span { display: inline-block; animation: sp-rise 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+.splash-mark span:first-child { color: var(--ink); animation-delay: 0.25s; }
+.splash-mark span:last-child {
+  background: linear-gradient(90deg, var(--mint-deep), #7be5d3);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation-delay: 0.4s;
 }
-.splash-bar {
-  margin-top: 34px;
-  width: 140px;
-  height: 3px;
-  background: rgba(15,61,58,0.15);
-  border-radius: 2px;
-  overflow: hidden;
+@keyframes sp-rise { from { transform: translateY(40%); opacity: 0; filter: blur(6px); } to { transform: none; opacity: 1; filter: none; } }
+.splash-tag { margin-top: 12px; color: var(--muted); font-size: 0.95rem; letter-spacing: 0.02em; animation: sp-fade 0.8s ease 0.7s both; }
+@keyframes sp-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* bar kemajuan + persen + tips */
+.sp-progress { margin-top: 30px; display: flex; align-items: center; gap: 12px; animation: sp-fade 0.6s ease 0.8s both; }
+.sp-bar { width: min(240px, 56vw); height: 8px; border-radius: 999px; background: rgba(15, 61, 58, 0.12); overflow: hidden; }
+html[data-theme="dark"] .sp-bar { background: rgba(255, 255, 255, 0.14); }
+.sp-bar i { position: relative; display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--mint-deep), var(--mint), #bfe8c2); }
+.sp-bar i::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.65) 50%, transparent 70%);
+  background-size: 200% 100%; animation: sp-shimmer 1.2s linear infinite;
 }
-.splash-bar::after {
-  content: "";
-  display: block;
-  height: 100%;
-  width: 0%;
-  background: var(--ink);
-  animation: load 2.1s ease forwards;
+@keyframes sp-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.sp-progress span { min-width: 3.4ch; text-align: left; font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.85rem; color: var(--ink); }
+.sp-tip {
+  margin: 18px 0 0; min-height: 1.5em; max-width: 34ch;
+  color: var(--muted); font-size: 0.9rem; line-height: 1.5;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
-@keyframes load { to { width: 100%; } }
+.sp-tip.in { opacity: 1; transform: none; }
 
 /* ===== Blob 3D background ===== */
 .blob-field {
@@ -478,7 +509,7 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   #splash { display: none; }
   main { opacity: 1; }
-  .bubble, .splash-bar::after { animation: none; }
+  .bubble { animation: none; }
 }
 
 /* ===============================
@@ -1260,7 +1291,6 @@ html[data-theme="dark"], html[data-theme="dark"] body {
   background-attachment: fixed;
 }
 html[data-theme="dark"] #splash { background: linear-gradient(160deg, #071a18 0%, #0c2a27 45%, #0f4a42 100%); }
-html[data-theme="dark"] .splash-mark span:first-child { color: #e6fbf5; }
 html[data-theme="dark"] .bubble { background: rgba(255,255,255,0.1); }
 html[data-theme="dark"] .blob-field .blob { opacity: 0.22; }
 html[data-theme="dark"] header { background: rgba(8,26,24,0.65); }

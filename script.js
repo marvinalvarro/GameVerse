@@ -134,15 +134,80 @@ for (let i = 0; i < 14; i++) {
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const main = document.getElementById('main');
 
-if (reduceMotion) {
-  splash.style.display = 'none';
-  main.classList.add('show');
-} else {
-  setTimeout(() => {
+// ===== Layar loading: logo, bar kemajuan yang ikut kesiapan halaman, dan tips acak =====
+const SPLASH_TIPS = [
+  ['Ketik .rank di server buat cek levelmu', 'Type .rank in the server to check your level'],
+  ['Nongkrong di voice biar XP-mu nambah', 'Hang out in voice to earn XP'],
+  ['Jaga streak apimu, jangan kelewat sehari!', "Keep your streak alive, don't skip a day!"],
+  ['Mabar Night tiap Sabtu, jangan lupa mampir', 'Mabar Night every Saturday, drop by!'],
+  ['Ketik .help buat lihat semua command', 'Type .help to see all commands'],
+  ['Bikin KTP digital-mu sendiri di server', 'Make your own digital ID in the server']
+];
+(function runSplash() {
+  const fill = document.getElementById('spFill');
+  const pctEl = document.getElementById('spPct');
+  const tipEl = document.getElementById('spTip');
+
+  if (reduceMotion || !fill || !pctEl || !tipEl) {
+    splash.style.display = 'none';
+    main.classList.add('show');
+    return;
+  }
+
+  // kunjungan berikutnya di sesi yang sama dibuat lebih singkat
+  let revisit = false;
+  try { revisit = sessionStorage.getItem('gv_splash') === '1'; sessionStorage.setItem('gv_splash', '1'); } catch (e) {}
+  const MIN = revisit ? 900 : 1700;   // tampil minimal (ms)
+  const MAX = 4500;                   // jangan menahan lebih lama dari ini
+
+  let ready = document.readyState === 'complete';
+  if (!ready) window.addEventListener('load', () => { ready = true; });
+  let finished = false;
+  function finish() {
+    if (finished) return;
+    finished = true;
+    clearInterval(tipTimer);
     splash.classList.add('hide');
     main.classList.add('show');
-  }, 2200);
-}
+    setTimeout(() => { splash.style.display = 'none'; }, 1200);
+  }
+
+  // tips bergantian
+  let ti = Math.floor(Math.random() * SPLASH_TIPS.length);
+  function showTip() {
+    const t = SPLASH_TIPS[ti % SPLASH_TIPS.length];
+    ti++;
+    tipEl.classList.remove('in');
+    setTimeout(() => { tipEl.textContent = tr(t[0], t[1]); tipEl.classList.add('in'); }, 180);
+  }
+  showTip();
+  const tipTimer = setInterval(showTip, 1500);
+
+  // bar maju halus sampai 90%, lalu penuh begitu halaman siap dan waktu minimal lewat
+  const t0 = performance.now();
+  let shown = 0;
+  (function frame(now) {
+    if (finished) return;
+    const t = now - t0;
+    let target = Math.min(90, (t / MIN) * 90);
+    if ((ready && t >= MIN) || t >= MAX) target = 100;
+    shown += (target - shown) * 0.12 + (target > shown ? 0.2 : 0);
+    if (shown > target) shown = target;
+    const p = Math.min(100, shown);
+    fill.style.width = p + '%';
+    pctEl.textContent = Math.round(p) + '%';
+    if (p >= 99.5) {
+      fill.style.width = '100%';
+      pctEl.textContent = '100%';
+      setTimeout(finish, 350);
+      return;
+    }
+    requestAnimationFrame(frame);
+  })(t0);
+
+  // jaga-jaga kalau tab di latar belakang (animasi berhenti)
+  setTimeout(finish, MAX + 1500);
+})();
 
 // ===== Modal fitur server =====
 const modalOverlay = document.getElementById('modalOverlay');
