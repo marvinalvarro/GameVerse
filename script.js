@@ -195,6 +195,7 @@ const SPLASH_TIPS = [
     if (shown > target) shown = target;
     const p = Math.min(100, shown);
     fill.style.width = p + '%';
+    document.querySelectorAll('.sp-rk').forEach((r) => { r.style.left = p + '%'; });   // roket ikut meluncur di ujung bar
     pctEl.textContent = Math.round(p) + '%';
     if (p >= 99.5) {
       fill.style.width = '100%';
@@ -1579,4 +1580,12 @@ document.addEventListener('gv:lang', applyScale);
   load();
   setInterval(() => { if (!document.hidden) load(); }, 2 * 60 * 1000);
   document.addEventListener('gv:lang', render);
+})();
+
+
+// ===== Logo di header: klik = kembali ke atas =====
+(function initLogoTop() {
+  const a = document.querySelector('a.logo-sm');
+  if (!a) return;
+  a.addEventListener('click', (e) => { e.preventDefault(); scrollToTop(); });
 })();
