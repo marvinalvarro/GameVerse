@@ -614,9 +614,11 @@ if (mobileViewport && mobileTrack && mobileDotsWrap && mobileNextBtn) {
     mobileNextBtn.textContent = currentPage === totalPages - 1 ? tr('Ke Halaman Utama', 'Back to Top') : tr('Lanjut', 'Next');
 
     // Halaman yang gak aktif gak bisa difokus / diklik lewat keyboard
+    const focused = document.activeElement;
     groups.forEach((g, i) => {
-      if (i === currentPage) g.removeAttribute('inert'); else g.setAttribute('inert', '');
-      g.setAttribute('aria-hidden', i === currentPage ? 'false' : 'true');
+      if (i === currentPage) { g.removeAttribute('inert'); return; }
+      if (focused && g.contains(focused)) focused.blur();
+      g.setAttribute('inert', '');
     });
 
     syncHeight();
@@ -1107,11 +1109,12 @@ function esc(str) {
   refreshLabel();
 
   function setOpen(open, returnFocus) {
+    // fokus tidak boleh tertinggal di dalam menu yang akan disembunyikan
+    if (!open && drawer.contains(document.activeElement)) document.activeElement.blur();
     drawer.classList.toggle('open', open);
     overlay.classList.toggle('open', open);
     burger.setAttribute('aria-expanded', open ? 'true' : 'false');
     burger.setAttribute('aria-label', open ? tr('Tutup menu', 'Close menu') : tr('Buka menu', 'Open menu'));
-    drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
     if (open) drawer.removeAttribute('inert'); else drawer.setAttribute('inert', '');
     document.body.style.overflow = open ? 'hidden' : '';
     if (open && closeBtn) closeBtn.focus({ preventScroll: true });
