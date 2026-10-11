@@ -25,6 +25,11 @@ const GV_CONFIG = {
   // Contoh: { text: 'Servernya seru banget!', textEn: 'The server is so fun!', name: 'marvin.', rating: 5 }   (textEn opsional)
   testimonials: [],
 
+  // Rating dan ulasan gaya Google Play (opsional). Kosong = bagian ini disembunyiin.
+  // Rata-rata, jumlah, dan grafik bintang dihitung otomatis dari daftar ini.
+  // Contoh: { name: 'marvin.', rating: 5, date: '10/10/26', text: 'Servernya seru!', textEn: 'Great server!', helpful: 3 }
+  reviews: [],
+
   // Admin / moderator (opsional). Kosong = section "Tim" disembunyiin.
   // Contoh: { name: 'Marvin', role: 'Owner', roleEn: 'Owner', avatar: 'img/marvin.webp' }  (avatar & roleEn boleh dikosongin)
   team: [],
@@ -568,6 +573,7 @@ const PAGE_INFO = [
 const HASH_PAGE = {
   'fitur-server': 0, 'coba-langsung': 1,
   panduan: 2, aturan: 2, rules: 2, template: 2,
+  ulasan: 5, rating: 5, reviews: 5,
   level: 3, galeri: 3, spotlight: 3, testimoni: 3, tim: 3,
   faq: 4, suara: 5, masukan: 5
 };
@@ -1588,4 +1594,47 @@ document.addEventListener('gv:lang', applyScale);
   const a = document.querySelector('a.logo-sm');
   if (!a) return;
   a.addEventListener('click', (e) => { e.preventDefault(); scrollToTop(); });
+})();
+
+
+// ===== Rating dan ulasan (gaya Google Play) =====
+(function initReviews() {
+  const box = document.getElementById('ulasan');
+  if (!box) return;
+  const avgEl = document.getElementById('rvAvg'), starsEl = document.getElementById('rvStars');
+  const countEl = document.getElementById('rvCount'), barsEl = document.getElementById('rvBars'), listEl = document.getElementById('rvList');
+  let expanded = false;
+
+  const stars = (v, big) => '<span class="rv-st' + (big ? ' big' : '') + '" style="--p:' + (Math.max(0, Math.min(5, v)) / 5 * 100) + '%" aria-hidden="true">★★★★★</span>';
+  function hue(name) { let h = 0; String(name).split('').forEach((c) => { h = (h * 31 + c.charCodeAt(0)) % 360; }); return 'hsl(' + h + ',55%,42%)'; }
+
+  function render() {
+    const R = (GV_CONFIG.reviews || []).filter((r) => r && Number(r.rating) >= 1 && Number(r.rating) <= 5);
+    if (!R.length) { box.hidden = true; return; }
+    const en = GV_LANG.get() === 'en', loc = en ? 'en-US' : 'id-ID';
+    const n = R.length, avg = R.reduce((a, r) => a + Number(r.rating), 0) / n;
+    const dist = [0, 0, 0, 0, 0, 0];
+    R.forEach((r) => { dist[Math.round(r.rating)]++; });
+
+    avgEl.textContent = avg.toLocaleString(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    starsEl.innerHTML = stars(avg, true);
+    countEl.textContent = n.toLocaleString(loc) + tr(' ulasan', n === 1 ? ' review' : ' reviews');
+    barsEl.innerHTML = [5, 4, 3, 2, 1].map((s) =>
+      '<div class="rv-bar"><span>' + s + '</span><div><i style="width:' + (dist[s] / n * 100) + '%"></i></div></div>').join('');
+
+    const shown = expanded ? R : R.slice(0, 5);
+    listEl.innerHTML = shown.map((r) => {
+      const name = r.name || tr('Member Game Verse', 'Game Verse member');
+      const text = (en && r.textEn) ? r.textEn : r.text;
+      const help = Number(r.helpful) > 0 ? '<span class="rv-help">' + tr(r.helpful + ' orang menganggap ini berguna', r.helpful + ' people found this helpful') + '</span>' : '';
+      return '<article class="rv-card"><div class="rv-head"><span class="rv-av" style="background:' + hue(name) + '">' + esc(String(name).trim().charAt(0).toUpperCase()) + '</span><b>' + esc(name) + '</b></div>' +
+        '<div class="rv-meta">' + stars(Number(r.rating)) + (r.date ? '<span>' + esc(r.date) + '</span>' : '') + '</div>' +
+        (text ? '<p>' + esc(text) + '</p>' : '') + help + '</article>';
+    }).join('') + (n > 5 && !expanded ? '<button class="rv-more" type="button">' + tr('Lihat semua ulasan', 'See all reviews') + '</button>' : '');
+    const more = listEl.querySelector('.rv-more');
+    if (more) more.addEventListener('click', () => { expanded = true; render(); });
+    box.hidden = false;
+  }
+  render();
+  document.addEventListener('gv:lang', render);
 })();

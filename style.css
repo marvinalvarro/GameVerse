@@ -1964,3 +1964,38 @@ html[data-theme="dark"] .sp-rk.lg-dark { display: block; }
 /* footer */
 .foot-logo { display: block; width: 150px; height: auto; margin: 0 auto 16px; }
 @media (prefers-reduced-motion: reduce) { .sp-logo-wrap { animation: none; } .logo-sm .lg-mark { transition: none; } }
+
+
+/* ===============================
+   Rating dan ulasan (gaya Google Play)
+=============================== */
+.rv-top { display: flex; align-items: center; gap: 28px; margin: 4px 0 20px; }
+.rv-score { flex: 0 0 auto; text-align: left; }
+.rv-score b { display: block; font-family: "Baloo 2", sans-serif; font-size: 3.4rem; line-height: 1; color: var(--ink); }
+.rv-score span:last-child { display: block; margin-top: 6px; font-size: 0.82rem; color: var(--muted); }
+.rv-bars { flex: 1; min-width: 0; display: grid; gap: 7px; }
+.rv-bar { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--muted); }
+.rv-bar > span { width: 10px; text-align: center; }
+.rv-bar > div { flex: 1; height: 8px; border-radius: 999px; background: rgba(128, 128, 128, 0.22); overflow: hidden; }
+.rv-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--mint-deep), var(--mint)); }
+.rv-st { position: relative; display: inline-block; letter-spacing: 2px; font-size: 0.95rem; line-height: 1; color: rgba(128, 128, 128, 0.35); white-space: nowrap; }
+.rv-st::before { content: "★★★★★"; position: absolute; left: 0; top: 0; width: var(--p, 0%); overflow: hidden; color: #f5b301; white-space: nowrap; }
+.rv-st.big { font-size: 1.15rem; margin-top: 8px; }
+.rv-list { display: grid; gap: 12px; }
+.rv-card { padding: 14px 16px; background: var(--panel); border: 1px solid var(--panel-line); border-radius: var(--radius); }
+.rv-head { display: flex; align-items: center; gap: 10px; }
+.rv-head b { color: var(--ink); font-size: 0.95rem; }
+.rv-av { flex: 0 0 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.9rem; }
+.rv-meta { display: flex; align-items: center; gap: 10px; margin: 8px 0 6px; font-size: 0.78rem; color: var(--muted); }
+.rv-card p { margin: 0; color: var(--ink); font-size: 0.9rem; line-height: 1.55; }
+.rv-help { display: block; margin-top: 8px; font-size: 0.78rem; color: var(--muted); }
+.rv-more {
+  min-height: 44px; border-radius: 999px; border: 1px solid var(--panel-line); background: var(--panel); color: var(--ink);
+  font-family: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.2s ease;
+}
+@media (hover: hover) { .rv-more:hover { transform: translateY(-2px); background: var(--aqua); color: var(--btn-ink); } }
+.rv-more:active { transform: scale(0.95); }
+.features-group .reviews { max-width: 620px; margin-left: auto; margin-right: auto; padding-bottom: 8px; }
+.features-group .reviews + .voice { margin-top: 22px; border-top: 1px solid var(--panel-line); padding-top: 24px; }
+@media (max-width: 400px) { .rv-top { gap: 18px; } .rv-score b { font-size: 2.8rem; } }

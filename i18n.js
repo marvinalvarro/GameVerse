@@ -169,7 +169,8 @@
  "Panduan": "Guides",
  "Masukan": "Feedback",
  "Navigasi utama": "Main navigation",
- "Satu klik doang, langsung bisa mabar dan ngobrol bareng <span id=\"ctaScale\">ratusan</span> member lain.": "Just one click and you can play and chat with <span id=\"ctaScale\">hundreds of</span> other members."
+ "Satu klik doang, langsung bisa mabar dan ngobrol bareng <span id=\"ctaScale\">ratusan</span> member lain.": "Just one click and you can play and chat with <span id=\"ctaScale\">hundreds of</span> other members.",
+ "Rating dan ulasan": "Ratings and reviews"
 }/*END*/;
 
   var ATTRS = ['placeholder', 'aria-label', 'title', 'alt', 'data-cap'];
