@@ -1,15 +1,14 @@
 // =====================================================================
-// Game Verse: ulasan dari Supabase (berdiri sendiri, script.js TIDAK perlu diubah)
-// - Masukan dari form otomatis disimpan juga ke tabel "feedback" di Supabase
-// - Ulasan yang sudah disetujui (approved = true) tampil di bagian "Rating dan ulasan"
+// Game Verse: ulasan dari Supabase (berdiri sendiri, script.js TIDAK diubah)
+// - Masukan dari form otomatis disimpan juga ke tabel "feedback"
+// - Ulasan yang disetujui (approved = true) tampil di "Rating dan ulasan",
+//   diletakkan DI BAWAH form "Suara kamu penting"
 // Muat file ini SETELAH script.js
 // =====================================================================
 (function () {
   'use strict';
 
-  // 1) Isi dengan Project URL Supabase kamu, contoh: https://abcdxyz.supabase.co
   var SUPABASE_URL = 'https://wwhaesewjsvaopoigupc.supabase.co';
-  // 2) Publishable key (aman di web selama RLS aktif, lihat supabase.sql)
   var SUPABASE_KEY = 'sb_publishable_XKYGT9aqD_-oZa80iNrYYw_U8Q4e4xF';
   var TABLE = 'feedback';
 
@@ -17,9 +16,22 @@
   var base = SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/' + TABLE;
   var headers = { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' };
 
+  // ---------- Pindahkan "Rating dan ulasan" ke bawah form ----------
+  (function moveBelowForm() {
+    var form = document.getElementById('suara');
+    var reviews = document.getElementById('ulasan');
+    if (!form || !reviews || !form.parentNode) return;
+    form.parentNode.insertBefore(reviews, form.nextSibling);
+    var css = document.createElement('style');
+    css.textContent =
+      '.features-group .voice + .reviews{margin-top:22px;padding-top:24px;border-top:1px solid var(--panel-line)}' +
+      '.features-group .reviews + .voice{margin-top:0;padding-top:6px;border-top:0}';
+    document.head.appendChild(css);
+  })();
+
   // ---------- Kirim masukan ke Supabase ----------
-  // Form lama mengirim ke webhook Discord. Kita "menumpang" di request itu:
-  // begitu form lolos validasi dan dikirim ke Discord, datanya juga disimpan ke Supabase.
+  // Form lama mengirim ke webhook Discord. Kita menumpang di request itu:
+  // begitu form lolos validasi, datanya juga disimpan ke Supabase.
   function saveToDb(embed) {
     if (!enabled || !embed || !embed.fields) return;
     var f = {};
