@@ -35,7 +35,8 @@
         rating: rating,
         message: message
       })
-    }).catch(function () { /* gagal simpan: Discord tetap menerima */ });
+    }).then(function (r) { if (r && r.ok) load(); })   // ulasan baru langsung tampil
+      .catch(function () { /* gagal simpan: Discord tetap menerima */ });
   }
 
   if (enabled) {
